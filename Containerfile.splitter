@@ -1,0 +1,16 @@
+# This file is used to split existing images using `buildah build`. See
+# README.md for how to use it.
+
+ARG CHUNKAH=quay.io/jlebon/chunkah:latest
+ARG CHUNKAH_ARGS=""
+ARG CHUNKAH_CONFIG_STR
+
+FROM overridden AS target
+FROM ${CHUNKAH} AS chunkah
+ARG CHUNKAH_CONFIG_STR
+ARG CHUNKAH_ARGS
+RUN --mount=type=bind,target=/run/src,rw \
+    --mount=from=target,target=/chunkah \
+      chunkah build ${CHUNKAH_ARGS} > /run/src/out.ociarchive
+
+FROM oci-archive:out.ociarchive

@@ -1,0 +1,44 @@
+# Build the project
+build profile="dev":
+    cargo build --profile {{ profile }}
+
+# Check code formatting
+fmt:
+    cargo fmt --check
+
+# Run unit tests
+check:
+    cargo test
+
+# Run clippy linter
+clippy:
+    cargo clippy -- -D warnings
+
+# Lint shell scripts
+shellcheck:
+    shellcheck --external-sources --enable=all $(git ls-files '*.sh')
+
+# Lint markdown files
+markdownlint:
+    markdownlint $(git ls-files '*.md')
+
+# Run all checks (shellcheck, unit tests, fmt, clippy, markdownlint)
+checkall: shellcheck check fmt clippy markdownlint
+
+# Build chunkah container image
+buildimg chunk="":
+    #!/bin/bash
+    set -euo pipefail
+    buildah="${BUILDAH:-buildah}"
+    args=(-t chunkah --layers=true {{ if chunk == "nochunk" { "--build-arg=FINAL_FROM=rootfs" } else { "--skip-unused-stages=false" } }})
+    # drop this once we can assume 1.43
+    version=$(${buildah} version --json | jq -r '.version')
+    if [[ $(echo -e "${version}\n1.43" | sort -V | head -n1) != "1.43" ]]; then
+        args+=(-v "$PWD:/run/src" --security-opt=label=disable)
+    fi
+    echo ${buildah} build "${args[@]}" .
+    ${buildah} build "${args[@]}" .
+
+# Run end-to-end tests with built chunkah image
+test *ARGS:
+    ./tests/e2e/run.sh {{ ARGS }}

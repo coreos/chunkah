@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    container: quay.io/fedora/fedora:latest
+    steps:
+      - name: Install tools
+        run: dnf install -y cargo clippy rustfmt just ShellCheck nodejs-npm openssl-devel git
+      - name: Configure git
+        run: git config --global --add safe.directory '*'
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Install markdownlint
+        run: npm install -g markdownlint-cli
+      - name: Build
+        run: just build
+      - name: Check
+        run: just checkall
+
+  e2e-tests:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    container:
+      image: quay.io/fedora/fedora:latest
+      options: --privileged --cgroupns=host -v /var/lib/containers -v /var/tmp -v /tmp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Install tools
+        run: dnf install -y just buildah podman skopeo jq
+      - name: Build image
+        run: just buildimg
+      - name: Run tests
+        run: just test
+      - name: Push to ghcr.io
+        run: |
+          set -euo pipefail
+          podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            podman push chunkah ghcr.io/${{ github.repository }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+          else
+            podman push chunkah ghcr.io/${{ github.repository }}:${{ github.sha }}
+            podman push chunkah ghcr.io/${{ github.repository }}:latest
+          fi
+
+  release:
+    needs: e2e-tests
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Install skopeo
+        run: sudo apt-get update && sudo apt-get install -y skopeo
+      - name: Copy to quay.io
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.docker
+          echo '${{ secrets.QUAY_AUTH }}' > ~/.docker/config.json
+          skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            docker://ghcr.io/${{ github.repository }}:latest docker://quay.io/jlebon/chunkah:dev
+          skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            docker://ghcr.io/${{ github.repository }}:latest docker://quay.io/jlebon/chunkah:latest
+      - name: Cleanup old images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: chunkah
+          package-type: container
+          min-versions-to-keep: 20

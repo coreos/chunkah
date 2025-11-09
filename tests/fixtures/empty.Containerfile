@@ -1,0 +1,11 @@
+FROM scratch
+USER myuser
+EXPOSE 8888
+ENV MYENV1=MYVAL1
+ENV MYENV2=MYVAL2
+ENTRYPOINT ["my", "entrypoint"]
+CMD ["my", "cmd"]
+VOLUME /myvolume
+WORKDIR /
+LABEL mylabel=myval
+STOPSIGNAL SIGQUIT

@@ -1,0 +1,27 @@
+{
+  "User": "myuser",
+  "ExposedPorts": {
+    "8888/tcp": {}
+  },
+  "Env": [
+    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "MYENV1=MYVAL1",
+    "MYENV2=MYVAL2"
+  ],
+  "Entrypoint": [
+    "my",
+    "entrypoint"
+  ],
+  "Cmd": [
+    "my",
+    "cmd"
+  ],
+  "Volumes": {
+    "/myvolume": {}
+  },
+  "WorkingDir": "/",
+  "Labels": {
+    "mylabel": "myval"
+  },
+  "StopSignal": "SIGQUIT"
+}
