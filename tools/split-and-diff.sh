@@ -18,6 +18,7 @@ Options:
     --raw              Compare raw layer tarballs without flattening (requires
                        single-layer images)
     --no-filter-mtime  Don't filter out mtime differences from output
+    --no-cleanup       Don't remove images from containers-storage on exit
     -h, --help         Show this help message
 
 Arguments:
@@ -42,6 +43,7 @@ EOF
 # Parse options
 raw_mode=false
 filter_mtime=true
+cleanup_images=true
 while [[ $# -gt 0 ]]; do
     case "${1}" in
         --raw)
@@ -50,6 +52,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --no-filter-mtime)
             filter_mtime=false
+            shift
+            ;;
+        --no-cleanup)
+            cleanup_images=false
             shift
             ;;
         -h|--help)
@@ -98,8 +104,10 @@ cleanup() {
         chmod -R u+w "${tmpdir}"
         rm -rf "${tmpdir}"
     fi
-    if [[ -n "${original_image}" ]]; then podman rmi -f "${original_image}" 2>/dev/null || true; fi
-    if [[ -n "${split_image}" ]]; then podman rmi -f "${split_image}" 2>/dev/null || true; fi
+    if [[ "${cleanup_images}" == "true" ]]; then
+        if [[ -n "${original_image}" ]]; then podman rmi -f "${original_image}" 2>/dev/null || true; fi
+        if [[ -n "${split_image}" ]]; then podman rmi -f "${split_image}" 2>/dev/null || true; fi
+    fi
 }
 trap cleanup EXIT
 
