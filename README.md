@@ -156,14 +156,10 @@ It is possible to modify how components are assigned to layers by setting the
 e.g.:
 
 ```Dockerfile
-RUN setfattr -n user.component -v "" /
 RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app
 ```
 
-Note chunkah requires setting an empty string value on the rootfs itself
-to enable xattr scanning. This avoids having to check the xattrs of the
-whole rootfs in the common case where this feature is not used. Apart from
-this detail, this is compatible with rpm-ostree's support for [the same
+This is compatible with rpm-ostree's support for [the same
 feature](https://coreos.github.io/rpm-ostree/build-chunked-oci/#assigning-files-to-specific-layers).
 
 ### Limiting the number of layers
