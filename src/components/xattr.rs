@@ -148,7 +148,7 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
         setup(&rootfs);
-        let files = crate::scan::scan_rootfs(&rootfs).unwrap();
+        let files = crate::scan::scan_rootfs(&rootfs, false).unwrap();
         (tmp, files)
     }
 

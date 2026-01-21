@@ -7,14 +7,18 @@ use camino::Utf8Path;
 use cap_std::fs::Dir;
 use cap_std_ext::dirext::{CapStdExtDirExt, WalkConfiguration};
 
-use crate::components::{self, Component, FileInfo, FileMap};
+use crate::components::{self, Component, FileInfo, FileMap, FileType};
 
 /// Scan the rootfs for components and return a mapping of component names to components.
+///
+/// If `skip_special_files` is true, special file types (sockets, FIFOs,
+/// block/char devices) are silently skipped. Otherwise, an error is returned.
 pub fn scan_for_components(
     rootfs: &Dir,
     default_mtime_clamp: u64,
+    skip_special_files: bool,
 ) -> Result<HashMap<String, Component>> {
-    let files = scan_rootfs(rootfs).context("scanning rootfs")?;
+    let files = scan_rootfs(rootfs, skip_special_files).context("scanning rootfs")?;
 
     let repos = components::ComponentsRepos::load(rootfs, &files, default_mtime_clamp)
         .context("loading components")?;
@@ -28,7 +32,10 @@ pub fn scan_for_components(
 
 /// Scan the rootfs and return a map of file paths to their metadata.
 /// We use cap-std-ext's walk here, which doesn't follow symlinks.
-pub fn scan_rootfs(rootfs: &Dir) -> Result<FileMap> {
+///
+/// If `skip_special_files` is true, special file types (sockets, FIFOs,
+/// block/char devices) are silently skipped. Otherwise, an error is returned.
+pub fn scan_rootfs(rootfs: &Dir, skip_special_files: bool) -> Result<FileMap> {
     let mut files = BTreeMap::new();
 
     let config = WalkConfiguration::default().path_base(Path::new("/"));
@@ -51,11 +58,22 @@ pub fn scan_rootfs(rootfs: &Dir) -> Result<FileMap> {
                 .symlink_metadata(fs_path)
                 .with_context(|| format!("getting metadata for {}", path))?;
 
+            // Check file type early, before reading xattrs
+            let file_type = match FileType::from_cap_std(&metadata.file_type()) {
+                Some(ft) => ft,
+                None => {
+                    if skip_special_files {
+                        return Ok(ControlFlow::Continue(()));
+                    } else {
+                        anyhow::bail!("special file type not supported: {}", path);
+                    }
+                }
+            };
+
             let xattrs = read_xattrs(rootfs, fs_path)
                 .with_context(|| format!("reading xattrs for {}", path))?;
 
-            let file_info = FileInfo::from_metadata(&metadata, xattrs)
-                .with_context(|| format!("processing metadata for {}", path))?;
+            let file_info = FileInfo::from_metadata(&metadata, file_type, xattrs);
 
             files.insert(path.to_owned(), file_info);
             Ok::<_, anyhow::Error>(ControlFlow::Continue(()))
@@ -127,7 +145,7 @@ mod tests {
         rootfs.symlink("enoent", "broken").unwrap();
         rootfs.symlink("../../../etc/passwd", "escape").unwrap();
 
-        let files = scan_rootfs(&rootfs).unwrap();
+        let files = scan_rootfs(&rootfs, false).unwrap();
 
         assert_eq!(get_file_type(&files, "/realdir"), Some(FileType::Directory));
         assert_eq!(
@@ -145,7 +163,7 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
 
-        let files = scan_rootfs(&rootfs).unwrap();
+        let files = scan_rootfs(&rootfs, false).unwrap();
 
         // Should be empty. Note even the root directory is not included.
         // Root entries are not commonly in the tar stream. Container
@@ -164,11 +182,42 @@ mod tests {
         rootfs.create_dir_all("a/b/c").unwrap();
         rootfs.write("a/b/c/file", "content").unwrap();
 
-        let files = scan_rootfs(&rootfs).unwrap();
+        let files = scan_rootfs(&rootfs, false).unwrap();
 
         assert_eq!(get_file_type(&files, "/a"), Some(FileType::Directory));
         assert_eq!(get_file_type(&files, "/a/b"), Some(FileType::Directory));
         assert_eq!(get_file_type(&files, "/a/b/c"), Some(FileType::Directory));
         assert_eq!(get_file_type(&files, "/a/b/c/file"), Some(FileType::File));
+    }
+
+    #[test]
+    fn test_scan_rootfs_special_file_type() {
+        let tmp = tempfile::tempdir().unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+
+        // Create a regular file and a Unix socket (special file type)
+        rootfs.write("regular.txt", "content").unwrap();
+        let socket_path = tmp.path().join("test.sock");
+        let _socket = std::os::unix::net::UnixListener::bind(&socket_path).unwrap();
+
+        // By default, special file types should error
+        let result = scan_rootfs(&rootfs, false);
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        let err_chain = format!("{:#}", err);
+        assert!(
+            err_chain.contains("special file type"),
+            "expected 'special file type' in error chain, got: {}",
+            err_chain
+        );
+
+        // With skip_special_files=true, the socket should be skipped
+        let files = scan_rootfs(&rootfs, true).unwrap();
+
+        // Regular file should be present
+        assert_eq!(get_file_type(&files, "/regular.txt"), Some(FileType::File));
+
+        // Socket should be skipped (not in the map)
+        assert!(files.get(Utf8Path::new("/test.sock")).is_none());
     }
 }

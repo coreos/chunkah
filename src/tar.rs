@@ -142,8 +142,7 @@ pub fn write_files_to_tar<W: Write>(
                     .with_context(|| format!("getting metadata for {}", ancestor))?;
                 let xattrs = crate::scan::read_xattrs(rootfs, rel_path.as_str())
                     .with_context(|| format!("reading xattrs for {}", ancestor))?;
-                FileInfo::from_metadata(&metadata, xattrs)
-                    .with_context(|| format!("processing metadata for {}", ancestor))?
+                FileInfo::from_metadata(&metadata, FileType::Directory, xattrs)
             };
             write_dir_entry(tar_builder, ancestor, mtime_clamp, &ancestor_info)
                 .with_context(|| format!("writing parent directory {}", ancestor))?;
@@ -423,7 +422,7 @@ mod tests {
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
         setup(&rootfs);
 
-        let mut files = crate::scan::scan_rootfs(&rootfs).unwrap();
+        let mut files = crate::scan::scan_rootfs(&rootfs, false).unwrap();
         if let Some(modify) = modify_files {
             modify(&mut files);
         }
@@ -606,7 +605,7 @@ mod tests {
         rootfs.symlink("target", "symlink1").unwrap();
         std::fs::hard_link(tmp.path().join("symlink1"), tmp.path().join("symlink2")).unwrap();
 
-        let files = crate::scan::scan_rootfs(&rootfs).unwrap();
+        let files = crate::scan::scan_rootfs(&rootfs, false).unwrap();
 
         // Verify the scan picked up the hardlink metadata for files
         let file1_info = files.get(&Utf8PathBuf::from("/file1")).unwrap();

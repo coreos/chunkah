@@ -251,7 +251,7 @@ mod tests {
         rootfs_setup(&rootfs);
 
         // Scan the rootfs once
-        let all_files = crate::scan::scan_rootfs(&rootfs).unwrap();
+        let all_files = crate::scan::scan_rootfs(&rootfs, false).unwrap();
 
         // Build components by selecting paths from scanned files
         let components: Vec<(String, Component)> = specs

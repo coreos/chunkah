@@ -65,25 +65,33 @@ pub enum FileType {
     Symlink,
 }
 
+impl FileType {
+    /// Try to convert from cap_std file type.
+    ///
+    /// Returns `None` for unsupported types (sockets, FIFOs, block/char devices).
+    pub fn from_cap_std(file_type: &cap_std::fs::FileType) -> Option<Self> {
+        if file_type.is_dir() {
+            Some(FileType::Directory)
+        } else if file_type.is_file() {
+            Some(FileType::File)
+        } else if file_type.is_symlink() {
+            Some(FileType::Symlink)
+        } else {
+            None
+        }
+    }
+}
+
 impl FileInfo {
     /// Create FileInfo from metadata and xattrs.
     pub fn from_metadata(
         metadata: &cap_std::fs::Metadata,
+        file_type: FileType,
         xattrs: Vec<(String, Vec<u8>)>,
-    ) -> Result<Self> {
+    ) -> Self {
         use cap_std::fs::MetadataExt;
 
-        let file_type = if metadata.file_type().is_dir() {
-            FileType::Directory
-        } else if metadata.file_type().is_file() {
-            FileType::File
-        } else if metadata.file_type().is_symlink() {
-            FileType::Symlink
-        } else {
-            anyhow::bail!("unsupported file type");
-        };
-
-        Ok(Self {
+        Self {
             file_type,
             mode: metadata.mode(),
             size: metadata.len(),
@@ -93,7 +101,7 @@ impl FileInfo {
             ino: metadata.ino(),
             nlink: metadata.nlink(),
             xattrs,
-        })
+        }
     }
 }
 
@@ -271,7 +279,7 @@ mod tests {
             .setxattr("opt/myapp/data", XATTR_NAME, b"myapp")
             .unwrap();
 
-        let files = crate::scan::scan_rootfs(&rootfs).unwrap();
+        let files = crate::scan::scan_rootfs(&rootfs, false).unwrap();
 
         let xattr_repo = xattr::XattrRepo::load(&files, 0).unwrap().unwrap();
         let packages = rpm_qa::load_from_str(RPM_FIXTURE).unwrap();

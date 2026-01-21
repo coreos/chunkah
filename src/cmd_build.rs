@@ -87,6 +87,13 @@ pub struct BuildArgs {
     /// the current system architecture otherwise.
     #[arg(long, value_name = "ARCH")]
     arch: Option<String>,
+
+    /// Skip special files (sockets, FIFOs, block/char devices)
+    ///
+    /// By default, chunkah fails when encountering special file types.
+    /// This flag causes them to be silently skipped instead.
+    #[arg(long)]
+    skip_special_files: bool,
 }
 
 impl BuildArgs {
@@ -163,8 +170,9 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     let rootfs = Dir::open_ambient_dir(args.rootfs.as_std_path(), ambient_authority())
         .with_context(|| format!("opening rootfs {}", args.rootfs))?;
 
-    let components = crate::scan::scan_for_components(&rootfs, created_epoch)
-        .with_context(|| format!("scanning {} for components", args.rootfs))?;
+    let components =
+        crate::scan::scan_for_components(&rootfs, created_epoch, args.skip_special_files)
+            .with_context(|| format!("scanning {} for components", args.rootfs))?;
 
     // pack components down to max layers
     let components = pack_components(args, components).context("packing components")?;
