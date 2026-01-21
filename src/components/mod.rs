@@ -119,7 +119,7 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
-        if let Some(repo) = rpm::RpmRepo::load(rootfs).context("loading rpmdb")? {
+        if let Some(repo) = rpm::RpmRepo::load(rootfs, files).context("loading rpmdb")? {
             repos.push(Box::new(repo));
         }
 

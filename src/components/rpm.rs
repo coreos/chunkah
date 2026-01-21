@@ -29,15 +29,21 @@ pub struct RpmRepo {
 }
 
 impl RpmRepo {
-    /// Load the RPM database from the given rootfs.
+    /// Load the RPM database from the given rootfs. The `files` parameter is
+    /// used to canonicalize paths from the RPM database.
     ///
     /// Returns `Ok(None)` if no RPM database is detected.
-    pub fn load(rootfs: &Dir) -> Result<Option<Self>> {
+    pub fn load(rootfs: &Dir, files: &super::FileMap) -> Result<Option<Self>> {
         if !has_rpmdb(rootfs)? {
             return Ok(None);
         }
 
-        let packages = rpm_qa::load_from_rootfs_dir(rootfs).context("loading rpmdb from rootfs")?;
+        let mut packages =
+            rpm_qa::load_from_rootfs_dir(rootfs).context("loading rpmdb from rootfs")?;
+
+        canonicalize_package_paths(rootfs, files, &mut packages)
+            .context("canonicalizing package paths")?;
+
         Self::load_from_packages(packages).map(Some)
     }
 
@@ -134,6 +140,154 @@ fn has_rpmdb(rootfs: &Dir) -> anyhow::Result<bool> {
         }
     }
     Ok(false)
+}
+
+/// Canonicalize all file paths in packages by resolving directory symlinks.
+fn canonicalize_package_paths(
+    rootfs: &Dir,
+    files: &super::FileMap,
+    packages: &mut rpm_qa::Packages,
+) -> Result<()> {
+    let mut cache = HashMap::new();
+
+    for package in packages.values_mut() {
+        let old_files = std::mem::take(&mut package.files);
+        for (path, info) in old_files {
+            let canonical = canonicalize_parent_path(rootfs, files, &path, &mut cache)
+                .with_context(|| format!("canonicalizing {}", path))?;
+            package.files.insert(canonical, info);
+        }
+    }
+
+    Ok(())
+}
+
+/// Canonicalize the parent directory of a path by resolving symlinks.
+///
+/// Given `/lib/modules/5.x/vmlinuz`, if `/lib` -> `usr/lib`, returns
+/// `/usr/lib/modules/5.x/vmlinuz`. Only symlinks in directory components are
+/// resolved, not the final component (the reason is that if the final component
+/// is supposed to be a file/directory according to the rpmdb, but it turns out
+/// to be symlink, then something is off and we don't want the RPM to claim it).
+///
+/// The path must be absolute.
+fn canonicalize_parent_path(
+    rootfs: &Dir,
+    files: &super::FileMap,
+    path: &Utf8Path,
+    cache: &mut HashMap<Utf8PathBuf, Utf8PathBuf>,
+) -> Result<Utf8PathBuf> {
+    assert!(path.is_absolute(), "path must be absolute: {}", path);
+
+    if path == Utf8Path::new("/") {
+        return Ok(Utf8PathBuf::from("/"));
+    }
+
+    // recursively canonicalize the parent
+    let parent = path
+        .parent()
+        .expect("non-root absolute path must have parent");
+    let canonical_parent = canonicalize_dir_path(rootfs, files, parent, cache, 0)?;
+
+    let filename = path
+        .file_name()
+        .expect("non-root absolute path must have filename");
+    Ok(canonical_parent.join(filename))
+}
+
+/// Maximum depth for symlink resolution to prevent infinite loops.
+const MAX_SYMLINK_DEPTH: usize = 40;
+
+/// Recursively canonicalize a directory path by resolving symlinks.
+fn canonicalize_dir_path(
+    rootfs: &Dir,
+    files: &super::FileMap,
+    path: &Utf8Path,
+    cache: &mut HashMap<Utf8PathBuf, Utf8PathBuf>,
+    depth: usize,
+) -> Result<Utf8PathBuf> {
+    assert!(path.is_absolute(), "path must be absolute: {}", path);
+
+    if depth > MAX_SYMLINK_DEPTH {
+        anyhow::bail!("too many levels of symbolic links: {}", path);
+    }
+
+    // check cache first
+    if let Some(cached) = cache.get(path) {
+        return Ok(cached.clone());
+    }
+
+    // base case: root
+    if path == Utf8Path::new("/") {
+        return Ok(Utf8PathBuf::from("/"));
+    }
+
+    // recursively canonicalize the parent
+    let parent = path
+        .parent()
+        .expect("non-root absolute path must have parent");
+    let canonical_parent = canonicalize_dir_path(rootfs, files, parent, cache, depth)?;
+
+    let filename = path
+        .file_name()
+        .expect("non-root absolute path must have filename");
+    let current_path = canonical_parent.join(filename);
+
+    let is_symlink = files
+        .get(&current_path)
+        .map(|fi| fi.file_type == FileType::Symlink)
+        // Technically if we fallback here it means it doesn't even exist in the
+        // rootfs so it won't even be claimed. But it feels overkill to try to
+        // e.g. return an Option and handle that everywhere.
+        .unwrap_or(false);
+
+    let canonical = if is_symlink {
+        let rel_path = current_path
+            .strip_prefix("/")
+            .expect("path must be absolute");
+        let target = rootfs
+            .read_link_contents(rel_path.as_str())
+            .with_context(|| format!("reading symlink target for {}", current_path))?;
+
+        let target_utf8 = Utf8Path::from_path(&target)
+            .ok_or_else(|| anyhow::anyhow!("non-UTF-8 symlink target for {}", current_path))?;
+
+        if target_utf8.is_absolute() {
+            // absolute symlink - recurse to resolve any symlinks in target
+            canonicalize_dir_path(rootfs, files, target_utf8, cache, depth + 1)?
+        } else {
+            // relative symlink - join with parent and normalize
+            let resolved = canonical_parent.join(target_utf8);
+            let normalized = normalize_path(&resolved)?;
+            // recurse to resolve any symlinks in the resolved path
+            canonicalize_dir_path(rootfs, files, &normalized, cache, depth + 1)?
+        }
+    } else {
+        current_path
+    };
+
+    cache.insert(path.to_owned(), canonical.clone());
+    Ok(canonical)
+}
+
+/// Normalize a path by resolving `.` and `..` components.
+fn normalize_path(path: &Utf8Path) -> Result<Utf8PathBuf> {
+    let mut result = Utf8PathBuf::new();
+    for component in path.components() {
+        use camino::Utf8Component;
+        match component {
+            Utf8Component::RootDir => result.push("/"),
+            Utf8Component::ParentDir => {
+                result.pop();
+            }
+            Utf8Component::Normal(n) => result.push(n),
+            Utf8Component::CurDir => {}
+            Utf8Component::Prefix(p) => {
+                anyhow::bail!("invalid path prefix: {:?}", p);
+            }
+        }
+    }
+    Ok(result)
 }
 
 /// Parse the SRPM name from a full SRPM filename.
@@ -359,7 +513,8 @@ mod tests {
 
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
 
-        let repo = RpmRepo::load(&rootfs).unwrap().unwrap();
+        let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
+        let repo = RpmRepo::load(&rootfs, &files).unwrap().unwrap();
 
         // Test that paths we know are in filesystem and setup are claimed
         let claims = repo.claims_for_path(Utf8Path::new("/"), FileType::Directory);
@@ -466,5 +621,78 @@ mod tests {
 
         let stability = calculate_stability(&changelog_times, buildtime).unwrap();
         assert_stability_in_range(stability, 0.0, 0.10);
+    }
+
+    fn build_filemap(rootfs: &Dir) -> crate::components::FileMap {
+        crate::scan::Scanner::new(rootfs).scan().unwrap()
+    }
+
+    #[test]
+    fn test_normalize_path() {
+        let cases = [
+            ("/", "/"),
+            ("/a/..", "/"),
+            ("/a/b/../c", "/a/c"),
+            ("/a/./b/c", "/a/b/c"),
+            ("/a/b/c/..", "/a/b"),
+        ];
+        for (input, expected) in cases {
+            assert_eq!(
+                normalize_path(Utf8Path::new(input)).unwrap(),
+                Utf8PathBuf::from(expected),
+                "normalize_path({input})"
+            );
+        }
+    }
+
+    #[test]
+    fn test_canonicalize_path() {
+        let tmp = tempfile::tempdir().unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+        rootfs.create_dir_all("usr/lib/modules").unwrap();
+        rootfs.symlink("usr/lib", "lib").unwrap();
+        rootfs.create_dir_all("usr/bar").unwrap();
+        rootfs.symlink(".././../bar", "foo").unwrap();
+        rootfs.symlink("usr/bar", "bar").unwrap();
+
+        let files = build_filemap(&rootfs);
+        let mut cache = HashMap::new();
+
+        // Test canonicalize_dir_path cases
+        let dir_cases = [
+            // No symlinks
+            ("/usr/lib/modules", "/usr/lib/modules"),
+            // Single symlink: /lib -> usr/lib
+            ("/lib", "/usr/lib"),
+            ("/lib/modules", "/usr/lib/modules"),
+            // Symlink chain: /foo -> bar -> usr/bar
+            ("/foo", "/usr/bar"),
+            // Nonexistent path returns as-is
+            ("/nonexistent/path", "/nonexistent/path"),
+        ];
+        for (input, expected) in dir_cases {
+            let result =
+                canonicalize_dir_path(&rootfs, &files, Utf8Path::new(input), &mut cache, 0);
+            assert_eq!(
+                result.unwrap(),
+                Utf8PathBuf::from(expected),
+                "canonicalize_dir_path({input})"
+            );
+        }
+
+        // Test canonicalize_parent_path (resolves parent symlinks, keeps filename)
+        let parent_cases = [
+            ("/lib/modules/vmlinuz", "/usr/lib/modules/vmlinuz"),
+            ("/foo/baz", "/usr/bar/baz"),
+        ];
+        for (input, expected) in parent_cases {
+            let result =
+                canonicalize_parent_path(&rootfs, &files, Utf8Path::new(input), &mut cache);
+            assert_eq!(
+                result.unwrap(),
+                Utf8PathBuf::from(expected),
+                "canonicalize_parent_path({input})"
+            );
+        }
     }
 }
