@@ -55,8 +55,6 @@ paths. Unclaimed files go to `chunkah/unclaimed`.
 
 - `build` (`src/cmd_build.rs`) - Main command: scans rootfs, assigns
   components, builds OCI archive
-- `prescan` (`src/cmd_prescan.rs`) - Hidden command: outputs component manifest
-  for testing
 
 ## Code Guidelines
 
