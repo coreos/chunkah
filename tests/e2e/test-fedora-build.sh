@@ -1,4 +1,5 @@
 #!/bin/bash
+# Test splitting an existing image using Containerfile.splitter.
 set -xeuo pipefail
 shopt -s inherit_errexit
 

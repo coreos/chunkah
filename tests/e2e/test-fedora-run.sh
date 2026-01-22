@@ -1,4 +1,5 @@
 #!/bin/bash
+# Test splitting an existing image using podman run with image mounts.
 set -xeuo pipefail
 shopt -s inherit_errexit
 
