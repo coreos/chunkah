@@ -3,12 +3,15 @@
 set -xeuo pipefail
 shopt -s inherit_errexit
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=SCRIPTDIR/lib.sh
+. "${SCRIPT_DIR}/lib.sh"
+
 SOURCE_IMAGE="localhost/fedora:test"
 CHUNKED_IMAGE="localhost/fedora-chunked:test"
 
 cleanup() {
-    podman rmi -f "${SOURCE_IMAGE}" 2>/dev/null || true
-    podman rmi -f "${CHUNKED_IMAGE}" 2>/dev/null || true
+    cleanup_images "${SOURCE_IMAGE}" "${CHUNKED_IMAGE}"
 }
 trap cleanup EXIT
 
@@ -33,18 +36,11 @@ podman tag "${iid}" "${CHUNKED_IMAGE}"
 # sanity-check it
 podman run --rm "${CHUNKED_IMAGE}" cat /etc/os-release | grep Fedora
 
-# use skopeo to inspect the ociarchive and check for layer annotations
-layer_annotations=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" | \
-    jq -r '.LayersData[].Annotations["org.chunkah.component"] // empty')
-
-# check for some expected components
-grep -q "rpm/filesystem" <<< "${layer_annotations}"
-grep -q "rpm/setup" <<< "${layer_annotations}"
-grep -q "rpm/glibc" <<< "${layer_annotations}"
+# check for expected components
+assert_has_components "${CHUNKED_IMAGE}" "rpm/filesystem" "rpm/setup" "rpm/glibc"
 
 # sanity-check we got at least 16 layers
-n=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" | jq '.LayersData | length')
-[[ ${n} -ge 16 ]]
+assert_min_layers "${CHUNKED_IMAGE}" 16
 
 # verify that security.capability xattrs are preserved
 caps=$(podman run --rm "${CHUNKED_IMAGE}" getcap /usr/bin/test-caps)
