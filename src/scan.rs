@@ -3,7 +3,7 @@ use std::ops::ControlFlow;
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use camino::Utf8Path;
+use camino::{Utf8Path, Utf8PathBuf};
 use cap_std::fs::Dir;
 use cap_std_ext::dirext::{CapStdExtDirExt, WalkConfiguration};
 
@@ -13,6 +13,7 @@ use crate::components::{FileInfo, FileMap, FileType};
 pub struct Scanner<'a> {
     rootfs: &'a Dir,
     skip_special_files: bool,
+    prune_paths: Vec<PrunePath>,
 }
 
 impl<'a> Scanner<'a> {
@@ -21,6 +22,7 @@ impl<'a> Scanner<'a> {
         Self {
             rootfs,
             skip_special_files: false,
+            prune_paths: Vec::new(),
         }
     }
 
@@ -31,6 +33,18 @@ impl<'a> Scanner<'a> {
     pub fn skip_special_files(mut self, skip: bool) -> Self {
         self.skip_special_files = skip;
         self
+    }
+
+    /// Set paths to prune from the scan.
+    ///
+    /// Paths must be absolute. A trailing `/` means prune children only,
+    /// keeping the directory itself.
+    pub fn prune(mut self, paths: &[Utf8PathBuf]) -> Result<Self> {
+        self.prune_paths = paths
+            .iter()
+            .map(parse_prune_path)
+            .collect::<Result<Vec<_>>>()?;
+        Ok(self)
     }
 
     /// Scan the rootfs and return a map of file paths to their metadata.
@@ -72,13 +86,28 @@ impl<'a> Scanner<'a> {
                     }
                 };
 
+                let prune_action = check_prune(path, &self.prune_paths);
+                if prune_action == PruneAction::SkipEntirely {
+                    if file_type == FileType::Directory {
+                        // don't bother recursing into this directory
+                        return Ok(ControlFlow::Break(()));
+                    }
+                    return Ok(ControlFlow::Continue(()));
+                }
+
                 let xattrs = read_xattrs(self.rootfs, fs_path)
                     .with_context(|| format!("reading xattrs for {}", path))?;
 
                 let file_info = FileInfo::from_metadata(&metadata, file_type, xattrs);
 
                 files.insert(path.to_owned(), file_info);
-                Ok::<_, anyhow::Error>(ControlFlow::Continue(()))
+
+                if prune_action == PruneAction::SkipChildren && file_type == FileType::Directory {
+                    // don't bother recursing into this directory
+                    Ok(ControlFlow::Break(()))
+                } else {
+                    Ok(ControlFlow::Continue(()))
+                }
             })
             .context("failed to walk rootfs")?;
 
@@ -122,6 +151,65 @@ pub fn read_xattrs(rootfs: &Dir, fs_path: &str) -> anyhow::Result<Vec<(String, V
     }
 
     Ok(xattrs)
+}
+
+/// Represents a path to prune during scanning.
+#[derive(Debug, Clone, PartialEq)]
+enum PrunePath {
+    /// Prune the path and all its descendants (e.g., --prune /foo)
+    Exact(Utf8PathBuf),
+    /// Prune only the children, keeping the directory itself (e.g., --prune /foo/)
+    ChildrenOnly(Utf8PathBuf),
+}
+
+/// Parse a prune path string into a PrunePath.
+fn parse_prune_path(path: &Utf8PathBuf) -> Result<PrunePath> {
+    if path == "/" {
+        anyhow::bail!("cannot prune root directory");
+    }
+    if !path.is_absolute() {
+        anyhow::bail!("prune path must be absolute: {}", path);
+    }
+
+    // (Yup, PathBuf/Utf8PathBuf remembers whether a trailing slash was provided
+    // when it was built, which is nice for us here because clap can parse it as
+    // a Utf8Path for us and it's only here that we need to "peek".)
+    match path.as_str().strip_suffix('/') {
+        Some(base) => Ok(PrunePath::ChildrenOnly(Utf8PathBuf::from(base))),
+        None => Ok(PrunePath::Exact(path.clone())),
+    }
+}
+
+/// Result of checking if a path should be pruned.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum PruneAction {
+    /// Keep the path and recurse into it
+    Keep,
+    /// Keep the path but don't recurse into it
+    SkipChildren,
+    /// Skip the path entirely (don't add to map, don't recurse)
+    SkipEntirely,
+}
+
+/// Check if a path should be pruned.
+fn check_prune(path: &Utf8Path, prune_paths: &[PrunePath]) -> PruneAction {
+    for prune in prune_paths {
+        match prune {
+            PrunePath::Exact(prune_path) => {
+                if path.starts_with(prune_path) {
+                    return PruneAction::SkipEntirely;
+                }
+            }
+            PrunePath::ChildrenOnly(prune_path) => {
+                if path == prune_path {
+                    return PruneAction::SkipChildren;
+                } else if path.starts_with(prune_path) {
+                    return PruneAction::SkipEntirely;
+                }
+            }
+        }
+    }
+    PruneAction::Keep
 }
 
 #[cfg(test)]
@@ -225,5 +313,42 @@ mod tests {
 
         // Socket should be skipped (not in the map)
         assert!(files.get(Utf8Path::new("/test.sock")).is_none());
+    }
+
+    #[test]
+    fn test_scanner_with_prune() {
+        let tmp = tempfile::tempdir().unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+
+        rootfs.create_dir_all("keep/nested").unwrap();
+        rootfs.write("keep/nested/file.txt", "keep").unwrap();
+        rootfs.create_dir_all("prune/nested").unwrap();
+        rootfs.write("prune/nested/file.txt", "prune").unwrap();
+        rootfs.create_dir_all("prune-children-only/nested").unwrap();
+        rootfs
+            .write("prune-children-only/nested/file.txt", "prune")
+            .unwrap();
+        rootfs.create_dir_all("zkeep/nested").unwrap();
+        rootfs.write("zkeep/nested/file.txt", "keep").unwrap();
+
+        let prune = vec![
+            Utf8PathBuf::from("/prune"),
+            Utf8PathBuf::from("/prune-children-only/"),
+        ];
+        let files = Scanner::new(&rootfs).prune(&prune).unwrap().scan().unwrap();
+
+        assert!(files.contains_key(Utf8Path::new("/keep")));
+        assert!(files.contains_key(Utf8Path::new("/keep/nested")));
+        assert!(files.contains_key(Utf8Path::new("/keep/nested/file.txt")));
+        assert!(!files.contains_key(Utf8Path::new("/prune")));
+        assert!(!files.contains_key(Utf8Path::new("/prune/nested")));
+        assert!(!files.contains_key(Utf8Path::new("/prune/nested/file.txt")));
+        // notice not negated test here
+        assert!(files.contains_key(Utf8Path::new("/prune-children-only")));
+        assert!(!files.contains_key(Utf8Path::new("/prune-children-only/nested")));
+        assert!(!files.contains_key(Utf8Path::new("/prune-children-only/nested/file.txt")));
+        assert!(files.contains_key(Utf8Path::new("/zkeep")));
+        assert!(files.contains_key(Utf8Path::new("/zkeep/nested")));
+        assert!(files.contains_key(Utf8Path::new("/zkeep/nested/file.txt")));
     }
 }

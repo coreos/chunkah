@@ -47,6 +47,26 @@ assert_min_layers() {
     fi
 }
 
+# Assert that a path exists in an image.
+assert_path_exists() {
+    local image="${1}"; shift
+    local path="${1}"; shift
+    if ! podman run --rm "${image}" test -e "${path}"; then
+        echo "ERROR: ${path} should exist in ${image}"
+        exit 1
+    fi
+}
+
+# Assert that a path does not exist in an image.
+assert_path_not_exists() {
+    local image="${1}"; shift
+    local path="${1}"; shift
+    if podman run --rm "${image}" test -e "${path}"; then
+        echo "ERROR: ${path} should not exist in ${image}"
+        exit 1
+    fi
+}
+
 # Remove images, ignoring errors.
 cleanup_images() {
     for image in "$@"; do

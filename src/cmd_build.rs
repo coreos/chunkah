@@ -94,6 +94,14 @@ pub struct BuildArgs {
     /// This flag causes them to be silently skipped instead.
     #[arg(long)]
     skip_special_files: bool,
+
+    /// Paths to exclude from the rootfs
+    ///
+    /// If a directory ends with `/`, its contents are excluded but not the
+    /// directory itself. Can be specified multiple times. Paths must be
+    /// absolute.
+    #[arg(long = "prune", value_name = "PATH")]
+    prune: Vec<Utf8PathBuf>,
 }
 
 impl BuildArgs {
@@ -172,6 +180,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
 
     let files = crate::scan::Scanner::new(&rootfs)
         .skip_special_files(args.skip_special_files)
+        .prune(&args.prune)?
         .scan()
         .with_context(|| format!("scanning {} for files", args.rootfs))?;
 
