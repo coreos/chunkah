@@ -11,7 +11,6 @@ publish = false
 [dependencies]
 anyhow = "1"
 camino = { version = "1", features = ["serde1"] }
-cap-std = { version = "3", default-features = false, features = ["fs_utf8"] }
 cap-std-ext = { version = "4", default-features = false, features = ["fs_utf8"] }
 chrono = "0.4"
 clap = { version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context", "env"] }

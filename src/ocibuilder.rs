@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::io::Write;
 
 use anyhow::{Context, Result};
-use cap_std::fs::Dir;
+use cap_std_ext::cap_std::fs::Dir;
 use ocidir::oci_spec::image as oci_image;
 
 use crate::components::Component;
@@ -36,7 +36,7 @@ pub struct Builder {
 impl Builder {
     /// Create a new Builder with required parameters.
     pub fn new(rootfs: &Dir, components: Vec<(String, Component)>) -> Result<Self> {
-        let oci_dir = cap_std_ext::cap_tempfile::tempdir(cap_std::ambient_authority())
+        let oci_dir = cap_std_ext::cap_tempfile::tempdir(cap_std_ext::cap_std::ambient_authority())
             .context("creating temp directory")?;
 
         Ok(Self {
@@ -189,8 +189,8 @@ impl Builder {
 mod tests {
     use super::*;
     use camino::Utf8PathBuf;
-    use cap_std::ambient_authority;
-    use cap_std::fs::PermissionsExt;
+    use cap_std_ext::cap_std::ambient_authority;
+    use cap_std_ext::cap_std::fs::PermissionsExt;
     use cap_std_ext::dirext::CapStdExtDirExt;
     use maplit::btreeset;
     use std::collections::BTreeSet;
@@ -403,7 +403,10 @@ mod tests {
 
                 rootfs.create_dir("mydir").unwrap();
                 rootfs
-                    .set_permissions("mydir", cap_std::fs::Permissions::from_mode(0o777))
+                    .set_permissions(
+                        "mydir",
+                        cap_std_ext::cap_std::fs::Permissions::from_mode(0o777),
+                    )
                     .unwrap();
 
                 rootfs.write("xattr_file", "xattr content").unwrap();

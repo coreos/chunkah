@@ -133,8 +133,8 @@ impl ComponentsRepo for XattrRepo {
 
 #[cfg(test)]
 mod tests {
-    use cap_std::ambient_authority;
-    use cap_std::fs::Dir;
+    use cap_std_ext::cap_std::ambient_authority;
+    use cap_std_ext::cap_std::fs::Dir;
     use cap_std_ext::dirext::CapStdExtDirExt;
 
     use super::*;

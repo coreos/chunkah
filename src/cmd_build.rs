@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use anyhow::{Context, Result};
 use camino::Utf8PathBuf;
-use cap_std::ambient_authority;
-use cap_std::fs::Dir;
+use cap_std_ext::cap_std::ambient_authority;
+use cap_std_ext::cap_std::fs::Dir;
 use clap::Parser;
 use ocidir::oci_spec::image as oci_image;
 use serde::Deserialize;
@@ -400,9 +400,7 @@ mod tests {
         let parsed = parse_config(CONFIG_FIXTURE).unwrap();
         let image_config = build_image_config(&args, parsed.config, 1, "amd64").unwrap();
 
-        let rootfs =
-            cap_std::fs::Dir::open_ambient_dir(rootfs_dir.path(), cap_std::ambient_authority())
-                .unwrap();
+        let rootfs = Dir::open_ambient_dir(rootfs_dir.path(), ambient_authority()).unwrap();
 
         // create a single empty component for testing
         let components = vec![(
@@ -428,9 +426,7 @@ mod tests {
         let mut archive = tar::Archive::new(output.as_slice());
         archive.unpack(oci_tempdir.path()).unwrap();
 
-        let oci_dir_cap =
-            cap_std::fs::Dir::open_ambient_dir(oci_tempdir.path(), cap_std::ambient_authority())
-                .unwrap();
+        let oci_dir_cap = Dir::open_ambient_dir(oci_tempdir.path(), ambient_authority()).unwrap();
         let oci_dir = ocidir::OciDir::open(oci_dir_cap).unwrap();
 
         // get the image manifest (we don't set a tag, so use the index)

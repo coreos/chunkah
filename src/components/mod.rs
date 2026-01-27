@@ -8,7 +8,7 @@ pub const UNCLAIMED_COMPONENT: &str = "chunkah/unclaimed";
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
-use cap_std::fs::Dir;
+use cap_std_ext::cap_std::fs::{Dir, FileType as CapFileType, Metadata, MetadataExt};
 
 /// Seconds per day.
 pub const SECS_PER_DAY: u64 = 60 * 60 * 24;
@@ -69,7 +69,7 @@ impl FileType {
     /// Try to convert from cap_std file type.
     ///
     /// Returns `None` for unsupported types (sockets, FIFOs, block/char devices).
-    pub fn from_cap_std(file_type: &cap_std::fs::FileType) -> Option<Self> {
+    pub fn from_cap_std(file_type: &CapFileType) -> Option<Self> {
         if file_type.is_dir() {
             Some(FileType::Directory)
         } else if file_type.is_file() {
@@ -85,12 +85,10 @@ impl FileType {
 impl FileInfo {
     /// Create FileInfo from metadata and xattrs.
     pub fn from_metadata(
-        metadata: &cap_std::fs::Metadata,
+        metadata: &Metadata,
         file_type: FileType,
         xattrs: Vec<(String, Vec<u8>)>,
     ) -> Self {
-        use cap_std::fs::MetadataExt;
-
         Self {
             file_type,
             mode: metadata.mode(),
@@ -242,8 +240,7 @@ trait ComponentsRepo {
 #[cfg(test)]
 mod tests {
     use camino::Utf8Path;
-    use cap_std::ambient_authority;
-    use cap_std::fs::Dir;
+    use cap_std_ext::cap_std::ambient_authority;
     use cap_std_ext::dirext::CapStdExtDirExt;
 
     use super::*;

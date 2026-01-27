@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
-use cap_std::fs::Dir;
+use cap_std_ext::cap_std::fs::Dir;
 use indexmap::IndexMap;
 use rpm_qa::FileInfo;
 
@@ -219,6 +219,7 @@ fn file_info_to_file_type(fi: &FileInfo) -> Option<FileType> {
 #[cfg(test)]
 mod tests {
     use camino::Utf8Path;
+    use cap_std_ext::cap_std::ambient_authority;
 
     use super::*;
 
@@ -356,8 +357,7 @@ mod tests {
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rpmdb.sqlite");
         std::fs::copy(&fixture_path, rpmdb_dir.join("rpmdb.sqlite")).unwrap();
 
-        let rootfs =
-            cap_std::fs::Dir::open_ambient_dir(tmp.path(), cap_std::ambient_authority()).unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
 
         let repo = RpmRepo::load(&rootfs).unwrap().unwrap();
 

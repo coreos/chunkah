@@ -3,6 +3,7 @@ use std::io::Write;
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
+use cap_std_ext::cap_std::fs::Dir;
 use ocidir::oci_spec::image as oci_image;
 use ocidir::{BlobWriter, WriteComplete};
 
@@ -101,7 +102,7 @@ pub fn create_layer(
 /// of the input BTreeMap for efficiency.
 pub fn write_files_to_tar<W: Write>(
     tar_builder: &mut tar::Builder<W>,
-    rootfs: &cap_std::fs::Dir,
+    rootfs: &Dir,
     files: &FileMap,
     mtime_clamp: u64,
 ) -> Result<()> {
@@ -179,7 +180,7 @@ pub fn write_files_to_tar<W: Write>(
 /// Write the OCI directory as a tar archive to a writer.
 // XXX: Consider upstreaming this to ocidir-rs.
 pub fn write_oci_archive<W: Write>(
-    oci_dir: &cap_std::fs::Dir,
+    oci_dir: &Dir,
     writer: W,
     compression: ArchiveCompression,
 ) -> Result<()> {
@@ -294,7 +295,7 @@ fn write_hardlink_entry<W: Write>(
 /// Write a regular file entry to the tar archive.
 fn write_file_entry<W: Write>(
     tar_builder: &mut tar::Builder<W>,
-    rootfs: &cap_std::fs::Dir,
+    rootfs: &Dir,
     path: &Utf8Path,
     mtime_clamp: u64,
     file_info: &FileInfo,
@@ -322,7 +323,7 @@ fn write_file_entry<W: Write>(
 /// Write a symlink entry to the tar archive.
 fn write_symlink_entry<W: Write>(
     tar_builder: &mut tar::Builder<W>,
-    rootfs: &cap_std::fs::Dir,
+    rootfs: &Dir,
     path: &Utf8Path,
     mtime_clamp: u64,
     file_info: &FileInfo,
@@ -347,7 +348,7 @@ fn write_symlink_entry<W: Write>(
     Ok(())
 }
 
-fn write_oci_archive_to<W: Write>(oci_dir: &cap_std::fs::Dir, writer: W) -> Result<()> {
+fn write_oci_archive_to<W: Write>(oci_dir: &Dir, writer: W) -> Result<()> {
     use cap_std_ext::dirext::CapStdExtDirExt;
     use std::ops::ControlFlow;
 
@@ -407,8 +408,8 @@ fn write_oci_archive_to<W: Write>(oci_dir: &cap_std::fs::Dir, writer: W) -> Resu
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cap_std::ambient_authority;
-    use cap_std::fs::Dir;
+    use cap_std_ext::cap_std::ambient_authority;
+
     use cap_std_ext::dirext::CapStdExtDirExt;
 
     /// Helper to create a rootfs in a tempdir, run setup, write files to tar, and return raw bytes.

@@ -4,7 +4,7 @@ use std::path::Path;
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
-use cap_std::fs::Dir;
+use cap_std_ext::cap_std::fs::Dir;
 use cap_std_ext::dirext::{CapStdExtDirExt, WalkConfiguration};
 
 use crate::components::{FileInfo, FileMap, FileType};
@@ -215,7 +215,7 @@ fn check_prune(path: &Utf8Path, prune_paths: &[PrunePath]) -> PruneAction {
 #[cfg(test)]
 mod tests {
     use camino::Utf8Path;
-    use cap_std::ambient_authority;
+    use cap_std_ext::cap_std::ambient_authority;
 
     use super::*;
     use crate::components::FileType;

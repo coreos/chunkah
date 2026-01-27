@@ -190,7 +190,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "camino",
- "cap-std",
  "cap-std-ext",
  "chrono",
  "clap",
