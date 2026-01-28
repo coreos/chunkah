@@ -1,3 +1,4 @@
+mod bigfiles;
 mod rpm;
 mod xattr;
 
@@ -123,6 +124,10 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
+        if let Some(repo) = bigfiles::BigfilesRepo::load(files, default_mtime_clamp) {
+            repos.push(Box::new(repo));
+        }
+
         // Other backends (e.g. deb, apk, pip, etc.) would go here...
 
         Ok(Self {
@@ -197,10 +202,10 @@ impl ComponentsRepos {
             );
         }
 
-        // Final pass: fill in stability for components with 0.0 (xattr, unclaimed).
-        // Use half the minimum non-zero stability so they're considered less stable
-        // than any known component, but non-zero so the packing algorithm can make
-        // meaningful TEV loss calculations.
+        // Final pass: fill in stability for components with 0.0 (xattr,
+        // bigfiles, unclaimed). Use half the minimum non-zero stability so
+        // they're considered less stable than any known component, but non-zero
+        // so the packing algorithm can make meaningful TEV loss calculations.
         let min_stability = components
             .values()
             .map(|c| c.stability)

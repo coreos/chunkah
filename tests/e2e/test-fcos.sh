@@ -35,12 +35,11 @@ assert_has_components "${CHUNKED_IMAGE}" "rpm/kernel" "rpm/systemd" "rpm/ignitio
 # verify we got exactly 96 layers
 assert_layer_count "${CHUNKED_IMAGE}" 96
 
-# verify unclaimed layer is under 300MB (314572800 bytes)
-# XXX: we're working towards reworking unclaimed logic which should allow us to lower the threshold here
+# verify layer containing unclaimed is under 50MB (52428800 bytes)
 unclaimed_size=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" | \
     jq '.LayersData[] | select(.Annotations["org.chunkah.component"] | contains("chunkah/unclaimed")) | .Size')
 [[ -n "${unclaimed_size}" ]]
-[[ ${unclaimed_size} -le 314572800 ]]
+[[ ${unclaimed_size} -le 52428800 ]]
 
 # verify chunked image is not larger than original + 1%
 # (catches possible e.g. bad hardlink handling)
