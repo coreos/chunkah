@@ -191,11 +191,30 @@ impl ComponentsRepos {
                 UNCLAIMED_COMPONENT.into(),
                 Component {
                     mtime_clamp: self.default_mtime_clamp,
-                    stability: 0.0, // unclaimed files assumed unstable
+                    stability: 0.0,
                     files: unclaimed,
                 },
             );
         }
+
+        // Final pass: fill in stability for components with 0.0 (xattr, unclaimed).
+        // Use half the minimum non-zero stability so they're considered less stable
+        // than any known component, but non-zero so the packing algorithm can make
+        // meaningful TEV loss calculations.
+        let min_stability = components
+            .values()
+            .map(|c| c.stability)
+            .filter(|&s| s > 0.0)
+            // SAFETY: somehow getting NaN is a logic error somewhere
+            .min_by(|a, b| a.partial_cmp(b).unwrap())
+            .unwrap();
+        let fallback_stability = min_stability / 2.0;
+        for comp in components.values_mut() {
+            if comp.stability == 0.0 {
+                comp.stability = fallback_stability;
+            }
+        }
+
         components
     }
 }
