@@ -42,3 +42,11 @@ buildimg chunk="":
 # Run end-to-end tests with built chunkah image
 test *ARGS:
     ./tests/e2e/run.sh {{ ARGS }}
+
+# Profile chunkah with flamegraph (outputs flamegraph.svg)
+profile *ARGS:
+    just -f tools/perf/Justfile profile {{ ARGS }}
+
+# Benchmark chunkah with hyperfine
+benchmark *ARGS:
+    just -f tools/perf/Justfile benchmark {{ ARGS }}
