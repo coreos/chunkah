@@ -900,11 +900,12 @@ checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 [[package]]
 name = "rpm-qa"
 version = "0.1.0"
-source = "git+https://github.com/jlebon/rpm-qa-rs#cd4cd3ef42533af9fcb8de26f10701feb08af5b8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48ba32617208a3787a73bc76d4c153377fe2dd503e570c3592855b0593531419"
 dependencies = [
  "anyhow",
  "camino",
- "cap-std",
+ "cap-std-ext",
  "rustix",
  "serde",
  "serde_json",
