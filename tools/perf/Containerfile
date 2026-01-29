@@ -1,0 +1,9 @@
+ARG BASE=quay.io/fedora/fedora-minimal:43
+
+FROM ${BASE}
+RUN --mount=type=cache,rw,id=dnf,target=/var/cache/libdnf5 \
+    dnf install -y cargo rust pkg-config openssl-devel perf
+RUN --mount=type=cache,rw,id=cargo,target=/root/.cargo \
+    cargo install flamegraph hyperfine --root /usr/local
+ENV CHUNKAH_ROOTFS=/chunkah
+WORKDIR /build
