@@ -4,7 +4,7 @@ ARG DNF_FLAGS="-y --setopt=install_weak_deps=False"
 FROM ${BASE}
 ARG DNF_FLAGS
 RUN --mount=type=cache,rw,id=dnf,target=/var/cache/libdnf5 \
-    dnf install ${DNF_FLAGS} cargo rust pkg-config openssl-devel perf
+    dnf install ${DNF_FLAGS} cargo rust pkg-config openssl-devel zlib-devel perf
 RUN --mount=type=cache,rw,id=cargo,target=/root/.cargo \
     cargo install flamegraph hyperfine --root /usr/local
 ENV CHUNKAH_ROOTFS=/chunkah

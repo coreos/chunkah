@@ -9,7 +9,7 @@ ARG DNF_FLAGS="-y --setopt=install_weak_deps=False"
 FROM ${BASE} AS builder
 ARG DNF_FLAGS
 RUN --mount=type=cache,rw,id=dnf,target=/var/cache/libdnf5 \
-    dnf install ${DNF_FLAGS} cargo rust pkg-config openssl-devel
+    dnf install ${DNF_FLAGS} cargo rust pkg-config openssl-devel zlib-devel
 WORKDIR /build
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
@@ -21,7 +21,7 @@ FROM ${BASE} AS rootfs
 ARG DNF_FLAGS
 RUN --mount=type=cache,id=dnf,target=/mnt \
     cp -a /mnt /var/cache/libdnf5 && \
-    dnf install ${DNF_FLAGS} openssl skopeo && rm -rf /var/cache/*
+    dnf install ${DNF_FLAGS} openssl zlib skopeo && rm -rf /var/cache/*
 COPY --from=builder /usr/bin/chunkah /usr/bin/chunkah
 
 FROM rootfs AS rechunk
