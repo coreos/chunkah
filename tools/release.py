@@ -70,7 +70,7 @@ def main():
             print("To complete the release, run:")
             print(f"  git push origin {tag}")
             print(f"  gh release create {tag} --notes-from-tag --verify-tag "
-                  f"{source_tarball} {vendor_tarball}")
+                  f"{source_tarball} {vendor_tarball} Containerfile.splitter")
             print(f"  rm {source_tarball} {vendor_tarball}")
         else:
             step("Pushing tag...")
@@ -78,7 +78,8 @@ def main():
 
             step("Creating GitHub release...")
             run("gh", "release", "create", tag, "--notes-from-tag",
-                "--verify-tag", source_tarball, vendor_tarball)
+                "--verify-tag", source_tarball, vendor_tarball,
+                "Containerfile.splitter")
 
             step("Cleaning up tarballs...")
             os.remove(source_tarball)
