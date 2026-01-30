@@ -1,6 +1,6 @@
 [package]
 name = "chunkah"
-version = "0.1.0"
+version = "0.1.1"
 description = "An OCI building tool for content-based layers"
 authors = ["Jonathan Lebon <jonathan@jlebon.com>"]
 repository = "https://github.com/jlebon/chunkah"
