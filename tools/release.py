@@ -161,7 +161,9 @@ def create_signed_tag(tag: str, message: str):
     with tempfile.NamedTemporaryFile(mode="w", suffix=".md") as f:
         f.write(message)
         f.flush()
-        run("git", "tag", "-s", "-a", tag, "-F", f.name)
+        # Use a non-# commentchar so that markdown headers are preserved
+        run("git", "-c", "core.commentchar=;", "tag", "-s", "-a", tag,
+            "-F", f.name)
 
 
 def generate_source_tarball(tag: str, version: str, output: str):
