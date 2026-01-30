@@ -20,6 +20,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Install markdownlint
         run: npm install -g markdownlint-cli
+      - name: Verify Cargo.lock is in sync
+        run: just lockcheck
       - name: Build
         run: just build
       - name: Check

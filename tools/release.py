@@ -28,6 +28,9 @@ def main():
         if tag_exists(tag):
             die(f"Tag {tag} already exists")
 
+        step("Verifying Cargo.lock is in sync...")
+        run("just", "lockcheck")
+
         step("Running checks...")
         run("just", "checkall")
 

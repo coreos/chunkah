@@ -22,6 +22,10 @@ shellcheck:
 markdownlint:
     markdownlint $(git ls-files '*.md')
 
+# Verify Cargo.lock is in sync with Cargo.toml
+lockcheck:
+    cargo update chunkah --locked
+
 # Run all checks (shellcheck, unit tests, fmt, clippy, markdownlint)
 checkall: shellcheck check fmt clippy markdownlint
 
