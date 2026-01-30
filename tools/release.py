@@ -175,14 +175,13 @@ def generate_vendor_tarball(output: str):
     """Generate vendored dependencies tarball."""
     run("cargo", "vendor-filterer",
         "--platform", "*-unknown-linux-*",
-        "--keep-dep-kinds", "no-dev",
         "--format=tar.gz",
         "--prefix=vendor",
         output)
 
 
 def verify_offline_build(version: str, source: str, vendor: str):
-    """Verify that the tarballs can build offline."""
+    """Verify that the tarballs can build and test offline."""
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
         project_dir = tmpdir / f"{NAME}-{version}"
@@ -201,9 +200,11 @@ replace-with = "vendored-sources"
 directory = "vendor"
 """)
 
-        # Build
+        # Build and test
         manifest = project_dir / "Cargo.toml"
         run("cargo", "build", "--release", "--offline",
+            "--manifest-path", str(manifest))
+        run("cargo", "test", "--release", "--offline",
             "--manifest-path", str(manifest))
 
 
