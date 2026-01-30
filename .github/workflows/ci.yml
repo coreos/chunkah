@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['*']
   pull_request:
     branches: [main]
 
@@ -48,7 +49,12 @@ jobs:
           set -euo pipefail
           podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
           podman push chunkah ghcr.io/${{ github.repository }}:${{ github.sha }}
-          podman push chunkah ghcr.io/${{ github.repository }}:latest
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+            podman push chunkah ghcr.io/${{ github.repository }}:${TAG}
+          else
+            podman push chunkah ghcr.io/${{ github.repository }}:latest
+          fi
 
   release:
     needs: e2e-tests
@@ -59,18 +65,25 @@ jobs:
     steps:
       - name: Install skopeo
         run: sudo apt-get update && sudo apt-get install -y skopeo
-      - name: Copy to quay.io
+      - name: Push to quay.io
         run: |
           set -euo pipefail
           mkdir -p ~/.docker
           echo '${{ secrets.QUAY_AUTH }}' > ~/.docker/config.json
-          skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            docker://ghcr.io/${{ github.repository }}:latest docker://quay.io/jlebon/chunkah:dev
-          skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            docker://ghcr.io/${{ github.repository }}:latest docker://quay.io/jlebon/chunkah:latest
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+            skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:${TAG}
+            skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:latest
+          else
+            skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:dev
+          fi
       - name: Cleanup old images
         uses: actions/delete-package-versions@v5
         with:
           package-name: chunkah
           package-type: container
           min-versions-to-keep: 20
+          ignore-versions: '^v.*$'
