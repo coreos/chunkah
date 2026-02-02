@@ -22,12 +22,22 @@ shellcheck:
 markdownlint:
     markdownlint $(git ls-files '*.md')
 
-# Verify Cargo.lock is in sync with Cargo.toml
-lockcheck:
+# Verify Cargo.lock and README version match Cargo.toml
+versioncheck:
+    #!/bin/bash
+    set -euo pipefail
     cargo update chunkah --locked
+    cargo_version=$(cargo metadata --no-deps --format-version=1 | jq -r '.packages[0].version')
+    line=$(grep -E '^\s+https://github\.com/jlebon/chunkah/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/Containerfile\.splitter$' README.md) \
+        || { echo "Could not find Containerfile.splitter download URL in README.md"; exit 1; }
+    readme_version=$(echo "${line}" | grep -oP 'download/v\K[0-9]+\.[0-9]+\.[0-9]+')
+    if [[ "${cargo_version}" != "${readme_version}" ]]; then
+        echo "Version mismatch: Cargo.toml has ${cargo_version}, README.md has ${readme_version}"
+        exit 1
+    fi
 
-# Run all checks (shellcheck, unit tests, fmt, clippy, markdownlint)
-checkall: shellcheck check fmt clippy markdownlint
+# Run all checks (shellcheck, unit tests, fmt, clippy, markdownlint, versioncheck)
+checkall: shellcheck check fmt clippy markdownlint versioncheck
 
 # Build chunkah container image (use --no-chunk to skip chunking for faster builds)
 [arg("no_chunk", long="no-chunk", value="true")]

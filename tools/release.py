@@ -31,8 +31,9 @@ def main():
         if is_worktree_dirty():
             die("Worktree is dirty, commit or stash changes first")
 
-        step("Verifying Cargo.lock is in sync...")
-        run("just", "lockcheck")
+        # do this first to avoid building implicitly bumping the lockfile
+        step("Verifying Cargo.lock and README.md are in sync...")
+        run("just", "versioncheck")
 
         step("Running checks...")
         run("just", "checkall")
