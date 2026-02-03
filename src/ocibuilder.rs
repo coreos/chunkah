@@ -134,10 +134,6 @@ impl Builder {
                 .with_context(|| format!("adding component {}", name))?;
         }
 
-        // Clear history - we don't want to emit it in the output image
-        // XXX: add a e.g. push_layer_without_history_annotated to ocidir
-        config.history_mut().take();
-
         Ok(())
     }
 
@@ -179,7 +175,28 @@ impl Builder {
             hm
         };
 
-        oci_dir.push_layer_with_history_annotated(manifest, config, layer, Some(annotations), None);
+        let mtime_i64 =
+            i64::try_from(component.mtime_clamp).context("mtime_clamp overflows i64")?;
+
+        let created = chrono::DateTime::from_timestamp(mtime_i64, 0)
+            .with_context(|| format!("invalid mtime_clamp: {}", component.mtime_clamp))?
+            .to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+
+        let history = oci_image::HistoryBuilder::default()
+            .created(created)
+            .author("chunkah".to_string())
+            .created_by("chunkah".to_string())
+            .comment(name.to_string())
+            .build()
+            .context("building history entry")?;
+
+        oci_dir.push_layer_with_history_annotated(
+            manifest,
+            config,
+            layer,
+            Some(annotations),
+            Some(history),
+        );
 
         Ok(())
     }
@@ -379,14 +396,49 @@ mod tests {
         assert_eq!(layer_b.1[0].1, tar::EntryType::Regular);
         assert_eq!(layer_b.1[0].2, 9); // "content b".len()
 
-        // Verify no history entries
+        // Verify history entries match layers
+        let history = result
+            .image_config
+            .history()
+            .as_ref()
+            .expect("image should have history entries");
+        assert_eq!(
+            history.len(),
+            result.manifest.layers().len(),
+            "history entries should match layer count"
+        );
+
+        // Check each history entry has expected fields
+        for entry in history {
+            assert_eq!(
+                entry.author().as_deref(),
+                Some("chunkah"),
+                "history author should be 'chunkah'"
+            );
+            assert_eq!(
+                entry.created_by().as_deref(),
+                Some("chunkah"),
+                "history created_by should be 'chunkah'"
+            );
+            assert!(
+                entry.comment().is_some(),
+                "history should have comment with component name"
+            );
+            assert!(
+                entry.created().is_some(),
+                "history should have created timestamp"
+            );
+        }
+
+        // Verify component names in history comments
+        let comments: Vec<_> = history.iter().filter_map(|h| h.comment().clone()).collect();
         assert!(
-            result
-                .image_config
-                .history()
-                .as_ref()
-                .is_none_or(|h| h.is_empty()),
-            "image should have no history entries"
+            comments.iter().any(|c| c == "component_a"),
+            "history comments should contain component_a"
+        );
+        assert!(
+            comments.iter().any(|c| c == "component_b"),
+            "history comments should contain component_b"
         );
     }
 
