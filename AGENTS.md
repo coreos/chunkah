@@ -115,6 +115,36 @@ Each group is sorted alphabetically. `cargo fmt` handles this.
 - Default `rustfmt` and `clippy` settings; all clippy warnings are errors
   (`-D warnings`).
 
+#### Logging
+
+Uses `tracing` crate. Log levels:
+
+- **trace**: Per-item iteration details (e.g., each file scanned, each path
+  claimed). Very verbose.
+- **debug**: Flow of control, configuration values, state changes. Useful for
+  diagnosing issues.
+- **info**: Significant milestones (e.g., "scan complete", "build complete").
+  Visible by default.
+- **warn**: Unexpected but recoverable conditions (e.g., missing package
+  metadata).
+- **error**: Unused. We propagate errors up.
+
+Syntax:
+
+```rust
+tracing::info!(files = files.len(), "scan complete");
+tracing::debug!(path = %path, "canonicalized");  // %path uses Display
+tracing::trace!(path = %path, "scanned file");
+tracing::warn!(package = %name, "missing sourcerpm");
+```
+
+Guidelines:
+
+- Messages are lowercase, no trailing punctuation.
+- Use `%` prefix for `Display` formatting (cleaner output for paths).
+- Use `?` prefix for `Debug` formatting (when needed).
+- Default level is `info`; use `-v` for debug, `-vv` for trace.
+
 ### Bash
 
 Script header (required):

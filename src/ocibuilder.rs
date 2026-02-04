@@ -71,6 +71,9 @@ impl Builder {
     pub fn build<W: Write>(self, output: &mut W) -> Result<()> {
         self.build_oci_dir().context("building OCI directory")?;
 
+        let compressed = matches!(self.compression, Compression::Gzip(_));
+        tracing::info!(compressed = compressed, "writing OCI archive");
+
         let compression = match self.compression {
             Compression::None => crate::tar::ArchiveCompression::None,
             Compression::Gzip(level) => {
@@ -128,6 +131,7 @@ impl Builder {
     ) -> Result<()> {
         for (name, component) in &self.components {
             if component.files.is_empty() {
+                tracing::debug!(component = %name, "skipping empty component");
                 continue;
             }
             self.add_component(manifest, config, name, component)
@@ -147,6 +151,7 @@ impl Builder {
     ) -> Result<()> {
         let oci_dir = ocidir::OciDir::open(self.oci_dir.try_clone().context("cloning oci_dir")?)
             .context("opening OCI directory")?;
+        tracing::debug!(components = name, "creating tar layer");
         let mut tar_builder =
             crate::tar::create_layer(&oci_dir, self.compression).context("creating layer")?;
 

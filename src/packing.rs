@@ -109,9 +109,11 @@ pub fn calculate_packing(items: &[PackItem], max_groups: usize) -> Vec<PackGroup
     }
 
     let n = items.len();
+    tracing::debug!(components = n, max_layers = max_groups, "starting packing");
 
     // if we already have fewer items than max_groups, no packing is needed
     if n <= max_groups {
+        tracing::debug!(components = n, "no packing needed, within max_layers");
         let mut result: Vec<PackGroup> = items
             .iter()
             .enumerate()
@@ -157,6 +159,7 @@ pub fn calculate_packing(items: &[PackItem], max_groups: usize) -> Vec<PackGroup
     }
 
     // do the next best merge until we're within the constraint
+    let mut merge_count = 0usize;
     while active_count > max_groups {
         let Some(merge_op) = merge_candidates.pop() else {
             break;
@@ -176,12 +179,22 @@ pub fn calculate_packing(items: &[PackItem], max_groups: usize) -> Vec<PackGroup
 
         // append merged group
         let new_id = groups.len();
+        let new_stability = g_a.stability * g_b.stability;
+        tracing::trace!(
+            merged_into = new_id,
+            from_a = merge_op.group_a_id,
+            from_b = merge_op.group_b_id,
+            loss = merge_op.loss,
+            new_stability = new_stability,
+            "merged groups"
+        );
         groups.push(Some(PackGroup {
             indices: new_indices,
             size: g_a.size + g_b.size,
-            stability: g_a.stability * g_b.stability,
+            stability: new_stability,
         }));
         active_count -= 1;
+        merge_count += 1;
 
         // calculate losses between new group and all remaining groups
         let created_group = groups[new_id].as_ref().unwrap();
@@ -200,6 +213,7 @@ pub fn calculate_packing(items: &[PackItem], max_groups: usize) -> Vec<PackGroup
             }
         }
     }
+    tracing::debug!(merges = merge_count, "packing merges performed");
 
     // collect and sort results by stability descending
     let mut result: Vec<PackGroup> = groups.into_iter().flatten().collect();

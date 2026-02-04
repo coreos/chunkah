@@ -41,6 +41,7 @@ impl RpmRepo {
         let mut packages =
             rpm_qa::load_from_rootfs_dir(rootfs).context("loading rpmdb from rootfs")?;
 
+        tracing::debug!(packages = packages.len(), "canonicalizing package paths");
         canonicalize_package_paths(rootfs, files, &mut packages)
             .context("canonicalizing package paths")?;
 
@@ -52,13 +53,16 @@ impl RpmRepo {
         let mut path_to_components: HashMap<Utf8PathBuf, Vec<(ComponentId, FileInfo)>> =
             HashMap::new();
 
+        let package_count = packages.len();
         for pkg in packages.into_values() {
             // Use the source RPM as the component name, falling back to package name
-            let component_name: &str = pkg
-                .sourcerpm
-                .as_deref()
-                .map(parse_srpm_name)
-                .unwrap_or(&pkg.name);
+            let component_name: &str = match pkg.sourcerpm.as_deref().map(parse_srpm_name) {
+                Some(name) => name,
+                None => {
+                    tracing::warn!(package = %pkg.name, "missing sourcerpm, using package name");
+                    &pkg.name
+                }
+            };
 
             let entry = components.entry(component_name.to_string());
             let component_id = ComponentId(entry.index());
@@ -70,6 +74,7 @@ impl RpmRepo {
                     *existing_bt = (*existing_bt).max(pkg.buildtime);
                 }
                 indexmap::map::Entry::Vacant(e) => {
+                    tracing::trace!(component = %component_name, id = component_id.0, "rpm component created");
                     let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now)?;
                     e.insert((pkg.buildtime, stability));
                 }
@@ -85,6 +90,13 @@ impl RpmRepo {
                 }
             }
         }
+
+        tracing::debug!(
+            packages = package_count,
+            components = components.len(),
+            paths = path_to_components.len(),
+            "loaded rpm database"
+        );
 
         Ok(Self {
             components,
@@ -165,6 +177,9 @@ fn canonicalize_package_paths(
         for (path, info) in old_files {
             let canonical = canonicalize_parent_path(rootfs, files, &path, &mut cache)
                 .with_context(|| format!("canonicalizing {}", path))?;
+            if canonical != path {
+                tracing::trace!(original = %path, canonical = %canonical, "path canonicalized");
+            }
             package.files.insert(canonical, info);
         }
     }

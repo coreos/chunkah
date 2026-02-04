@@ -117,16 +117,19 @@ impl ComponentsRepos {
         if let Some(repo) =
             xattr::XattrRepo::load(files, default_mtime_clamp).context("loading xattrs")?
         {
+            tracing::info!(repo = "xattr", "loaded repo");
             repos.push(Box::new(repo));
         }
 
         if let Some(repo) =
             rpm::RpmRepo::load(rootfs, files, default_mtime_clamp).context("loading rpmdb")?
         {
+            tracing::info!(repo = "rpm", "loaded repo");
             repos.push(Box::new(repo));
         }
 
         if let Some(repo) = bigfiles::BigfilesRepo::load(files, default_mtime_clamp) {
+            tracing::info!(repo = "bigfiles", "loaded repo");
             repos.push(Box::new(repo));
         }
 
@@ -153,6 +156,9 @@ impl ComponentsRepos {
 
         // make sure they're in priority order
         self.repos.sort_by_key(|r| r.default_priority());
+        for (idx, repo) in self.repos.iter().enumerate() {
+            tracing::trace!(name = %repo.name(), repo_idx = idx, "repo prioritized");
+        }
 
         // check for claims!
         let unclaimed: FileMap = files
@@ -163,6 +169,7 @@ impl ComponentsRepos {
                 for (repo_idx, repo) in self.repos.iter().enumerate() {
                     let component_ids = repo.claims_for_path(&path, file_info.file_type);
                     if !component_ids.is_empty() {
+                        tracing::trace!(path = %path, repo_idx = repo_idx, ids = ?component_ids, "path claimed");
                         for id in component_ids {
                             claims
                                 .entry((repo_idx, id))
@@ -172,6 +179,7 @@ impl ComponentsRepos {
                         return None; // claimed
                     }
                 }
+                tracing::trace!(path = %path, "path unclaimed");
                 Some((path, file_info)) // not claimed
             })
             .collect();
@@ -194,6 +202,7 @@ impl ComponentsRepos {
 
         // and the catch-all component for anything unclaimed
         if !unclaimed.is_empty() {
+            tracing::info!(unclaimed = unclaimed.len(), "unclaimed files");
             components.insert(
                 UNCLAIMED_COMPONENT.into(),
                 Component {
@@ -213,11 +222,20 @@ impl ComponentsRepos {
             .map(|c| c.stability)
             .filter(|&s| s > 0.0)
             // SAFETY: somehow getting NaN is a logic error somewhere
-            .min_by(|a, b| a.partial_cmp(b).unwrap())
-            // All components have stability 0.0; just default all of them to a
-            // sensible value.
-            .unwrap_or(0.5);
-        let fallback_stability = min_stability / 2.0;
+            .min_by(|a, b| a.partial_cmp(b).unwrap());
+        let fallback_stability = match min_stability {
+            Some(min) => min / 2.0,
+            None => {
+                // All components have stability 0.0; no package manager data available
+                tracing::warn!("no stability data available, packing may be suboptimal");
+                0.5
+            }
+        };
+        tracing::debug!(
+            min_stability = min_stability,
+            fallback = fallback_stability,
+            "computed fallback stability"
+        );
         for comp in components.values_mut() {
             if comp.stability == 0.0 {
                 comp.stability = fallback_stability;

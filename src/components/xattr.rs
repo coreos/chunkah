@@ -54,9 +54,11 @@ impl XattrRepo {
                 // simplify this when we have either
                 // https://github.com/indexmap-rs/indexmap/issues/355 or
                 // https://github.com/indexmap-rs/indexmap/issues/388
-                let idx = components
-                    .get_index_of(name)
-                    .unwrap_or_else(|| components.insert_full(name.clone()).0);
+                let idx = components.get_index_of(name).unwrap_or_else(|| {
+                    let idx = components.insert_full(name.clone()).0;
+                    tracing::trace!(path = %path, name = %name, id = idx, "xattr component created");
+                    idx
+                });
                 ComponentId(idx)
             });
 
@@ -71,6 +73,7 @@ impl XattrRepo {
             let effective_id = own_component_id.or_else(|| dir_stack.last().map(|(_, id)| *id));
 
             if let Some(id) = effective_id {
+                tracing::trace!(path = %path, component_id = id.0, "xattr assignment");
                 path_to_component.insert(path.clone(), id);
             }
         }
@@ -78,6 +81,12 @@ impl XattrRepo {
         if components.is_empty() {
             return Ok(None);
         }
+
+        tracing::debug!(
+            components = components.len(),
+            paths = path_to_component.len(),
+            "loaded xattr components"
+        );
 
         Ok(Some(Self {
             components,

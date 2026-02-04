@@ -21,7 +21,7 @@ CHUNKAH_CONFIG_STR=$(podman inspect "${SOURCE_IMAGE}")
 # run chunkah!
 podman run --rm --mount=type=image,src="${SOURCE_IMAGE}",target=/chunkah \
   -e CHUNKAH_CONFIG_STR="${CHUNKAH_CONFIG_STR}" \
-      "${CHUNKAH_IMG:?}" build > out.ociarchive
+      "${CHUNKAH_IMG:?}" build -v > out.ociarchive
 
 # XXX: need to fix 'podman load' to only print image ID on its stdout, like 'podman pull'
 iid=$(podman load -i out.ociarchive)

@@ -145,18 +145,24 @@ impl BuildArgs {
 }
 
 pub fn run(args: &BuildArgs) -> Result<()> {
+    tracing::info!(rootfs = %args.rootfs, "starting build");
+
     let created_epoch = args
         .source_date_epoch
         .map_or_else(utils::get_current_epoch, Ok)?;
+    tracing::debug!(created_epoch, "using timestamp");
 
     // load base config from file, string, or use empty default
     let parsed = if let Some(path) = &args.config {
+        tracing::debug!(source = %path, "loading config from file");
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("failed to read config file: {}", path))?;
         parse_config(&content).with_context(|| format!("failed to parse config file: {}", path))?
     } else if let Some(config_str) = &args.config_str {
+        tracing::debug!("loading config from string");
         parse_config(config_str).context("failed to parse config string")?
     } else {
+        tracing::debug!("using default config");
         ParsedConfig {
             config: oci_image::Config::default(),
             annotations: HashMap::new(),
@@ -168,6 +174,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     // get the current arch if not provided, but even if provided, this
     // normalizes the arch so that `--arch x86_64` also works
     let architecture = utils::get_goarch(architecture);
+    tracing::debug!(architecture = architecture, "target architecture");
 
     // merge config and CLI annotations
     let annotations = parse_key_value_pairs(&args.annotations, parsed.annotations)
@@ -184,6 +191,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         .prune(&args.prune)?
         .scan()
         .with_context(|| format!("scanning {} for files", args.rootfs))?;
+    tracing::info!(files = files.len(), "scan complete");
 
     let repos =
         ComponentsRepos::load(&rootfs, &files, created_epoch).context("loading components")?;
@@ -192,9 +200,11 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     }
 
     let components = repos.into_components(files);
+    tracing::info!(components = components.len(), "components assigned");
 
     // pack components down to max layers
     let components = pack_components(args, components).context("packing components")?;
+    tracing::info!(layers = components.len(), "packing complete");
 
     // build the OCI image
     let compression = if args.compressed {
@@ -210,12 +220,17 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         .config(image_config);
 
     if let Some(output_path) = &args.output {
+        tracing::info!(output = %output_path, "writing to file");
         let mut file = std::fs::File::create(output_path)
             .with_context(|| format!("creating output file {}", output_path))?;
-        builder.build(&mut file)
+        builder.build(&mut file)?;
     } else {
-        builder.build(&mut std::io::stdout().lock())
+        tracing::info!("writing to stdout");
+        builder.build(&mut std::io::stdout().lock())?;
     }
+
+    tracing::info!("build complete");
+    Ok(())
 }
 
 /// Parse config from a JSON string.
@@ -340,10 +355,13 @@ fn pack_components(
 
     let items: Vec<PackItem> = entries
         .iter()
-        .map(|entry| {
-            let (_, comp) = entry.as_ref().unwrap();
+        .enumerate()
+        .map(|(idx, entry)| {
+            let (name, comp) = entry.as_ref().unwrap();
+            let size = comp.files.values().map(|f| f.size).sum();
+            tracing::trace!(idx = idx, name = %name, size = size, stability = comp.stability, "packing item");
             PackItem {
-                size: comp.files.values().map(|f| f.size).sum(),
+                size,
                 stability: comp.stability,
             }
         })

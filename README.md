@@ -22,6 +22,7 @@ with content-based layers.
   - [Building from a raw rootfs](#building-from-a-raw-rootfs)
   - [Customizing the OCI image config and annotations](#customizing-the-oci-image-config-and-annotations)
   - [Compatibility with bootable (bootc) images](#compatibility-with-bootable-bootc-images)
+  - [Debugging](#debugging)
 - [Relationship to `zstd:chunked`](#relationship-to-zstdchunked)
 - [Origins](#origins)
 
@@ -241,6 +242,13 @@ for better splitting.
 
 OSTree-based images as created by `rpm-ostree` and `ostree container
 encapsulate` are not supported.
+
+### Debugging
+
+Use `-v` for verbose output or the `RUST_LOG` environment variable for
+fine-grained control (e.g. `RUST_LOG=chunkah=debug`). Logs are written
+to stderr. (There is also `-vv` for trace output mostly meant for chunkah
+development. You'll want to redirect stderr to a file!)
 
 ## Relationship to `zstd:chunked`
 

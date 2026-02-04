@@ -22,6 +22,7 @@ config_str=$(podman inspect "${TARGET_IMAGE}")
 buildah_build \
     --from "${TARGET_IMAGE}" --build-arg CHUNKAH="${CHUNKAH_IMG:?}" \
     --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
+    --build-arg CHUNKAH_ARGS="-v" \
     -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
 
 # sanity-check it

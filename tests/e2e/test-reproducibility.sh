@@ -22,7 +22,7 @@ for i in 1 2; do
     podman run --rm --mount=type=image,src="${SOURCE_IMAGE}",target=/chunkah \
         -e CHUNKAH_CONFIG_STR="${CHUNKAH_CONFIG_STR}" \
         -e SOURCE_DATE_EPOCH=1700000000 \
-            "${CHUNKAH_IMG:?}" build > "out${i}.ociarchive"
+            "${CHUNKAH_IMG:?}" build -v > "out${i}.ociarchive"
 done
 
 # the two OCI archives should be byte-identical

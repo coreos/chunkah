@@ -26,7 +26,7 @@ RUN mkdir -p /prune-children/nested && echo "should be gone" > /prune-children/n
 FROM ${CHUNKAH_IMG:?} AS chunkah
 RUN --mount=from=builder,src=/,target=/chunkah,ro \\
     --mount=type=bind,target=/run/src,rw \\
-        chunkah build \\
+        chunkah build -v \\
             --skip-special-files \\
             --prune /prune-me \\
             --prune /prune-children/ \\

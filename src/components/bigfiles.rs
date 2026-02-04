@@ -79,6 +79,7 @@ impl BigfilesRepo {
 
             // create a component for this path
             let (idx, _) = components.insert_full(component_name);
+            tracing::trace!(path = %path, component = %components[idx], id = idx, "bigfile component created");
             let component_id = ComponentId(idx);
             path_to_component.insert(path.clone(), component_id);
 
@@ -93,6 +94,12 @@ impl BigfilesRepo {
         if components.is_empty() {
             return None;
         }
+
+        tracing::debug!(
+            components = components.len(),
+            paths = path_to_component.len(),
+            "loaded bigfiles components"
+        );
 
         Some(Self {
             components,

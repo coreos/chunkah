@@ -145,6 +145,7 @@ pub fn write_files_to_tar<W: Write>(
                     .with_context(|| format!("reading xattrs for {}", ancestor))?;
                 FileInfo::from_metadata(&metadata, FileType::Directory, xattrs)
             };
+            tracing::trace!(path = %ancestor, "writing parent directory");
             write_dir_entry(tar_builder, ancestor, mtime_clamp, &ancestor_info)
                 .with_context(|| format!("writing parent directory {}", ancestor))?;
             dir_stack.push(ancestor);
@@ -153,6 +154,7 @@ pub fn write_files_to_tar<W: Write>(
         // Handle hardlinks up front
         if file_info.file_type != FileType::Directory && file_info.nlink > 1 {
             if let Some(first_path) = inode_to_path.get(&file_info.ino) {
+                tracing::trace!(path = %path, target = %first_path, "writing hardlink");
                 write_hardlink_entry(tar_builder, path, first_path, mtime_clamp, file_info)?;
                 continue;
             }
@@ -162,14 +164,17 @@ pub fn write_files_to_tar<W: Write>(
 
         match file_info.file_type {
             FileType::Directory => {
+                tracing::trace!(path = %path, "writing directory");
                 write_dir_entry(tar_builder, path, mtime_clamp, file_info)?;
                 // We might enter this directory in the next iteration; push it
                 dir_stack.push(path.as_path());
             }
             FileType::File => {
+                tracing::trace!(path = %path, "writing file");
                 write_file_entry(tar_builder, rootfs, path, mtime_clamp, file_info)?;
             }
             FileType::Symlink => {
+                tracing::trace!(path = %path, "writing symlink");
                 write_symlink_entry(tar_builder, rootfs, path, mtime_clamp, file_info)?;
             }
         }

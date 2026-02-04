@@ -26,7 +26,7 @@ RUN cp /usr/bin/true /usr/bin/test-caps && setcap cap_net_raw+ep /usr/bin/test-c
 FROM ${CHUNKAH_IMG:?} AS chunkah
 RUN --mount=from=builder,src=/,target=/chunkah,ro \\
     --mount=type=bind,target=/run/src,rw \\
-        chunkah build > /run/src/out.ociarchive
+        chunkah build -v > /run/src/out.ociarchive
 
 FROM oci-archive:out.ociarchive
 EOF

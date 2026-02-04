@@ -44,6 +44,9 @@ impl<'a> Scanner<'a> {
             .iter()
             .map(parse_prune_path)
             .collect::<Result<Vec<_>>>()?;
+        if !self.prune_paths.is_empty() {
+            tracing::debug!(paths = ?self.prune_paths, "prune paths configured");
+        }
         Ok(self)
     }
 
@@ -79,6 +82,7 @@ impl<'a> Scanner<'a> {
                     Some(ft) => ft,
                     None => {
                         if self.skip_special_files {
+                            tracing::debug!(path = %path, "skipping special file");
                             return Ok(ControlFlow::Continue(()));
                         } else {
                             anyhow::bail!("special file type not supported: {}", path);
@@ -88,6 +92,7 @@ impl<'a> Scanner<'a> {
 
                 let prune_action = check_prune(path, &self.prune_paths);
                 if prune_action == PruneAction::SkipEntirely {
+                    tracing::debug!(path = %path, "pruning path");
                     if file_type == FileType::Directory {
                         // don't bother recursing into this directory
                         return Ok(ControlFlow::Break(()));
@@ -101,8 +106,10 @@ impl<'a> Scanner<'a> {
                 let file_info = FileInfo::from_metadata(&metadata, file_type, xattrs);
 
                 files.insert(path.to_owned(), file_info);
+                tracing::trace!(path = %path, "scanned file");
 
                 if prune_action == PruneAction::SkipChildren && file_type == FileType::Directory {
+                    tracing::debug!(path = %path, "pruning children only");
                     // don't bother recursing into this directory
                     Ok(ControlFlow::Break(()))
                 } else {
