@@ -72,8 +72,16 @@ fi
 
 image="${1}"
 
-# Get layer data from skopeo
-layer_data=$(skopeo inspect "${image}" | jq -r '
+# Get image metadata from skopeo
+image_info=$(skopeo inspect "${image}")
+
+if [[ -z "${image_info}" ]]; then
+    echo "Error: Could not inspect image" >&2
+    exit 1
+fi
+
+# Try to get layer data from annotations first
+layer_data=$(echo "${image_info}" | jq -r '
     .LayersData[] |
     {
         size: .Size,
@@ -83,7 +91,43 @@ layer_data=$(skopeo inspect "${image}" | jq -r '
 ')
 
 if [[ -z "${layer_data}" ]]; then
-    echo "Error: Could not inspect image or no layers found" >&2
+    echo "Error: No layers found in image" >&2
+    exit 1
+fi
+
+# Check if annotations are present by looking for any known component
+has_annotations=$(echo "${layer_data}" | jq -s 'any(.component != "unknown")')
+using_history_fallback=false
+
+if [[ "${has_annotations}" == "false" ]]; then
+    # Fallback: get component names from OCI history
+    image_config=$(skopeo inspect --config "${image}")
+
+    # Verify this is a chunkah-generated image by checking history author
+    has_chunkah_history=$(echo "${image_config}" | jq '[.history // [] | .[] | .author] | any(. == "chunkah")')
+
+    if [[ "${has_chunkah_history}" == "true" ]]; then
+        using_history_fallback=true
+        echo "Note: Using OCI history fallback (annotations not available). Stability data unavailable." >&2
+        echo "" >&2
+
+        # Merge layer sizes with component names from history (excluding empty layers)
+        layers_json=$(echo "${image_info}" | jq '.LayersData')
+        history_json=$(echo "${image_config}" | jq '[.history // [] | .[] | select(.empty_layer != true)]')
+        layer_data=$(jq -n \
+            --argjson layers "${layers_json}" \
+            --argjson history "${history_json}" \
+            '[$layers, $history] | transpose | map({
+                size: .[0].Size,
+                component: (.[1].comment // "unknown"),
+                stability: "-"
+            }) | .[]')
+    fi
+fi
+
+# Error if sorting by stability but stability data is unavailable
+if [[ "${sort_by}" == "stability" && "${using_history_fallback}" == "true" ]]; then
+    echo "Error: Cannot sort by stability when using history fallback (stability data unavailable)" >&2
     exit 1
 fi
 
