@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Compare sequential images and report layer sharing statistics."""
+"""Compare sequential images and report layer sharing statistics.
+
+Example usage for FCOS (after running chunk-image-series.py):
+
+    ./tools/analyze-layer-reuse.py localhost/fedora-coreos-test --compare-originals
+
+This analyzes layer reuse between sequential chunked images and compares
+against the original (un-chunked) images to measure chunking effectiveness.
+"""
 
 import argparse
 import json

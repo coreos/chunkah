@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
-"""Pull images from a registry, run chunkah on each, store results."""
+"""Pull images from a registry, run chunkah on each, store results.
+
+Example usage for FCOS:
+
+    ./tools/chunk-image-series.py quay.io/fedora/fedora-coreos \\
+        --tag-filter '*.*.3.*' --limit 5 --keep-originals \\
+        --prefix fedora-coreos-test \\
+        --chunkah-image localhost/chunkah \\
+        -- --compressed --label ostree.commit- --label ostree.final-diffid- --prune /sysroot/
+
+This pulls the 5 most recent stable FCOS images (matching *.*.3.*), runs
+chunkah on each, and stores the results as localhost/fedora-coreos-test:0-4.
+The originals are kept as localhost/fedora-coreos-test-orig:0-4 for comparison.
+"""
 
 import argparse
 import fnmatch
