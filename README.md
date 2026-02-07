@@ -22,6 +22,7 @@ with content-based layers.
   - [Building from a raw rootfs](#building-from-a-raw-rootfs)
   - [Customizing the OCI image config and annotations](#customizing-the-oci-image-config-and-annotations)
   - [Compatibility with bootable (bootc) images](#compatibility-with-bootable-bootc-images)
+- [Relationship to `zstd:chunked`](#relationship-to-zstdchunked)
 - [Origins](#origins)
 
 ## Motivation
@@ -241,6 +242,24 @@ for better splitting.
 OSTree-based images as created by `rpm-ostree` and `ostree container
 encapsulate` are not supported.
 
+## Relationship to `zstd:chunked`
+
+[zstd:chunked] is a [container-libs] feature that enables partial layer pulls,
+fetching only changed files and chunks within a layer via HTTP range requests.
+chunkah and zstd:chunked are complementary:
+
+- chunkah operates at build time: it structures the image so that unchanged
+  content lives in unchanged layers, maximizing layer-level deduplication. This
+  works with any OCI registry and requires no special client support.
+- zstd:chunked operates at pull time: within layers, only the files (technically
+  chunks *within* files) that changed are fetched. This requires client support
+  and HTTP range requests from the registry, and has higher CPU and memory
+  overhead on the client side.
+
+Used together, most layers are reused at the registry level (thanks to chunkah),
+and for the few that *did* change, you can efficiently pull just those (thanks
+to zstd:chunked), minimizing overhead.
+
 ## Origins
 
 chunkah is a generalized successor to rpm-ostree's [build-chunked-oci] command
@@ -255,3 +274,5 @@ well.
 [OCI image config]: https://github.com/opencontainers/image-spec/blob/26647a49f642c7d22a1cd3aa0a48e4650a542269/specs-go/v1/config.go#L24
 [buildah-rfe]: https://github.com/containers/buildah/issues/6621
 [buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652
+[zstd:chunked]: https://github.com/containers/container-libs/blob/main/storage/docs/containers-storage-zstd-chunked.5.md
+[container-libs]: https://github.com/containers/container-libs
