@@ -8,8 +8,8 @@ buildah_build() {
     local tmp_args=()
     local version min_version
     version=$(${BUILDAH:-buildah} version --json | jq -r '.version')
-    min_version=$(echo -e "${version}\n1.43" | sort -V | head -n1)
-    if [[ "${min_version}" != "1.43" ]]; then
+    min_version=$(echo -e "${version}\n1.44" | sort -V | head -n1)
+    if [[ "${min_version}" != "1.44" ]]; then
         tmp_args+=(-v "${PWD}:/run/src" --security-opt=label=disable)
     fi
     ${BUILDAH:-buildah} build --skip-unused-stages=false "${tmp_args[@]}" "$@"

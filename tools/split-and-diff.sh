@@ -200,11 +200,11 @@ skopeo copy "containers-storage:${original_image}" "oci-archive:${tmpdir}/origin
 echo "Splitting image through chunkah..."
 config_str=$(podman inspect "${original_image}")
 
-# Check buildah version for compatibility (< 1.43 needs extra args)
+# Check buildah version for compatibility (< 1.44 needs extra args)
 buildah_args=()
 buildah_version=$(buildah version --json | jq -r '.version')
-min_version=$(echo -e "${buildah_version}\n1.43" | sort -V | head -n1)
-if [[ "${min_version}" != "1.43" ]]; then
+min_version=$(echo -e "${buildah_version}\n1.44" | sort -V | head -n1)
+if [[ "${min_version}" != "1.44" ]]; then
     buildah_args+=(-v "${tmpdir}:/run/src" --security-opt=label=disable)
 fi
 

@@ -95,7 +95,7 @@ argument.
 > You must add the `--skip-unused-stages=false` option (see also [this buildah
 > RFE][buildah-rfe]).
 >
-> For Buildah versions before v1.43, this also requires `-v $(pwd):/run/src
+> For Buildah versions before v1.44, this also requires `-v $(pwd):/run/src
 > --security-opt=label=disable`.
 
 <!-- markdownlint-disable-next-line MD028 -->
@@ -158,7 +158,7 @@ ENTRYPOINT ["git"]
 > option (see also [this buildah RFE][buildah-rfe]), and you cannot use the
 > `--jobs` option.
 >
-> For Buildah versions before v1.43, this also requires `-v $(pwd):/run/src
+> For Buildah versions before v1.44, this also requires `-v $(pwd):/run/src
 > --security-opt=label=disable`.
 
 ## Advanced Usage
