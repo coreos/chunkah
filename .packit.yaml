@@ -1,0 +1,12 @@
+upstream_tag_template: v{version}
+specfile_path: packaging/chunkah.spec
+
+files_to_sync:
+  - src: packaging/chunkah.spec
+    dest: chunkah.spec
+
+jobs:
+  - job: propose_downstream
+    trigger: release
+    dist_git_branches:
+      - fedora-all
