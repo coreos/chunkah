@@ -33,7 +33,7 @@ impl RpmRepo {
     /// used to canonicalize paths from the RPM database.
     ///
     /// Returns `Ok(None)` if no RPM database is detected.
-    pub fn load(rootfs: &Dir, files: &super::FileMap) -> Result<Option<Self>> {
+    pub fn load(rootfs: &Dir, files: &super::FileMap, now: u64) -> Result<Option<Self>> {
         if !has_rpmdb(rootfs)? {
             return Ok(None);
         }
@@ -44,10 +44,10 @@ impl RpmRepo {
         canonicalize_package_paths(rootfs, files, &mut packages)
             .context("canonicalizing package paths")?;
 
-        Self::load_from_packages(packages).map(Some)
+        Self::load_from_packages(packages, now).map(Some)
     }
 
-    pub fn load_from_packages(packages: rpm_qa::Packages) -> Result<Self> {
+    pub fn load_from_packages(packages: rpm_qa::Packages, now: u64) -> Result<Self> {
         let mut components: IndexMap<String, (u64, f64)> = IndexMap::new();
         let mut path_to_components: HashMap<Utf8PathBuf, Vec<(ComponentId, FileInfo)>> =
             HashMap::new();
@@ -60,10 +60,19 @@ impl RpmRepo {
                 .map(parse_srpm_name)
                 .unwrap_or(&pkg.name);
 
-            let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime)?;
+            let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now)?;
             let entry = components.entry(component_name.to_string());
             let component_id = ComponentId(entry.index());
-            entry.or_insert((pkg.buildtime, stability));
+            entry
+                .and_modify(|(existing_bt, existing_stab)| {
+                    // Build time across subpackages for a given SRPM can vary.
+                    // We want the max() of all of them as the clamp.
+                    if pkg.buildtime > *existing_bt {
+                        *existing_bt = pkg.buildtime;
+                        *existing_stab = stability;
+                    }
+                })
+                .or_insert((pkg.buildtime, stability));
 
             for (path, file_info) in pkg.files.into_iter() {
                 // Accumulate entries for all file types. Skip if this component
@@ -316,13 +325,8 @@ fn parse_srpm_name(srpm: &str) -> &str {
 ///
 /// The lookback period is limited to STABILITY_LOOKBACK_DAYS (1 year).
 /// If there are no changelog entries, the build time is used as a fallback.
-fn calculate_stability(changelog_times: &[u64], buildtime: u64) -> Result<f64> {
+fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) -> Result<f64> {
     use super::{SECS_PER_DAY, STABILITY_LOOKBACK_DAYS, STABILITY_PERIOD_DAYS};
-
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .context("getting current time")?
-        .as_secs();
 
     let lookback_start = now.saturating_sub(STABILITY_LOOKBACK_DAYS * SECS_PER_DAY);
 
@@ -415,7 +419,7 @@ mod tests {
     #[test]
     fn test_claims_for_path() {
         let packages = rpm_qa::load_from_str(FIXTURE).unwrap();
-        let repo = RpmRepo::load_from_packages(packages).unwrap();
+        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
 
         // /usr/bin/bash is a file owned by bash
         let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/bash"), FileType::File);
@@ -459,7 +463,7 @@ mod tests {
     #[test]
     fn test_claims_for_path_wrong_type() {
         let packages = rpm_qa::load_from_str(FIXTURE).unwrap();
-        let repo = RpmRepo::load_from_packages(packages).unwrap();
+        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
 
         // /usr/bin/bash is a file in RPM, but we query as symlink
         let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/bash"), FileType::Symlink);
@@ -473,7 +477,7 @@ mod tests {
     #[test]
     fn test_shared_directories_claimed_by_multiple_components() {
         let packages = rpm_qa::load_from_str(FIXTURE).unwrap();
-        let repo = RpmRepo::load_from_packages(packages).unwrap();
+        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
 
         // /usr/lib/.build-id is a well-known directory shared by many packages
         let claims = repo.claims_for_path(Utf8Path::new("/usr/lib/.build-id"), FileType::Directory);
@@ -514,7 +518,7 @@ mod tests {
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
 
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
-        let repo = RpmRepo::load(&rootfs, &files).unwrap().unwrap();
+        let repo = RpmRepo::load(&rootfs, &files, now_secs()).unwrap().unwrap();
 
         // Test that paths we know are in filesystem and setup are claimed
         let claims = repo.claims_for_path(Utf8Path::new("/"), FileType::Directory);
@@ -555,7 +559,7 @@ mod tests {
         let changelog_times = vec![old_time, old_time - SECS_PER_DAY];
         let buildtime = old_time;
 
-        let stability = calculate_stability(&changelog_times, buildtime).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
         assert_eq!(stability, 0.99);
     }
 
@@ -567,7 +571,7 @@ mod tests {
         let changelog_times = vec![recent_time];
         let buildtime = recent_time;
 
-        let stability = calculate_stability(&changelog_times, buildtime).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
         assert_eq!(stability, 0.0);
     }
 
@@ -580,7 +584,7 @@ mod tests {
         let buildtime = now - (30 * SECS_PER_DAY); // 30 days ago
         let changelog_times: Vec<u64> = vec![];
 
-        let stability = calculate_stability(&changelog_times, buildtime).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
         // 1 change over 30 days = lambda of 1/30
         // stability = e^(-lambda * 7) = e^(-7/30) ≈ 0.79
         assert_stability_in_range(stability, 0.75, 0.85);
@@ -602,7 +606,7 @@ mod tests {
         ];
         let buildtime = now - (100 * SECS_PER_DAY);
 
-        let stability = calculate_stability(&changelog_times, buildtime).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
         assert_stability_in_range(stability, 0.70, 0.80);
     }
 
@@ -619,7 +623,7 @@ mod tests {
             .collect();
         let buildtime = now - (20 * SECS_PER_DAY);
 
-        let stability = calculate_stability(&changelog_times, buildtime).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
         assert_stability_in_range(stability, 0.0, 0.10);
     }
 

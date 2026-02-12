@@ -120,7 +120,9 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
-        if let Some(repo) = rpm::RpmRepo::load(rootfs, files).context("loading rpmdb")? {
+        if let Some(repo) =
+            rpm::RpmRepo::load(rootfs, files, default_mtime_clamp).context("loading rpmdb")?
+        {
             repos.push(Box::new(repo));
         }
 
@@ -306,7 +308,11 @@ mod tests {
 
         let xattr_repo = xattr::XattrRepo::load(&files, 0).unwrap().unwrap();
         let packages = rpm_qa::load_from_str(RPM_FIXTURE).unwrap();
-        let rpm_repo = rpm::RpmRepo::load_from_packages(packages).unwrap();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        let rpm_repo = rpm::RpmRepo::load_from_packages(packages, now).unwrap();
 
         let repos: Vec<Box<dyn ComponentsRepo>> = vec![Box::new(rpm_repo), Box::new(xattr_repo)];
         let loaded = ComponentsRepos {

@@ -335,6 +335,8 @@ fn pack_components(
     let max_layers = args.max_layers;
 
     let mut entries: Vec<Option<(String, Component)>> = components.into_iter().map(Some).collect();
+    // sort by component name for deterministic inputs to the packing algorithm
+    entries.sort_by(|a, b| a.as_ref().unwrap().0.cmp(&b.as_ref().unwrap().0));
 
     let items: Vec<PackItem> = entries
         .iter()
@@ -374,6 +376,8 @@ fn pack_components(
                 merged_files.extend(comp.files);
             }
 
+            // this becomes history/annotation values; sort for reproducibility
+            names.sort();
             let merged_name = names.join(" ");
             result.push((
                 merged_name,
