@@ -9,8 +9,6 @@ edition = "2024"
 publish = false
 
 [dependencies]
-alpm-db = "0.2"
-alpm-mtree = "0.3"
 anyhow = "1"
 camino = { version = "1", features = ["serde1"] }
 cap-std-ext = { version = "4", default-features = false, features = ["fs_utf8"] }
