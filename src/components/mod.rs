@@ -127,8 +127,8 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
-        if let Some(repo) =
-            alpm::AlpmComponentsRepo::load(rootfs, files).context("loading alpm packages")?
+        if let Some(repo) = alpm::AlpmComponentsRepo::load(rootfs, files, default_mtime_clamp)
+            .context("loading alpm packages")?
         {
             repos.push(Box::new(repo));
         }
