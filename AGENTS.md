@@ -11,6 +11,8 @@ are created to maximize layer reuse rather than reflecting Dockerfile structure.
 
 ## Build and Test Commands
 
+The justfile is called `Justfile` (capitalized), not `justfile`.
+
 ```bash
 just build               # Build the project (dev)
 just build release       # Build the project (release)
