@@ -30,7 +30,14 @@ jobs:
 
   e2e-tests:
     needs: unit-tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
@@ -51,18 +58,36 @@ jobs:
         run: |
           set -euo pipefail
           podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          podman push chunkah ghcr.io/${{ github.repository }}:${{ github.sha }}
+          podman push chunkah ghcr.io/${{ github.repository }}:${{ github.sha }}-${{ matrix.arch }}
+
+  manifest:
+    needs: e2e-tests
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - name: Create and push manifest
+        run: |
+          set -euo pipefail
+          podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
+          podman manifest create ghcr.io/${{ github.repository }}:${{ github.sha }} \
+            ghcr.io/${{ github.repository }}:${{ github.sha }}-amd64 \
+            ghcr.io/${{ github.repository }}:${{ github.sha }}-arm64
+          podman manifest push ghcr.io/${{ github.repository }}:${{ github.sha }}
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
-            podman push chunkah ghcr.io/${{ github.repository }}:${TAG}
+            podman tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:${TAG}
+            podman manifest push ghcr.io/${{ github.repository }}:${TAG}
           else
-            podman push chunkah ghcr.io/${{ github.repository }}:latest
+            podman tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:latest
+            podman manifest push ghcr.io/${{ github.repository }}:latest
           fi
 
   release:
-    needs: e2e-tests
+    needs: manifest
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       packages: write
     steps:
@@ -75,12 +100,12 @@ jobs:
           echo '${{ secrets.QUAY_AUTH }}' > ~/.docker/config.json
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
-            skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
               docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:${TAG}
-            skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
               docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:latest
           else
-            skopeo copy --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
               docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:dev
           fi
       - name: Cleanup old images
