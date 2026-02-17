@@ -9,4 +9,5 @@ jobs:
   - job: propose_downstream
     trigger: release
     dist_git_branches:
-      - fedora-all
+      rawhide:
+        fast_forward_merge_into: [fedora-branched]
