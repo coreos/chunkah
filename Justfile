@@ -79,10 +79,32 @@ diff +ARGS:
     args=({{ ARGS }})
     image1="${args[0]}"
     image2="${args[1]}"
+
+    # Compare OCI image config
+    metadata_rc=0
+    config1=$(skopeo inspect --config "containers-storage:${image1}" | jq -S '.config')
+    config2=$(skopeo inspect --config "containers-storage:${image2}" | jq -S '.config')
+    if ! diff <(echo "${config1}") <(echo "${config2}"); then
+        echo "image config differs"
+        metadata_rc=1
+    fi
+
+    # Compare manifest annotations
+    annot1=$(skopeo inspect --raw "containers-storage:${image1}" | jq -S '.annotations // {}')
+    annot2=$(skopeo inspect --raw "containers-storage:${image2}" | jq -S '.annotations // {}')
+    if ! diff <(echo "${annot1}") <(echo "${annot2}"); then
+        echo "manifest annotations differ"
+        metadata_rc=1
+    fi
+
+    # Compare filesystem trees
+    fs_rc=0
     podman run --rm -v /var/tmp \
         --mount=type=image,src="${image1}",target=/image1 \
         --mount=type=image,src="${image2}",target=/image2 \
-        "${img}" /image1 /image2 "${args[@]:2}"
+        "${img}" /image1 /image2 "${args[@]:2}" || fs_rc=$?
+
+    exit $(( metadata_rc | fs_rc ))
 
 # Split an existing image using the splitter Containerfile
 split IMG *ARGS:
