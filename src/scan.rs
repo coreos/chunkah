@@ -141,18 +141,27 @@ pub fn read_xattrs(rootfs: &Dir, fs_path: &str) -> anyhow::Result<Vec<(String, V
             continue;
         }
 
+        // Technically, keeping the key as OsStr would be more correct,
+        // but we'll need UTF-8 to shove it in a PAX header anyway so might
+        // as well error now. Note libarchive and GNU tar differ here.
+        // libarchive does urlencoding, GNU tar just writes the key as is
+        // anyway. We'll cross that bridge when/if we get to it.
+        let key_str = key
+            .to_str()
+            .with_context(|| format!("non-UTF8 xattr key {} on {}", key.display(), fs_path))?;
+
+        // Skip all trusted.* xattrs. It's primarily used by overlayfs itself
+        // and so more of a runtime thing. And no container runtime preserves
+        // them. This also avoids capturing filesystem specific things like XFS'
+        // legacy ACL aliases (trusted.SGI_ACL_*).
+        if key_str.starts_with("trusted.") {
+            continue;
+        }
+
         if let Some(value) = rootfs
             .getxattr(fs_path, key)
             .with_context(|| format!("reading xattr {} for {}", key.display(), fs_path))?
         {
-            // Technically, keeping the key as OsStr would be more correct,
-            // but we'll need UTF-8 to shove it in a PAX header anyway so might
-            // as well error now. Note libarchive and GNU tar differ here.
-            // libarchive does urlencoding, GNU tar just writes the key as is
-            // anyway. We'll cross that bridge when/if we get to it.
-            let key_str = key
-                .to_str()
-                .with_context(|| format!("non-UTF8 xattr key {} on {}", key.display(), fs_path))?;
             xattrs.push((key_str.to_string(), value));
         }
     }
