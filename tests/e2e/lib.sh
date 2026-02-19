@@ -13,6 +13,7 @@ buildah_build() {
         tmp_args+=(-v "${PWD}:/run/src" --security-opt=label=disable)
     fi
     ${BUILDAH:-buildah} build --skip-unused-stages=false "${tmp_args[@]}" "$@"
+    rm -f "${PWD}/out.ociarchive"
 }
 
 # Get layer annotations for an image.

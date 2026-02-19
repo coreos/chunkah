@@ -53,6 +53,7 @@ buildimg no_chunk="":
     fi
     echo ${buildah} build "${args[@]}" .
     ${buildah} build "${args[@]}" .
+    rm -f out.ociarchive
 
 # Run end-to-end tests with built chunkah image
 test *ARGS:
@@ -101,6 +102,7 @@ split IMG *ARGS:
         args+=(-v "$PWD:/run/src" --security-opt=label=disable)
     fi
     ${buildah} build "${args[@]}" Containerfile.splitter
+    rm -f out.ociarchive
 
 # Cut a release (use --no-push to prepare without pushing)
 release *ARGS:
