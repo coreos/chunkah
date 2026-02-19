@@ -157,6 +157,11 @@ pub fn read_xattrs(rootfs: &Dir, fs_path: &str) -> anyhow::Result<Vec<(String, V
         }
     }
 
+    // Sort by key to ensure deterministic ordering. llistxattr(2) does not
+    // guarantee any particular order, and the order can vary between runs
+    // depending on filesystem internals.
+    xattrs.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+
     Ok(xattrs)
 }
 
