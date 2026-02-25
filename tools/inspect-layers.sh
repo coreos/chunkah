@@ -131,12 +131,14 @@ if [[ "${sort_by}" == "stability" && "${using_history_fallback}" == "true" ]]; t
     exit 1
 fi
 
-# Count layers
+# Count layers and total size
 layer_count=$(echo "${layer_data}" | jq -s 'length')
+total_size_mb=$(echo "${layer_data}" | jq -s '[.[].size] | add' | awk '{printf "%.2f", $1 / 1024 / 1024}')
 
 echo "=== Chunkah Layer Breakdown ==="
 echo ""
 echo "Total layers: ${layer_count}"
+echo "Total size:   ${total_size_mb} MB"
 echo ""
 printf "%-12s %-10s %-60s\n" "Size (MB)" "Stability" "Components"
 printf "%-12s %-10s %-60s\n" "----------" "---------" "------------------------------------------------------------"
