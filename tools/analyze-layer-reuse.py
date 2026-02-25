@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Compare sequential images and report layer sharing statistics.
+"""Compare images and report layer sharing statistics.
 
-Example usage for FCOS (after running chunk-image-series.py):
+Example usage:
 
-    ./tools/analyze-layer-reuse.py localhost/fedora-coreos-test --compare-originals
+    ./tools/analyze-layer-reuse.py containers-storage:localhost/img:{a,b,c}
 
-This analyzes layer reuse between sequential chunked images and compares
-against the original (un-chunked) images to measure chunking effectiveness.
+Image references must be transport-qualified (e.g. containers-storage:,
+oci-archive:, docker://).
 """
 
 import argparse
@@ -28,8 +28,7 @@ class LayerInfo:
 class ImageInfo:
     """Information about an image's layers."""
     ref: str
-    tag: str
-    original_tag: str | None  # From annotation org.chunkah.original-tag
+    created: str | None  # Image creation timestamp from skopeo inspect
     layers: list[LayerInfo]
     total_size: int
 
@@ -37,10 +36,8 @@ class ImageInfo:
 @dataclass
 class UpdateAnalysis:
     """Analysis of layer changes between two images."""
-    from_tag: str
-    to_tag: str
-    from_original: str | None
-    to_original: str | None
+    from_ref: str
+    to_ref: str
     shared_layers: list[LayerInfo]
     added_layers: list[LayerInfo]
     removed_layers: list[LayerInfo]
@@ -50,11 +47,13 @@ class UpdateAnalysis:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Compare sequential images and report layer sharing statistics"
+        description="Compare sequential images and report layer sharing statistics",
     )
     parser.add_argument(
-        "prefix",
-        help="containers-storage prefix (e.g., localhost/fcos-chunked)",
+        "images",
+        nargs="+",
+        metavar="IMAGE",
+        help="Transport-qualified image references to compare",
     )
     parser.add_argument(
         "--json",
@@ -63,59 +62,42 @@ def main():
         help="Output as JSON",
     )
     parser.add_argument(
-        "--show-components",
+        "--show-changed-components",
         action="store_true",
         help="Show which components changed in each update",
     )
     parser.add_argument(
-        "--compare-originals",
+        "--show-unchanged-components",
         action="store_true",
-        help="Also analyze original images ({prefix}-orig) for comparison",
+        help="Show which components were unchanged (shared) in each update",
     )
     args = parser.parse_args()
 
+    if len(args.images) < 2:
+        die("Need at least 2 images for update analysis")
+
     try:
-        # Find all images with the prefix
-        image_refs = find_images(args.prefix)
-
-        if not image_refs:
-            die(f"No images found with prefix '{args.prefix}'")
-
-        if len(image_refs) == 1:
-            print("Warning: Only 1 image found. Need at least 2 for update analysis.",
-                  file=sys.stderr)
-
         # Get info for each image
         images = []
-        for ref in image_refs:
-            images.append(get_image_info(ref, args.prefix))
+        for ref in args.images:
+            images.append(get_image_info(ref))
+
+        # If component display requested and annotations are missing, try history fallback
+        if args.show_changed_components or args.show_unchanged_components:
+            _backfill_components_from_history(images)
 
         # Analyze sequential updates
         analyses = []
         for i in range(len(images) - 1):
             analyses.append(analyze_update(images[i], images[i + 1]))
 
-        # Optionally analyze original images for comparison
-        orig_images = []
-        orig_analyses = []
-        if args.compare_originals:
-            orig_prefix = f"{args.prefix}-orig"
-            orig_refs = find_images(orig_prefix)
-            if not orig_refs:
-                print(f"Warning: No original images found at '{orig_prefix}'",
-                      file=sys.stderr)
-            else:
-                for ref in orig_refs:
-                    orig_images.append(get_image_info(ref, orig_prefix))
-                for i in range(len(orig_images) - 1):
-                    orig_analyses.append(analyze_update(orig_images[i], orig_images[i + 1]))
-
         # Output results
         if args.json_output:
-            print(format_json_output(images, analyses, orig_images, orig_analyses))
+            print(format_json_output(images, analyses))
         else:
-            print(format_human_output(images, analyses, orig_images, orig_analyses,
-                                      args.show_components))
+            print(format_human_output(images, analyses,
+                                      args.show_changed_components,
+                                      args.show_unchanged_components))
 
     except subprocess.CalledProcessError as e:
         die(f"Command failed: {e.cmd}")
@@ -123,34 +105,13 @@ def main():
         die(str(e))
 
 
-def find_images(prefix: str) -> list[str]:
-    """Find all images matching prefix:0, prefix:1, etc."""
-    try:
-        output = run_output(
-            "podman", "images", "--format", "{{.Repository}}:{{.Tag}}",
-            prefix
-        )
-    except subprocess.CalledProcessError:
-        return []
+def get_image_info(image_ref: str) -> ImageInfo:
+    """Get layer information for an image via skopeo.
 
-    refs = [line.strip() for line in output.strip().split("\n") if line.strip()]
-
-    # Filter to only those with numeric tags and sort by index
-    numeric_refs = []
-    for ref in refs:
-        try:
-            idx = _parse_tag_index(ref, prefix)
-            numeric_refs.append((idx, ref))
-        except ValueError:
-            continue
-
-    numeric_refs.sort(key=lambda x: x[0])
-    return [ref for _, ref in numeric_refs]
-
-
-def get_image_info(image_ref: str, prefix: str) -> ImageInfo:
-    """Get layer information for an image via skopeo."""
-    output = run_output("skopeo", "inspect", f"containers-storage:{image_ref}")
+    The image_ref must be transport-qualified
+    (e.g., containers-storage:localhost/myimage:tag).
+    """
+    output = run_output("skopeo", "inspect", image_ref)
     data = json.loads(output)
 
     layers = []
@@ -165,20 +126,47 @@ def get_image_info(image_ref: str, prefix: str) -> ImageInfo:
         layers.append(LayerInfo(digest=digest, size=size, component=component))
         total_size += size
 
-    # Get original tag from labels if available
-    original_tag = None
-    labels = data.get("Labels", {}) or {}
-    original_tag = labels.get("org.chunkah.original-tag")
-
-    tag = image_ref.split(":")[-1] if ":" in image_ref else ""
+    # Get creation date (truncate to date only)
+    created_raw = data.get("Created", "")
+    created = created_raw[:10] if created_raw else None
 
     return ImageInfo(
         ref=image_ref,
-        tag=tag,
-        original_tag=original_tag,
+        created=created,
         layers=layers,
         total_size=total_size,
     )
+
+
+def _backfill_components_from_history(images: list[ImageInfo]):
+    """Backfill component names from OCI history if annotations are missing.
+
+    This is a fallback for images that only have history metadata (like those
+    built with older chunkah versions). See inspect-layers.sh for the same
+    approach.
+    """
+    for img in images:
+        if any(layer.component for layer in img.layers):
+            continue
+
+        config_output = run_output("skopeo", "inspect", "--config", img.ref)
+        config = json.loads(config_output)
+        history = config.get("history", []) or []
+
+        if not any(entry.get("author") == "chunkah" for entry in history):
+            continue
+
+        _warn_history_fallback()
+        component_names = [
+            entry.get("comment", "unknown")
+            for entry in history
+            if not entry.get("empty_layer", False)
+        ]
+        if len(component_names) != len(img.layers):
+            die(f"{img.ref}: history has {len(component_names)} non-empty "
+                f"entries but image has {len(img.layers)} layers")
+        for i, name in enumerate(component_names):
+            img.layers[i].component = name
 
 
 def analyze_update(from_img: ImageInfo, to_img: ImageInfo) -> UpdateAnalysis:
@@ -206,10 +194,8 @@ def analyze_update(from_img: ImageInfo, to_img: ImageInfo) -> UpdateAnalysis:
     download_bytes = sum(layer.size for layer in added_layers)
 
     return UpdateAnalysis(
-        from_tag=from_img.tag,
-        to_tag=to_img.tag,
-        from_original=from_img.original_tag,
-        to_original=to_img.original_tag,
+        from_ref=from_img.ref,
+        to_ref=to_img.ref,
         shared_layers=shared_layers,
         added_layers=added_layers,
         removed_layers=removed_layers,
@@ -219,65 +205,57 @@ def analyze_update(from_img: ImageInfo, to_img: ImageInfo) -> UpdateAnalysis:
 
 
 def format_human_output(images: list[ImageInfo], analyses: list[UpdateAnalysis],
-                        orig_images: list[ImageInfo], orig_analyses: list[UpdateAnalysis],
-                        show_components: bool) -> str:
+                        show_changed_components: bool,
+                        show_unchanged_components: bool) -> str:
     """Format analysis results for human consumption."""
     lines = []
 
-    # Header
-    if images:
-        first_tag = images[0].tag
-        last_tag = images[-1].tag
-        lines.append(f"==> Found {len(images)} chunked images: {images[0].ref.rsplit(':', 1)[0]}:{first_tag} through :{last_tag}")
-        lines.append("")
-
     # Image summary
-    lines.append("==> Chunked Image Summary:")
+    lines.append("==> Image Summary:")
     for img in images:
-        original = f" ({img.original_tag})" if img.original_tag else ""
+        created = f"{img.created}  " if img.created else ""
         size_str = _format_bytes(img.total_size)
-        lines.append(f"    :{img.tag}{original}  {len(img.layers)} layers, {size_str}")
+        lines.append(f"    {created}{img.ref}  {len(img.layers)} layers, {size_str}")
     lines.append("")
 
     # Update analysis
     if analyses:
-        lines.append("==> Chunked Update Analysis:")
+        lines.append("==> Update Analysis:")
         lines.append("")
 
         for analysis in analyses:
-            from_str = f":{analysis.from_tag}"
-            to_str = f":{analysis.to_tag}"
-            if analysis.from_original and analysis.to_original:
-                from_str += f" ({analysis.from_original})"
-                to_str += f" ({analysis.to_original})"
+            total_bytes = analysis.shared_bytes + analysis.download_bytes
+            reuse_ratio = analysis.shared_bytes / total_bytes if total_bytes > 0 else 0
+            shared_n = len(analysis.shared_layers)
+            total_n = len(analysis.shared_layers) + len(analysis.added_layers)
 
-            total_layers = len(analysis.shared_layers) + len(analysis.added_layers)
-            reuse_ratio = len(analysis.shared_layers) / total_layers if total_layers > 0 else 0
+            lines.append(f"    From: {analysis.from_ref}")
+            lines.append(f"    To:   {analysis.to_ref}")
+            lines.append(f"      Shared:   {len(analysis.shared_layers):3} layers ({_format_bytes(analysis.shared_bytes)})")
+            lines.append(f"      Added:    {len(analysis.added_layers):3} layers ({_format_bytes(analysis.download_bytes)} download)")
+            lines.append(f"      Removed:  {len(analysis.removed_layers):3} layers")
+            lines.append(f"      Data reuse: {reuse_ratio * 100:.1f}% ({shared_n}/{total_n} layers)")
 
-            lines.append(f"    {from_str} -> {to_str}")
-            lines.append(f"    Shared:   {len(analysis.shared_layers):3} layers ({_format_bytes(analysis.shared_bytes)})")
-            lines.append(f"    Added:    {len(analysis.added_layers):3} layers ({_format_bytes(analysis.download_bytes)} download)")
-            lines.append(f"    Removed:  {len(analysis.removed_layers):3} layers")
-            lines.append(f"    Reuse:    {reuse_ratio * 100:.1f}%")
+            if show_changed_components and analysis.added_layers:
+                changed = _components_by_size(analysis.added_layers)
+                if changed:
+                    rest = f", ... and {len(changed) - 5} more" if len(changed) > 5 else ""
+                    lines.append(f"      Changed:   {', '.join(changed[:5])}{rest}")
 
-            if show_components and analysis.added_layers:
-                added_components = sorted(set(
-                    layer.component for layer in analysis.added_layers
-                    if layer.component
-                ))
-                if added_components:
-                    lines.append(f"    Changed components: {', '.join(added_components[:5])}")
-                    if len(added_components) > 5:
-                        lines.append(f"                        ... and {len(added_components) - 5} more")
+            if show_unchanged_components and analysis.shared_layers:
+                unchanged = _components_by_size(analysis.shared_layers)
+                if unchanged:
+                    rest = f", ... and {len(unchanged) - 5} more" if len(unchanged) > 5 else ""
+                    lines.append(f"      Unchanged: {', '.join(unchanged[:5])}{rest}")
 
             lines.append("")
 
-    # Summary statistics for chunked
+    # Summary statistics
     if analyses:
         summary = _calculate_summary(analyses)
-        lines.append("==> Chunked Summary:")
+        lines.append("==> Summary:")
         lines.append(f"    Total updates analyzed: {summary['update_count']}")
-        lines.append(f"    Average layer reuse:    {summary['avg_reuse_ratio'] * 100:.1f}%")
+        lines.append(f"    Average data reuse:    {summary['avg_reuse_ratio'] * 100:.1f}%")
         lines.append(f"    Average download size:  {_format_bytes(summary['avg_download_bytes'])}")
 
         if summary['update_count'] > 1:
@@ -285,50 +263,17 @@ def format_human_output(images: list[ImageInfo], analyses: list[UpdateAnalysis],
             lines.append(f"    Max download:           {_format_bytes(summary['max_download_bytes'])}")
         lines.append("")
 
-    # Original image comparison (if available)
-    if orig_images and orig_analyses:
-        lines.append("==> Original (un-chunked) Update Analysis:")
-        lines.append("")
-
-        for analysis in orig_analyses:
-            total_layers = len(analysis.shared_layers) + len(analysis.added_layers)
-            reuse_ratio = len(analysis.shared_layers) / total_layers if total_layers > 0 else 0
-
-            lines.append(f"    :{analysis.from_tag} -> :{analysis.to_tag}")
-            lines.append(f"    Shared:   {len(analysis.shared_layers):3} layers ({_format_bytes(analysis.shared_bytes)})")
-            lines.append(f"    Added:    {len(analysis.added_layers):3} layers ({_format_bytes(analysis.download_bytes)} download)")
-            lines.append(f"    Reuse:    {reuse_ratio * 100:.1f}%")
-            lines.append("")
-
-        orig_summary = _calculate_summary(orig_analyses)
-        lines.append("==> Original Summary:")
-        lines.append(f"    Average layer reuse:    {orig_summary['avg_reuse_ratio'] * 100:.1f}%")
-        lines.append(f"    Average download size:  {_format_bytes(orig_summary['avg_download_bytes'])}")
-        lines.append("")
-
-        # Comparison
-        if analyses:
-            chunked_summary = _calculate_summary(analyses)
-            lines.append("==> Comparison (Chunked vs Original):")
-            savings = orig_summary['avg_download_bytes'] - chunked_summary['avg_download_bytes']
-            savings_pct = (savings / orig_summary['avg_download_bytes'] * 100
-                          if orig_summary['avg_download_bytes'] > 0 else 0)
-            lines.append(f"    Download savings:       {_format_bytes(savings)} ({savings_pct:.1f}% smaller)")
-            lines.append(f"    Layer reuse improvement: {(chunked_summary['avg_reuse_ratio'] - orig_summary['avg_reuse_ratio']) * 100:+.1f}%")
-
     return "\n".join(lines)
 
 
-def format_json_output(images: list[ImageInfo], analyses: list[UpdateAnalysis],
-                       orig_images: list[ImageInfo],
-                       orig_analyses: list[UpdateAnalysis]) -> str:
+def format_json_output(images: list[ImageInfo],
+                       analyses: list[UpdateAnalysis]) -> str:
     """Format analysis results as JSON."""
 
     def _format_image(img: ImageInfo) -> dict:
         return {
             "ref": img.ref,
-            "tag": img.tag,
-            "original_tag": img.original_tag,
+            "created": img.created,
             "layer_count": len(img.layers),
             "total_bytes": img.total_size,
             "layers": [
@@ -342,60 +287,44 @@ def format_json_output(images: list[ImageInfo], analyses: list[UpdateAnalysis],
         }
 
     def _format_analysis(analysis: UpdateAnalysis) -> dict:
-        total = len(analysis.shared_layers) + len(analysis.added_layers)
+        total_bytes = analysis.shared_bytes + analysis.download_bytes
         return {
-            "from": analysis.from_tag,
-            "to": analysis.to_tag,
-            "from_original": analysis.from_original,
-            "to_original": analysis.to_original,
+            "from": analysis.from_ref,
+            "to": analysis.to_ref,
             "shared_layer_count": len(analysis.shared_layers),
             "added_layer_count": len(analysis.added_layers),
             "removed_layer_count": len(analysis.removed_layers),
             "shared_bytes": analysis.shared_bytes,
             "download_bytes": analysis.download_bytes,
-            "reuse_ratio": len(analysis.shared_layers) / total if total > 0 else 0,
+            "reuse_ratio": analysis.shared_bytes / total_bytes if total_bytes > 0 else 0,
         }
 
     output = {
-        "chunked": {
-            "images": [_format_image(img) for img in images],
-            "updates": [_format_analysis(a) for a in analyses],
-            "summary": _calculate_summary(analyses) if analyses else {},
-        },
+        "images": [_format_image(img) for img in images],
+        "updates": [_format_analysis(a) for a in analyses],
+        "summary": _calculate_summary(analyses) if analyses else {},
     }
-
-    if orig_images or orig_analyses:
-        output["original"] = {
-            "images": [_format_image(img) for img in orig_images],
-            "updates": [_format_analysis(a) for a in orig_analyses],
-            "summary": _calculate_summary(orig_analyses) if orig_analyses else {},
-        }
-
-        # Add comparison if both have data
-        if analyses and orig_analyses:
-            chunked_summary = _calculate_summary(analyses)
-            orig_summary = _calculate_summary(orig_analyses)
-            savings = orig_summary['avg_download_bytes'] - chunked_summary['avg_download_bytes']
-            output["comparison"] = {
-                "download_savings_bytes": savings,
-                "download_savings_ratio": (
-                    savings / orig_summary['avg_download_bytes']
-                    if orig_summary['avg_download_bytes'] > 0 else 0
-                ),
-                "reuse_improvement": (
-                    chunked_summary['avg_reuse_ratio'] - orig_summary['avg_reuse_ratio']
-                ),
-            }
 
     return json.dumps(output, indent=2)
 
 
-def _parse_tag_index(ref: str, prefix: str) -> int:
-    """Extract numeric index from image reference."""
-    if ":" not in ref:
-        raise ValueError("No tag in reference")
-    tag = ref.split(":")[-1]
-    return int(tag)
+def _components_by_size(layers: list[LayerInfo]) -> list[str]:
+    """Return component names sorted by layer size (largest first)."""
+    named = [(layer.component, layer.size) for layer in layers if layer.component]
+    named.sort(key=lambda x: x[1], reverse=True)
+    return [name for name, _ in named]
+
+
+_history_fallback_warned = False
+
+
+def _warn_history_fallback():
+    """Print a one-time warning about using history fallback."""
+    global _history_fallback_warned
+    if not _history_fallback_warned:
+        _history_fallback_warned = True
+        print("Note: Using OCI history fallback (annotations not available).",
+              file=sys.stderr)
 
 
 def _format_bytes(n: int | float) -> str:
@@ -417,9 +346,9 @@ def _calculate_summary(analyses: list[UpdateAnalysis]) -> dict:
     download_bytes = [a.download_bytes for a in analyses]
     reuse_ratios = []
     for a in analyses:
-        total = len(a.shared_layers) + len(a.added_layers)
-        if total > 0:
-            reuse_ratios.append(len(a.shared_layers) / total)
+        total_bytes = a.shared_bytes + a.download_bytes
+        if total_bytes > 0:
+            reuse_ratios.append(a.shared_bytes / total_bytes)
 
     return {
         "update_count": len(analyses),
