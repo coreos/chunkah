@@ -147,11 +147,6 @@ impl BuildArgs {
 pub fn run(args: &BuildArgs) -> Result<()> {
     tracing::info!(rootfs = %args.rootfs, "starting build");
 
-    let created_epoch = args
-        .source_date_epoch
-        .map_or_else(utils::get_current_epoch, Ok)?;
-    tracing::debug!(created_epoch, "using timestamp");
-
     // load base config from file, string, or use empty default
     let parsed = if let Some(path) = &args.config {
         tracing::debug!(source = %path, "loading config from file");
@@ -167,8 +162,11 @@ pub fn run(args: &BuildArgs) -> Result<()> {
             config: oci_image::Config::default(),
             annotations: HashMap::new(),
             architecture: None,
+            created: None,
         }
     };
+
+    let created_epoch = resolve_created_epoch(args.source_date_epoch, &parsed)?;
 
     let architecture = args.arch.as_deref().or(parsed.architecture.as_deref());
     // get the current arch if not provided, but even if provided, this
@@ -252,6 +250,7 @@ fn parse_config(json_str: &str) -> Result<ParsedConfig> {
             config,
             annotations: HashMap::new(),
             architecture: None,
+            created: None,
         }),
     }
 }
@@ -266,6 +265,8 @@ struct ParsedConfig {
     annotations: HashMap<String, String>,
     #[serde(rename = "Architecture")]
     architecture: Option<String>,
+    #[serde(rename = "Created")]
+    created: Option<String>,
 }
 
 /// Config input format - either direct OCI config or podman/docker inspect output.
@@ -278,6 +279,25 @@ enum ConfigInput {
     InspectOne(ParsedConfig),
     /// Direct OCI config (e.g., `{"Entrypoint": [...]}`)
     Direct(oci_image::Config),
+}
+
+/// Resolve the created epoch from CLI, config, or current time.
+///
+/// Priority: explicit `--source-date-epoch` > `Created` from image inspect > current time.
+fn resolve_created_epoch(source_date_epoch: Option<u64>, parsed: &ParsedConfig) -> Result<u64> {
+    if let Some(epoch) = source_date_epoch {
+        tracing::debug!(epoch, "using source date epoch from CLI/env");
+        Ok(epoch)
+    } else if let Some(created) = &parsed.created {
+        let epoch =
+            utils::parse_rfc3339_epoch(created).context("parsing image created timestamp")?;
+        tracing::debug!(epoch, created = %created, "using build date from image config");
+        Ok(epoch)
+    } else {
+        let epoch = utils::get_current_epoch()?;
+        tracing::debug!(epoch, "using current time as source date epoch");
+        Ok(epoch)
+    }
 }
 
 /// Build the OCI image configuration from CLI args and a parsed config.
@@ -525,7 +545,8 @@ mod tests {
             "Annotations": {
                 "org.example.key": "value"
             },
-            "Architecture": "arm64"
+            "Architecture": "arm64",
+            "Created": "2023-11-14T22:13:20Z"
         }]"#;
         let parsed = parse_config(json).unwrap();
 
@@ -542,6 +563,7 @@ mod tests {
             Some(&"value".to_string())
         );
         assert_eq!(parsed.architecture, Some("arm64".to_string()));
+        assert_eq!(parsed.created, Some("2023-11-14T22:13:20Z".to_string()));
     }
 
     #[test]

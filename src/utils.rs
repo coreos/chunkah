@@ -9,6 +9,13 @@ pub fn get_current_epoch() -> Result<u64> {
         .map(|d| d.as_secs())
 }
 
+/// Parse an RFC 3339 timestamp string into a Unix epoch (seconds).
+pub fn parse_rfc3339_epoch(s: &str) -> Result<u64> {
+    let dt = chrono::DateTime::parse_from_rfc3339(s)
+        .with_context(|| format!("parsing RFC 3339 timestamp: {s}"))?;
+    u64::try_from(dt.timestamp()).with_context(|| format!("timestamp is negative: {s}"))
+}
+
 /// Format a byte count as a human-readable string using binary units.
 pub fn format_size(bytes: u64) -> String {
     const KIB: f64 = 1024.0;
@@ -43,6 +50,17 @@ pub fn get_goarch(arch: Option<&str>) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_parse_rfc3339_epoch() {
+        assert_eq!(
+            parse_rfc3339_epoch("2023-11-14T22:13:20Z").unwrap(),
+            1700000000
+        );
+        assert_eq!(parse_rfc3339_epoch("1970-01-01T00:00:00Z").unwrap(), 0);
+        assert!(parse_rfc3339_epoch("not-a-date").is_err());
+        assert!(parse_rfc3339_epoch("1969-12-31T23:59:59Z").is_err());
+    }
 
     #[test]
     fn test_format_size() {
