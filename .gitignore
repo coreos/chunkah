@@ -1,2 +1,3 @@
 /.opencode/plans
 /target
+__pycache__/
