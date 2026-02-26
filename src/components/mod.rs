@@ -1,3 +1,4 @@
+mod alpm;
 mod bigfiles;
 mod rpm;
 mod xattr;
@@ -126,6 +127,12 @@ impl ComponentsRepos {
             rpm::RpmRepo::load(rootfs, files, default_mtime_clamp).context("loading rpmdb")?
         {
             tracing::info!(repo = "rpm", "loaded repo");
+            repos.push(Box::new(repo));
+        }
+
+        if let Some(repo) = alpm::AlpmComponentsRepo::load(rootfs, files, default_mtime_clamp)
+            .context("loading alpm packages")?
+        {
             repos.push(Box::new(repo));
         }
 

@@ -39,3 +39,14 @@ podman run --name chunkah-test-fixture-tmp --rm quay.io/hummingbird-ci/builder b
     sqlite3 /mnt/usr/lib/sysimage/rpm/rpmdb.sqlite "PRAGMA journal_mode = DELETE;" &>2
     cat /mnt/usr/lib/sysimage/rpm/rpmdb.sqlite
 ' > rpmdb.sqlite
+
+echo ">>> REGENERATING: Arch Linux local db" >&2
+mkdir -p arch-rootfs
+pushd arch-rootfs
+podman run --rm quay.io/archlinux/archlinux:latest bash -c '
+    mkdir -p /mnt/var/lib/pacman
+    pacman -Sy -r /mnt > /dev/null
+    pacman -S --noconfirm -r /mnt filesystem iana-etc > /dev/null
+    tar -C /mnt -cf - var/lib/pacman/local
+    ' | tar xf -
+popd
