@@ -11,6 +11,8 @@ use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
 use cap_std_ext::cap_std::fs::{Dir, FileType as CapFileType, Metadata, MetadataExt};
 
+use crate::utils;
+
 /// Seconds per day.
 pub const SECS_PER_DAY: u64 = 60 * 60 * 24;
 
@@ -48,7 +50,6 @@ pub type FileMap = BTreeMap<Utf8PathBuf, FileInfo>;
 pub struct FileInfo {
     pub file_type: FileType,
     pub mode: u32,
-    #[allow(dead_code)]
     pub size: u64,
     pub uid: u32,
     pub gid: u32,
@@ -184,12 +185,22 @@ impl ComponentsRepos {
             })
             .collect();
 
-        // build final components map
+        #[derive(Default)]
+        struct RepoStats {
+            components: usize,
+            total_size: u64,
+        }
+
+        // build final components map, tracking per-repo stats
+        let mut repo_stats: BTreeMap<usize, RepoStats> = BTreeMap::new();
         let mut components = HashMap::new();
         for ((repo_idx, comp_id), files) in claims {
             let repo = &self.repos[repo_idx];
             let info = repo.component_info(comp_id);
             let full_name = format!("{}/{}", repo.name(), info.name);
+            let stats = repo_stats.entry(repo_idx).or_default();
+            stats.components += 1;
+            stats.total_size += files.values().map(|f| f.size).sum::<u64>();
             components.insert(
                 full_name,
                 Component {
@@ -200,9 +211,16 @@ impl ComponentsRepos {
             );
         }
 
+        // log per-repo summary
+        for (repo_idx, stats) in &repo_stats {
+            let repo_name = self.repos[*repo_idx].name();
+            tracing::info!(repo = repo_name, components = stats.components, size = %utils::format_size(stats.total_size), "repo summary");
+        }
+
         // and the catch-all component for anything unclaimed
         if !unclaimed.is_empty() {
-            tracing::info!(unclaimed = unclaimed.len(), "unclaimed files");
+            let size: u64 = unclaimed.values().map(|f| f.size).sum();
+            tracing::info!(files = unclaimed.len(), size = %utils::format_size(size), "unclaimed files");
             components.insert(
                 UNCLAIMED_COMPONENT.into(),
                 Component {

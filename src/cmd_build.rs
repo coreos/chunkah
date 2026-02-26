@@ -191,7 +191,8 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         .prune(&args.prune)?
         .scan()
         .with_context(|| format!("scanning {} for files", args.rootfs))?;
-    tracing::info!(files = files.len(), "scan complete");
+    let total_size: u64 = files.values().map(|f| f.size).sum();
+    tracing::info!(files = files.len(), size = %utils::format_size(total_size), "scan complete");
 
     let repos =
         ComponentsRepos::load(&rootfs, &files, created_epoch).context("loading components")?;
