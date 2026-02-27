@@ -307,19 +307,19 @@ fn write_file_entry<W: Write>(
 ) -> Result<()> {
     let rel_path = strip_root_prefix(path);
 
-    let content = rootfs
-        .read(rel_path)
-        .with_context(|| format!("reading {}", path))?;
+    let file = rootfs
+        .open(rel_path)
+        .with_context(|| format!("opening {}", path))?;
 
     let mut header = tar::Header::new_gnu();
     header.set_entry_type(tar::EntryType::Regular);
-    header.set_size(content.len() as u64);
+    header.set_size(file_info.size);
     write_header_from_file_info(&mut header, file_info, mtime_clamp);
     append_xattrs(tar_builder, &file_info.xattrs, path.as_str())
         .with_context(|| format!("appending xattrs for {}", path))?;
 
     tar_builder
-        .append_data(&mut header, rel_path.as_str(), content.as_slice())
+        .append_data(&mut header, rel_path.as_str(), file)
         .with_context(|| format!("appending file {}", path))?;
 
     Ok(())
@@ -404,13 +404,17 @@ fn write_oci_archive_to<W: Write>(oci_dir: &Dir, writer: W) -> Result<()> {
                 tar.append_data(&mut header, &path_str, std::io::empty())
                     .with_context(|| format!("appending directory {}", path.display()))?;
             } else if file_type.is_file() {
-                let content = component
+                let file = component
                     .dir
-                    .read(component.filename)
-                    .with_context(|| format!("reading {}", path.display()))?;
+                    .open(component.filename)
+                    .with_context(|| format!("opening {}", path.display()))?;
+                let size = file
+                    .metadata()
+                    .with_context(|| format!("getting metadata for {}", path.display()))?
+                    .len();
                 let mut header = file_header.clone();
-                header.set_size(content.len() as u64);
-                tar.append_data(&mut header, path, content.as_slice())
+                header.set_size(size);
+                tar.append_data(&mut header, path, file)
                     .with_context(|| format!("appending {}", path.display()))?;
             } else {
                 anyhow::bail!(
