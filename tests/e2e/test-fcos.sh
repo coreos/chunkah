@@ -11,8 +11,10 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 TARGET_IMAGE="quay.io/fedora/fedora-coreos:stable"
 CHUNKED_IMAGE="localhost/fcos-chunked:test"
 
+peak_mem_dir=$(mktemp -d)
 cleanup() {
     cleanup_images "${CHUNKED_IMAGE}"
+    rm -rf "${peak_mem_dir}"
 }
 trap cleanup EXIT
 
@@ -23,7 +25,8 @@ config_str=$(podman inspect "${TARGET_IMAGE}")
 buildah_build \
     --from "${TARGET_IMAGE}" --build-arg CHUNKAH="${CHUNKAH_IMG:?}" \
     --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
-    --build-arg "CHUNKAH_ARGS=-v --prune /sysroot/ --max-layers 96" \
+    --build-arg "CHUNKAH_ARGS=-v --prune /sysroot/ --max-layers 96 --write-peak-mem-to /run/peak-mem/value" \
+    -v "${peak_mem_dir}:/run/peak-mem" \
     -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
 
 # sanity-check it
@@ -50,6 +53,10 @@ max_size=$((size_original * 101 / 100))
 
 # verify the chunked image is equivalent to the source (excluding pruned /sysroot/)
 assert_no_diff "${TARGET_IMAGE}" "${CHUNKED_IMAGE}" --skip /sysroot/
+
+# verify peak memory is under 200 MiB (209715200 bytes)
+peak_mem_bytes=$(cat "${peak_mem_dir}/value")
+[[ ${peak_mem_bytes} -le 209715200 ]]
 
 # run bootc lint
 podman run --rm "${CHUNKED_IMAGE}" bootc container lint

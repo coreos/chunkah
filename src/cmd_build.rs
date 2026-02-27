@@ -103,6 +103,10 @@ pub struct BuildArgs {
     /// absolute.
     #[arg(long = "prune", value_name = "PATH")]
     prune: Vec<Utf8PathBuf>,
+
+    /// Write peak memory usage (in bytes) to a file
+    #[arg(long, value_name = "PATH", hide = true)]
+    write_peak_mem_to: Option<Utf8PathBuf>,
 }
 
 impl BuildArgs {
@@ -226,6 +230,12 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     } else {
         tracing::info!("writing to stdout");
         builder.build(&mut std::io::stdout().lock())?;
+    }
+
+    if let Some(path) = &args.write_peak_mem_to {
+        let peak_rss = utils::get_peak_rss().context("getting peak memory usage")?;
+        std::fs::write(path, format!("{peak_rss}\n"))
+            .with_context(|| format!("writing peak memory to {path}"))?;
     }
 
     tracing::info!("build complete");
