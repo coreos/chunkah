@@ -34,6 +34,29 @@ pub fn format_size(bytes: u64) -> String {
     }
 }
 
+/// Returns the peak resident set size (VmHWM) in bytes.
+pub fn get_peak_rss() -> Result<u64> {
+    let status =
+        std::fs::read_to_string("/proc/self/status").context("reading /proc/self/status")?;
+    for line in status.lines() {
+        if let Some(value) = line.strip_prefix("VmHWM:") {
+            // format is "    123456 kB" but whitespace can vary
+            let mut parts = value.split_whitespace();
+            let kb_str = parts
+                .next()
+                .with_context(|| format!("malformed VmHWM line: {line}"))?;
+            if parts.next() != Some("kB") || parts.next().is_some() {
+                anyhow::bail!("unexpected VmHWM format: {}", value.trim());
+            }
+            let kb: u64 = kb_str
+                .parse()
+                .with_context(|| format!("parsing VmHWM value: {kb_str}"))?;
+            return Ok(kb * 1024);
+        }
+    }
+    anyhow::bail!("VmHWM not found in /proc/self/status");
+}
+
 /// Returns the OCI/Go architecture string.
 ///
 /// If `arch` is provided, translates it to OCI format.
