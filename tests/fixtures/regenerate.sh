@@ -4,28 +4,36 @@ shopt -s inherit_errexit
 
 cd "$(dirname "$0")"
 
-echo ">>> REGENERATING: fedora.json" >&2
+echo ">>> REGENERATING: fedora.qf" >&2
 
-# Packages to cherry-pick from the full rpm -qa output
+# Packages to cherry-pick from the full rpm -qa output.
+# Some of these are not in fedora-minimal and need to be installed first.
 PACKAGES=(
     bash
-    glibc
     coreutils
+    fedora-release-common
+    glibc
+    langpacks-core-en
+    perl-POSIX
     rpm
+    setup
     shadow-utils
     util-linux-core
-    setup
-    perl-POSIX
 )
 
-# Build jq filter to select packages by name
-filter=$(printf '"%s",' "${PACKAGES[@]}")
-filter="[${filter%,}]"
+# The queryformat string must match QUERYFORMAT in rpm-qa-rs src/parse.rs.
+queryformat='@@PKG@@\t%{NAME}\t%{VERSION}\t%{RELEASE}\t%{EPOCH}\t%{ARCH}\t%{LICENSE}\t%{SIZE}\t%{BUILDTIME}\t%{INSTALLTIME}\t%{SOURCERPM}\t%{FILEDIGESTALGO}\n[@@FILE@@\t%{FILENAMES}\t%{FILESIZES}\t%{FILEMODES}\t%{FILEMTIMES}\t%{FILEDIGESTS}\t%{FILEFLAGS}\t%{FILEUSERNAME}\t%{FILEGROUPNAME}\t%{FILELINKTOS}\n][@@CL@@\t%{CHANGELOGTIME}\n]'
 
-podman run --rm quay.io/fedora/fedora-minimal:latest rpm -qa --json | \
-    jq -s --argjson names "${filter}" '
-        [.[] | select(.Name as $n | $names | index($n))] | sort_by(.Name) | .[]
-    ' > fedora.json
+# Sort package names for deterministic output
+sorted_output=$(printf '%s\n' "${PACKAGES[@]}" | sort)
+mapfile -t sorted <<< "${sorted_output}"
+
+podman run --rm quay.io/fedora/fedora-minimal:latest \
+    bash -c '
+        set -euo pipefail
+        dnf install -y --setopt=install_weak_deps=False "$@" >/dev/null
+        for pkg in "$@"; do rpm -q --queryformat "'"${queryformat}"'" "$pkg"; done
+    ' -- "${sorted[@]}" > fedora.qf
 
 echo ">>> REGENERATING: empty.image-config.json" >&2
 buildah build --omit-history -f empty.Containerfile -t chunkah-empty

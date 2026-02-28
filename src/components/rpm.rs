@@ -397,7 +397,7 @@ mod tests {
 
     use super::*;
 
-    const FIXTURE: &str = include_str!("../../tests/fixtures/fedora.json");
+    const FIXTURE: &str = include_str!("../../tests/fixtures/fedora.qf");
 
     #[test]
     fn test_parse_srpm_name() {
@@ -455,7 +455,7 @@ mod tests {
         assert_eq!(claims.len(), 1);
         let info = repo.component_info(claims[0]);
         assert_eq!(info.name, "glibc");
-        assert_eq!(info.mtime_clamp, 1765791404);
+        assert_eq!(info.mtime_clamp, 1771428496);
 
         // Unowned file should not be claimed
         let claims = repo.claims_for_path(Utf8Path::new("/some/unowned/file"), FileType::File);

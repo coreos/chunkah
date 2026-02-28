@@ -309,7 +309,7 @@ mod tests {
 
     use super::*;
 
-    const RPM_FIXTURE: &str = include_str!("../../tests/fixtures/fedora.json");
+    const RPM_FIXTURE: &str = include_str!("../../tests/fixtures/fedora.qf");
 
     const XATTR_NAME: &str = "user.component";
 
