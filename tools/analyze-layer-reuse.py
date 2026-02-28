@@ -38,6 +38,8 @@ class UpdateAnalysis:
     """Analysis of layer changes between two images."""
     from_ref: str
     to_ref: str
+    from_created: str | None
+    to_created: str | None
     shared_layers: list[LayerInfo]
     added_layers: list[LayerInfo]
     removed_layers: list[LayerInfo]
@@ -196,6 +198,8 @@ def analyze_update(from_img: ImageInfo, to_img: ImageInfo) -> UpdateAnalysis:
     return UpdateAnalysis(
         from_ref=from_img.ref,
         to_ref=to_img.ref,
+        from_created=from_img.created,
+        to_created=to_img.created,
         shared_layers=shared_layers,
         added_layers=added_layers,
         removed_layers=removed_layers,
@@ -229,8 +233,10 @@ def format_human_output(images: list[ImageInfo], analyses: list[UpdateAnalysis],
             shared_n = len(analysis.shared_layers)
             total_n = len(analysis.shared_layers) + len(analysis.added_layers)
 
-            lines.append(f"    From: {analysis.from_ref}")
-            lines.append(f"    To:   {analysis.to_ref}")
+            from_created = f"  ({analysis.from_created})" if analysis.from_created else ""
+            to_created = f"  ({analysis.to_created})" if analysis.to_created else ""
+            lines.append(f"    From: {analysis.from_ref}{from_created}")
+            lines.append(f"    To:   {analysis.to_ref}{to_created}")
             lines.append(f"      Shared:   {len(analysis.shared_layers):3} layers ({_format_bytes(analysis.shared_bytes)})")
             lines.append(f"      Added:    {len(analysis.added_layers):3} layers ({_format_bytes(analysis.download_bytes)} download)")
             lines.append(f"      Removed:  {len(analysis.removed_layers):3} layers")
@@ -290,7 +296,9 @@ def format_json_output(images: list[ImageInfo],
         total_bytes = analysis.shared_bytes + analysis.download_bytes
         return {
             "from": analysis.from_ref,
+            "from_created": analysis.from_created,
             "to": analysis.to_ref,
+            "to_created": analysis.to_created,
             "shared_layer_count": len(analysis.shared_layers),
             "added_layer_count": len(analysis.added_layers),
             "removed_layer_count": len(analysis.removed_layers),
