@@ -28,6 +28,21 @@ jobs:
       - name: Check
         run: just checkall
 
+  msrv:
+    runs-on: ubuntu-latest
+    container: registry.access.redhat.com/ubi9/ubi:latest
+    steps:
+      - name: Install tools
+        run: dnf install -y rust-toolset openssl-devel zlib-devel git
+      - name: Configure git
+        run: git config --global --add safe.directory '*'
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Build
+        run: cargo build
+      - name: Test
+        run: cargo test
+
   e2e-tests:
     needs: unit-tests
     runs-on: ${{ matrix.runner }}

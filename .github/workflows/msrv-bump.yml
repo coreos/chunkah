@@ -1,0 +1,59 @@
+name: MSRV Bump
+
+on:
+  schedule:
+    # Weekly on Monday at 9am UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-msrv:
+    runs-on: ubuntu-latest
+    container: registry.access.redhat.com/ubi9/ubi:latest
+    steps:
+      - name: Install tools
+        run: dnf install -y git
+      - name: Configure git
+        run: git config --global --add safe.directory '*'
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Get current MSRV
+        id: current
+        run: |
+          msrv=$(grep '^rust-version' Cargo.toml | sed 's/.*"\(.*\)"/\1/')
+          echo "Current MSRV: ${msrv}"
+          echo "msrv=${msrv}" >> "${GITHUB_OUTPUT}"
+
+      - name: Get RHEL 9 Rust version
+        id: rhel9
+        run: |
+          version=$(dnf repoquery --quiet --latest-limit=1 --qf '%{version}' rust)
+          echo "RHEL 9 Rust version: ${version}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+      - name: Update Cargo.toml
+        if: steps.current.outputs.msrv != steps.rhel9.outputs.version
+        run: |
+          sed -i 's/^rust-version = ".*"/rust-version = "${{ steps.rhel9.outputs.version }}"/' Cargo.toml
+
+      - name: Create pull request
+        if: steps.current.outputs.msrv != steps.rhel9.outputs.version
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: msrv-bump
+          title: "Cargo.toml: bump rust-version to ${{ steps.rhel9.outputs.version }}"
+          body: |
+            RHEL 9 now ships Rust ${{ steps.rhel9.outputs.version }}.
+            Bump the minimum supported Rust version accordingly.
+
+            *This PR was automatically created by the MSRV Bump workflow.*
+          commit-message: |
+            Cargo.toml: bump rust-version to ${{ steps.rhel9.outputs.version }}
+
+            RHEL 9 now ships Rust ${{ steps.rhel9.outputs.version }}.
+            Bump the minimum supported Rust version accordingly.

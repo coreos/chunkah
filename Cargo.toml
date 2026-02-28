@@ -6,6 +6,8 @@ authors = ["Jonathan Lebon <jonathan@jlebon.com>"]
 repository = "https://github.com/jlebon/chunkah"
 license = "MIT OR Apache-2.0"
 edition = "2024"
+# Automatically bumped to match RHEL 9; see .github/workflows/msrv-bump.yml
+rust-version = "1.88.0"
 publish = false
 
 [dependencies]
