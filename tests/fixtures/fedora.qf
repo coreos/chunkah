@@ -1,0 +1,1813 @@
+@@PKG@@	bash	5.3.0	2.fc43	(none)	x86_64	GPL-3.0-or-later	8820142	1753299195	1772261275	bash-5.3.0-2.fc43.src.rpm	8
+@@FILE@@	/etc/skel/.bash_logout	18	33188	1753228800	2584c4ba8b0d2a52d94023f420b7e356a1b1a3f2291ad5eba06683d58c48570d	17	root	root	
+@@FILE@@	/etc/skel/.bash_profile	144	33188	1753228800	53fb514aefa7b5280314277abffc9b008910c0689304c267be0d38ba16dd5319	17	root	root	
+@@FILE@@	/etc/skel/.bashrc	522	33188	1753228800	c5566fb3645f14ef9f8fd2bcb0ad468bf6ef8a0c51a55633cb57f4c3e572aac6	17	root	root	
+@@FILE@@	/usr/bin/alias	33	33261	1753228800	c277897660adddce26a75871188bdae7ffa73f571a6fb779090a4c92df33988d	0	root	root	
+@@FILE@@	/usr/bin/bash	1502072	33261	1753228800	72c31946a6b51c6332022dce2b542931b825d1174d5efc014ef9a1d5385d4c32	0	root	root	
+@@FILE@@	/usr/bin/bashbug	10	41471	1753228800		0	root	root	bashbug-64
+@@FILE@@	/usr/bin/bashbug-64	7286	33261	1753228800	607db71c6ccfd183d3a348429499749fbb5799feba4be853fb542a4f311d6806	0	root	root	
+@@FILE@@	/usr/bin/bg	30	33261	1753228800	5a864f2047a83aa767ac1a3fca577e5f3a8eb4d129b4b1974fb2009960a9a0be	0	root	root	
+@@FILE@@	/usr/bin/cd	30	33261	1753228800	3f794988bc9b6e734d06c6507b4335054d01760a741b60104a49543cf7a964ed	0	root	root	
+@@FILE@@	/usr/bin/command	35	33261	1753228800	aafc06c6657ccf32c0af350777aa38537ff90685345dc19078afaa26bbe4412a	0	root	root	
+@@FILE@@	/usr/bin/fc	30	33261	1753228800	86495d1781eeec50764ce4e629f316087c2b53054b999308f40580633601b270	0	root	root	
+@@FILE@@	/usr/bin/fg	30	33261	1753228800	0af28b724b8b1850fa6b4f232cf51229b2efed0333ebfb51d940798e28e0d625	0	root	root	
+@@FILE@@	/usr/bin/getopts	35	33261	1753228800	7f1a970be00f749e2c9a820592e8109ddb7efc76cd8f8f47b748a16feab8cabb	0	root	root	
+@@FILE@@	/usr/bin/hash	32	33261	1753228800	a5c3efd29eb134da49b68b78155c0338ab614eec99094bd07cdda7e99e53ddca	0	root	root	
+@@FILE@@	/usr/bin/jobs	32	33261	1753228800	1e4046021f3ae7abb820a995c8572cda3f3b4a4d14cb50e3bcb0f50f391a5bd2	0	root	root	
+@@FILE@@	/usr/bin/read	32	33261	1753228800	f0f717be7c907acc0c1c4b489d619663076e5f08ed56257d647d192d492a147b	0	root	root	
+@@FILE@@	/usr/bin/sh	4	41471	1753228800		0	root	root	bash
+@@FILE@@	/usr/bin/type	32	33261	1753228800	36d5d35fee92010a0869fa9229d201b54f795217557105409e381f471a8038cd	0	root	root	
+@@FILE@@	/usr/bin/ulimit	34	33261	1753228800	d66bfb63a8afcea2c6d17561f27f8d3ddb49062f221c9b18d64e7c846c34ff94	0	root	root	
+@@FILE@@	/usr/bin/umask	33	33261	1753228800	975d986bf2124069a5781239ba169c894f3c0c152e3262cbddd64fff74e88171	0	root	root	
+@@FILE@@	/usr/bin/unalias	35	33261	1753228800	9631a027d22e68cb01c9753dc6cd44b9b210007cb0c1162cab12a715a2bcef60	0	root	root	
+@@FILE@@	/usr/bin/wait	32	33261	1753228800	238e0bce60ea5baff73d00fe4bb580335c5fb2c50fc3d9527f80fa57f5648550	0	root	root	
+@@FILE@@	/usr/lib/.build-id	0	16877	1753228800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/8d	0	16877	1753228800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/8d/ad0abbb7a9e8dfad50bb28d16b7e1521189942	24	41471	1753228800		4096	root	root	../../../../usr/bin/bash
+@@FILE@@	/usr/share/doc/bash	0	16877	1753228800		0	root	root	
+@@FILE@@	/usr/share/doc/bash/FAQ	99634	33188	1658845050	1a8838790362d6cefc1b4b0a230710769ea47f4eb96c8dcd24b846dd7d445db3	2	root	root	
+@@FILE@@	/usr/share/doc/bash/INTRO	7072	33188	919286022	88d4f438af6af108d5970aed3a88208a295b6dafc2d55b549169bb0a372ec1fb	2	root	root	
+@@FILE@@	/usr/share/doc/bash/RBASH	2747	33188	1728336317	0fd1c24613e7d8c698c3f743dcbbae8d75563cbd65f597f37eb93751d91acc29	2	root	root	
+@@FILE@@	/usr/share/doc/bash/README	1084	33188	919286124	255cce4868c3fd2887c050fc4e56edc3a246e3dfedd8a58c16e57eaeaf43bee5	2	root	root	
+@@FILE@@	/usr/share/doc/bash/bash.html	426217	33188	1746393909	79394ccb66e4d572f47d8b01634d3b08a87f705a230605006e25aecd5e033475	2	root	root	
+@@FILE@@	/usr/share/doc/bash/bashref.html	1040870	33188	1748609566	b91026acffb159bd1e842e3116a95539bf858e2b57cbfa74df9e3a53379177a4	2	root	root	
+@@FILE@@	/usr/share/info/bash.info.gz	167157	33188	1753228800	c2ab10cda098ad2e6a43ced7a02ff1545fd9d85f3dc05183bb1d72cd3fcf60b2	2	root	root	
+@@FILE@@	/usr/share/licenses/bash	0	16877	1753228800		0	root	root	
+@@FILE@@	/usr/share/licenses/bash/COPYING	35147	33188	1218546032	8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903	128	root	root	
+@@FILE@@	/usr/share/locale/af/LC_MESSAGES/bash.mo	1040	33188	1753228800	052d862b0c7cc51b401e6d9b261ceb8842a1e6cf22127db67499e3c479e3d26f	0	root	root	
+@@FILE@@	/usr/share/locale/bg/LC_MESSAGES/bash.mo	258404	33188	1748961203	7cf93f86b0b15374b36e846593a7638f5f376c69d82b196f1aafd5a21402510f	0	root	root	
+@@FILE@@	/usr/share/locale/ca/LC_MESSAGES/bash.mo	128568	33188	1753228800	5cd7b6a86a1578c9e2f542346e1f6e5e415de8c557f58b820f50e98e5d769fbc	0	root	root	
+@@FILE@@	/usr/share/locale/cs/LC_MESSAGES/bash.mo	192115	33188	1748980015	b34acb20879d0e617c9febcf1314ba216138eaab672e955651f87a05c48ee155	0	root	root	
+@@FILE@@	/usr/share/locale/da/LC_MESSAGES/bash.mo	60443	33188	1753228800	65ef69ad05f96da1e3c6bb6b253947523f3eb9c392e1fd13533286fbc313901c	0	root	root	
+@@FILE@@	/usr/share/locale/de/LC_MESSAGES/bash.mo	182342	33188	1749653704	e5f534536b7a2a8f84f66a62fe32240a6d7d22873db56d84ba69cef93ddaecf8	0	root	root	
+@@FILE@@	/usr/share/locale/el/LC_MESSAGES/bash.mo	77549	33188	1753228800	4e7a21f92e762cd729a81916d2c61e5b9e30492883c8e73234b0e6a525ae2973	0	root	root	
+@@FILE@@	/usr/share/locale/en@boldquot/LC_MESSAGES/bash.mo	180619	33188	1753228800	165af15b504a082c3f8d81c7b1d9bdf9caafb5cca8bb20e90a1987d77af6bbfd	0	root	root	
+@@FILE@@	/usr/share/locale/en@quot/LC_MESSAGES/bash.mo	178923	33188	1753228800	2dd5196b9f028d850edf075d4bee1e240e2b5073d28ec1c05f706e08438aa345	0	root	root	
+@@FILE@@	/usr/share/locale/eo/LC_MESSAGES/bash.mo	118409	33188	1753228800	08c37e5fe3aff8e97960d75db9812a7dd352a50fadb844b430938731cd536069	0	root	root	
+@@FILE@@	/usr/share/locale/es/LC_MESSAGES/bash.mo	190295	33188	1748976118	2975e2a6c3a742fec6ddb3a172e164cf8b340569bd4676b9f78472621339a59e	0	root	root	
+@@FILE@@	/usr/share/locale/et/LC_MESSAGES/bash.mo	27510	33188	1750857909	20d873ec22c8b8d24b94c9389af552cccd8f7e1e3fec89da5ac03901df5895b2	0	root	root	
+@@FILE@@	/usr/share/locale/fi/LC_MESSAGES/bash.mo	62932	33188	1753228800	32e48f3ee9c6ac34b266645ba7aa220292754ce628325b204ceaca0a2db91f1b	0	root	root	
+@@FILE@@	/usr/share/locale/fr/LC_MESSAGES/bash.mo	197028	33188	1748961585	fe88029876d61cef07beea9344cb579dbd6b592079f7f3a7d6b1cd46bde9e6a4	0	root	root	
+@@FILE@@	/usr/share/locale/ga/LC_MESSAGES/bash.mo	100049	33188	1753228800	57e47b9137642888e4a58265fb7cba70c670f650438495fb3ffbab5a4a8a5438	0	root	root	
+@@FILE@@	/usr/share/locale/gl/LC_MESSAGES/bash.mo	48557	33188	1753228800	63845467029bd90dfc3210fbb95d83a792938bb2f864a2c8538130b7c0f2c8bc	0	root	root	
+@@FILE@@	/usr/share/locale/hr/LC_MESSAGES/bash.mo	184243	33188	1749151460	81d6a15bf4c9ec83f147e13b55786e138898d6606d60bd4044849779d1296437	0	root	root	
+@@FILE@@	/usr/share/locale/hu/LC_MESSAGES/bash.mo	116359	33188	1753228800	322f0a819ef2a10d25f6483884e85e7af59b0d73c1b7989a23472ebd051d4686	0	root	root	
+@@FILE@@	/usr/share/locale/id/LC_MESSAGES/bash.mo	81233	33188	1753228800	9f007d9d964d72651cd28ca2d87be6bc7a22eaa4f449261e8c0c85c30b72cc2e	0	root	root	
+@@FILE@@	/usr/share/locale/it/LC_MESSAGES/bash.mo	190431	33188	1750096220	0f8a4709db67ff45cdf3e9c50e96462eff3aa335b9d62051dee634eee3a16afd	0	root	root	
+@@FILE@@	/usr/share/locale/ja/LC_MESSAGES/bash.mo	91569	33188	1753228800	b4ac9e0e04e28f91f20fd11c7a0c6b6140386a65b909acc271f06707a4cd05af	0	root	root	
+@@FILE@@	/usr/share/locale/ka/LC_MESSAGES/bash.mo	44183	33188	1753228800	d75d1ec0c575c3c6255c0fd5427b23d3e672a82054170579724a9fb79cbd4dfa	0	root	root	
+@@FILE@@	/usr/share/locale/ko/LC_MESSAGES/bash.mo	192128	33188	1749043274	16aeaff4d13d4bee13090674cb43e1b10023c8c46c08cb64c877ff97a9dd8cc7	0	root	root	
+@@FILE@@	/usr/share/locale/lt/LC_MESSAGES/bash.mo	26385	33188	1753228800	ad2e451bd88f90f25601d6c3b744fe6b3e6672344ae3b426b5a801f2cd69c7bc	0	root	root	
+@@FILE@@	/usr/share/locale/nb/LC_MESSAGES/bash.mo	120592	33188	1753228800	49b7e31bad92c0e32046a54cf169870a043c6ec57d78a78e6bd1a2eb59dd8c9e	0	root	root	
+@@FILE@@	/usr/share/locale/nl/LC_MESSAGES/bash.mo	187509	33188	1749220159	302272c10f6ab91e05dbafa6e341716014e62566873109fa5aa2382d94a5e663	0	root	root	
+@@FILE@@	/usr/share/locale/pl/LC_MESSAGES/bash.mo	190807	33188	1749236800	d5c75d442a39991044d4df8fa4fcb8f77cc009dc7dd9c2da6e1bd57ff8e649d2	0	root	root	
+@@FILE@@	/usr/share/locale/pt/LC_MESSAGES/bash.mo	186579	33188	1748961207	ce78e2981523565a801004a0c327877d60009b7cf61475098933d0d3728be19f	0	root	root	
+@@FILE@@	/usr/share/locale/pt_BR/LC_MESSAGES/bash.mo	190756	33188	1748976123	7e2c259344b24cffbb374e49de1f0b9fc5a89ff1e98c77197e157444c9c4b2dd	0	root	root	
+@@FILE@@	/usr/share/locale/ro/LC_MESSAGES/bash.mo	197068	33188	1748976126	08a9e628435f2b94bab77270eef99fe4740d43a75171df3e177ff8433a7bb0a8	0	root	root	
+@@FILE@@	/usr/share/locale/ru/LC_MESSAGES/bash.mo	105270	33188	1753228800	152d9ae0666682c6ba97b77fa925fd34e098b947e5dc86921e7882a2bcd6ef66	0	root	root	
+@@FILE@@	/usr/share/locale/sk/LC_MESSAGES/bash.mo	69047	33188	1753228800	9cb0e7ffa345484cfd79c025724f0d22b74f446ac9eb890c4726bb3ab30c8156	0	root	root	
+@@FILE@@	/usr/share/locale/sl/LC_MESSAGES/bash.mo	66641	33188	1753228800	472eab42e4c1f3d71ab65040caeec9df927e7827c36099898f47ac74bfadf76c	0	root	root	
+@@FILE@@	/usr/share/locale/sq/LC_MESSAGES/bash.mo	608	33188	1753228800	5df9caac16cd62a7748cf469ab042ce1258d5c132817f0da8625333e57688396	0	root	root	
+@@FILE@@	/usr/share/locale/sr/LC_MESSAGES/bash.mo	241651	33188	1749653706	062240a475f44064c43e8a19b3da671f87275504554425214c95c89666a0a977	0	root	root	
+@@FILE@@	/usr/share/locale/sv/LC_MESSAGES/bash.mo	183324	33188	1749127893	5a605b06bb3cac26d7b72395f3aa3d483e416900b29afe1ea03d6689540ebd2a	0	root	root	
+@@FILE@@	/usr/share/locale/tr/LC_MESSAGES/bash.mo	96241	33188	1753228800	44bed93c877535520ab19bb2dde2730a94f19b1b7e92f7483cd989c59f7d54b0	0	root	root	
+@@FILE@@	/usr/share/locale/uk/LC_MESSAGES/bash.mo	246838	33188	1748961211	748c7f95114a384907c1824e953a4c6957e8fd12ea865e518334238a6a9f1d0e	0	root	root	
+@@FILE@@	/usr/share/locale/vi/LC_MESSAGES/bash.mo	108706	33188	1753228800	20e77b23216dbbe50992ed239e76e2b589cb121404e5e2f4e615a8495d5be081	0	root	root	
+@@FILE@@	/usr/share/locale/zh_CN/LC_MESSAGES/bash.mo	176530	33188	1748961217	f7e81c95e45b722686a9cff822f594ddf8bb8b49c4fee7b5764cb3943f945d43	0	root	root	
+@@FILE@@	/usr/share/locale/zh_TW/LC_MESSAGES/bash.mo	118863	33188	1753228800	5fa4abd414259909b2bd94a1a28d9034983c80f82119f5642096555262c75f3a	0	root	root	
+@@FILE@@	/usr/share/man/man1/..1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/:.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/[.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/alias.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/bash.1.gz	107578	33188	1753228800	6ed59630e6979e93e40864500682936a8d014fcf150acc392b327c621aa2f900	2	root	root	
+@@FILE@@	/usr/share/man/man1/bashbug-64.1.gz	12	41471	1753228800		2	root	root	bashbug.1.gz
+@@FILE@@	/usr/share/man/man1/bashbug.1.gz	984	33188	1596397189	b874207b8ff076fadc4e26ddc066f019b71e90ed38ca5e22d3515ce55de10310	2	root	root	
+@@FILE@@	/usr/share/man/man1/bg.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/bind.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/break.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/builtin.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/builtins.1.gz	562	33188	1674850714	e456f6dc9c05cbd3acf8fe8e5665ac79194470eb98fe12b5dc98ba4079c5d56f	2	root	root	
+@@FILE@@	/usr/share/man/man1/caller.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/cd.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/command.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/compgen.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/complete.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/compopt.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/continue.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/declare.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/dirs.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/disown.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/enable.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/eval.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/exec.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/exit.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/export.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/fc.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/fg.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/getopts.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/hash.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/help.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/history.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/jobs.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/let.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/local.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/logout.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/mapfile.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/popd.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/pushd.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/read.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/readarray.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/readonly.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/return.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/set.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/sh.1.gz	9	41471	1753228800		2	root	root	bash.1.gz
+@@FILE@@	/usr/share/man/man1/shift.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/shopt.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/source.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/suspend.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/times.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/trap.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/type.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/typeset.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/ulimit.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/umask.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/unalias.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/unset.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/wait.1.gz	40	33188	1753228800	55e10cb00b262abf4a13e91e0bbb6040e1da2e428c9fb844430f4d0650c21ec0	2	root	root	
+@@CL@@	1753272000
+@@CL@@	1752580800
+@@CL@@	1739448000
+@@CL@@	1737028800
+@@CL@@	1731067200
+@@CL@@	1724932800
+@@CL@@	1723464000
+@@CL@@	1721217600
+@@CL@@	1707480000
+@@CL@@	1706011200
+@@CL@@	1705924800
+@@CL@@	1705665600
+@@CL@@	1700481600
+@@CL@@	1699617600
+@@PKG@@	coreutils	9.7	7.fc43	(none)	x86_64	GPL-3.0-or-later AND GFDL-1.3-no-invariants-or-later AND LGPL-2.1-or-later AND LGPL-3.0-or-later	5673161	1768567609	1772261276	coreutils-9.7-7.fc43.src.rpm	8
+@@FILE@@	/usr/bin/[	45056	33261	1768521600	05967c9dcc81c91f4b3e681b41cc6051f1976f6b931f2af9e9173bc6919ee789	0	root	root	
+@@FILE@@	/usr/bin/arch	32624	33261	1768521600	c83a5b9fdb7786052293261014e4edeb7e462d438eb4c27e859a185a1d685e00	0	root	root	
+@@FILE@@	/usr/bin/b2sum	53256	33261	1768521600	44ccc6489b0e86d692e566b3627d3e8e1596e7500342c499db4008f6f7542011	0	root	root	
+@@FILE@@	/usr/bin/base32	36768	33261	1768521600	1a1f0382efd31e98d544e9bf79f21c2c3294c422c8c104574cd81dc118818838	0	root	root	
+@@FILE@@	/usr/bin/base64	36768	33261	1768521600	669bc449cfbc7606010694720ce224942cf21add5144dfb57130b8c1efcefc61	0	root	root	
+@@FILE@@	/usr/bin/basename	32640	33261	1768521600	dd9ac97e131d3a60df1b586baf72985bfe3ebe029b57672842d6359bed4f67b5	0	root	root	
+@@FILE@@	/usr/bin/basenc	49424	33261	1768521600	2c0189f2fe1f65d88f17fa8d61c9273dbc64fff1c526c842218837575185f027	0	root	root	
+@@FILE@@	/usr/bin/cat	36728	33261	1768521600	8ca1e9e74b1171698728fe7d0e4ccdf44bbf0c007e1352eeba906be103d69945	0	root	root	
+@@FILE@@	/usr/bin/chcon	66088	33261	1768521600	50b424166b52e2edcb06323921f5e87e9803e782fcdc35537b855cb0a5d164df	0	root	root	
+@@FILE@@	/usr/bin/chgrp	66000	33261	1768521600	ed01c137ab556f42303533ec6ccfbea68e03c13cb9c41a48228f938a97bf47e4	0	root	root	
+@@FILE@@	/usr/bin/chmod	57816	33261	1768521600	9ad4ffa9e27161ae65ef9fd83a75067b35472017fa6be2fa881d9bbc217016ad	0	root	root	
+@@FILE@@	/usr/bin/chown	66016	33261	1768521600	75cbde350ccf211c91d14f29c2e1d0335a9f16ba53bba5494dcd6fc8697face4	0	root	root	
+@@FILE@@	/usr/bin/chroot	40920	33261	1768521600	3b3db2bef0a502738e66087c43fd5ae95657ac15d4785ca46135328f6caec435	0	root	root	
+@@FILE@@	/usr/bin/cksum	115144	33261	1768521600	5a378f34418a0ac42a83f7dd3d37578784ea88f5aba8e6343c795b556f466c20	0	root	root	
+@@FILE@@	/usr/bin/comm	36856	33261	1768521600	a570b4cb08f0ab3194ae53bd75ce308194b30239812ad007960aca1be00c6fa2	0	root	root	
+@@FILE@@	/usr/bin/cp	140728	33261	1768521600	8fb6d16482c897aa2f055a2f63a993edbd51d6455dad84092eb400cf7fd5dd86	0	root	root	
+@@FILE@@	/usr/bin/csplit	49328	33261	1768521600	17e9857dbc7cb2f8c3c7bd64c0b87a75f3cbc9ef4d93078e6015823fd477b5ab	0	root	root	
+@@FILE@@	/usr/bin/cut	49176	33261	1768521600	abbf0f6dc15d9cf39e81c4b963d4394e7f38556b3a289c4990387a8f8273e700	0	root	root	
+@@FILE@@	/usr/bin/date	90280	33261	1768521600	2e60be95b8c429704a475c32edb1470470e01bc66990f833e9100b1ab12a29d1	0	root	root	
+@@FILE@@	/usr/bin/dd	61784	33261	1768521600	7ad4255ab33db880da43f8b648974bff153598a9cd14cacbac54fbe1824eb8f5	0	root	root	
+@@FILE@@	/usr/bin/df	86952	33261	1768521600	32fb56b4d48a3395688b357ea4cc01858ea595d6c831a6094818482b06976c1b	0	root	root	
+@@FILE@@	/usr/bin/dir	145320	33261	1768521600	f9f1717c39c1da46e97507d33b648cad9189d4c5d769a069a62a06a5ae8aaf11	0	root	root	
+@@FILE@@	/usr/bin/dircolors	45040	33261	1768521600	ab1b0674fb103ca2102912e141f727eed111c4b46e5a8326323f3a4565145f5d	0	root	root	
+@@FILE@@	/usr/bin/dirname	32456	33261	1768521600	627f4f52f203acbf9b1fe21d738562ea13a898ade0157fc07829ef6dfe2a1e36	0	root	root	
+@@FILE@@	/usr/bin/du	95040	33261	1768521600	537573fb015cedd6fe1f0accbe8ba90e296cae5ef75897860dc661e6f7c5c9ce	0	root	root	
+@@FILE@@	/usr/bin/echo	32456	33261	1768521600	8401477a126fe2e519ef8ba26ea0fff9e9e26ce205b389c1f6d13479e1d9bf7e	0	root	root	
+@@FILE@@	/usr/bin/env	45496	33261	1768521600	6b92c4c94f32a3336d8bd62b74fceade34aa5d6088be3e93a7c7aa70a9c91488	0	root	root	
+@@FILE@@	/usr/bin/expand	40936	33261	1768521600	694d94e6f398b04d25a5f20329c761eabedb66d4167e47996fa47340854afa33	0	root	root	
+@@FILE@@	/usr/bin/expr	49032	33261	1768521600	1071917fe4b334baf1bdf3c3d7d547e1a970a58a3819bc6cdad24d1a5767b379	0	root	root	
+@@FILE@@	/usr/bin/factor	69872	33261	1768521600	433fe99ab15dce069ddab0700ec93270c985fc4758e0cee448c45d741d5c6bdf	0	root	root	
+@@FILE@@	/usr/bin/false	28336	33261	1768521600	ab334c18880e3e8031fabdb31d4150c84622b5944b759697c0c6241c2896bb5a	0	root	root	
+@@FILE@@	/usr/bin/fmt	40880	33261	1768521600	fc9f31fba6e39604f50858b97fd1966cbf6f9c699f15c0d37b8320c4fbbb20a4	0	root	root	
+@@FILE@@	/usr/bin/fold	40840	33261	1768521600	1ed758781e115d8ab555fe487b3338a790e003f42088879924ffbe6fcc8952b5	0	root	root	
+@@FILE@@	/usr/bin/groups	36744	33261	1768521600	5af93ca86e66c63c3483560b9f82d5019063564dde7cb12c4cfa80d9a77f223a	0	root	root	
+@@FILE@@	/usr/bin/head	49176	33261	1768521600	22e5db04705f0a5cb675993891f2d51cfa3c7bf9f3b76f6cca8162ab7cdb0a70	0	root	root	
+@@FILE@@	/usr/bin/hostid	32632	33261	1768521600	b823fe45a6075cde8ccc0a61120732018a39b5ed196874d7b1b33c45e22e5453	0	root	root	
+@@FILE@@	/usr/bin/id	44984	33261	1768521600	c2c7415ded1c3c25d2f982be10d91ba12ace27104a7deaffe17db2fac18bb6ab	0	root	root	
+@@FILE@@	/usr/bin/install	144920	33261	1768521600	a258a1c610633ac04bbc03d90f6f7da0f25055e95d23a1a54ab1edc2725e405a	0	root	root	
+@@FILE@@	/usr/bin/join	49256	33261	1768521600	28f32d785f9626959015d12f3e7082a1ee1bcbdc49de6e3172263d9f2204925a	0	root	root	
+@@FILE@@	/usr/bin/link	32640	33261	1768521600	a07e3b879918ee9f45c735dadf6627d9bf699f235c66378a6ea5e1c4118eea59	0	root	root	
+@@FILE@@	/usr/bin/ln	61776	33261	1768521600	7ca2d0e838afe70a5c6cfbd9021a3f8f323e878d4b70198183cee2b97a05d990	0	root	root	
+@@FILE@@	/usr/bin/logname	32624	33261	1768521600	9dd298b7f45174b9f696e9d7f0816d499ad28aac44e48d4c0a948657a8124481	0	root	root	
+@@FILE@@	/usr/bin/ls	145312	33261	1768521600	90cb1294cfbc6e07badcd93191c043f8683271410a3e2852d8bd4541952ca963	0	root	root	
+@@FILE@@	/usr/bin/md5sum	44912	33261	1768521600	17ff02ee090b38782bb1c67af6cfd69b86196ec5c11c5c6a3758246b613e2290	0	root	root	
+@@FILE@@	/usr/bin/mkdir	53480	33261	1768521600	bd9fb9299212a686ea925281ffa2f9833cabea527b91a4d94476bafe36ac069e	0	root	root	
+@@FILE@@	/usr/bin/mkfifo	49240	33261	1768521600	01c91a56b10e5fe120393ec8ebf236b06a25c05d9a6067c60c4605b7245b0c3e	0	root	root	
+@@FILE@@	/usr/bin/mknod	49248	33261	1768521600	08eb2327bda5ff8746baed7bd8f3a4ebe13a9409ff621dab7877fa3b9a414da8	0	root	root	
+@@FILE@@	/usr/bin/mktemp	36784	33261	1768521600	eb81245768152015ad82aeb51e587bc05ba321ea791cbb8e786ed2bccb457ad7	0	root	root	
+@@FILE@@	/usr/bin/mv	136576	33261	1768521600	0f9eb51f183e27959f430c7fae2a82417cfd0668dabad049c55f68eed580ec76	0	root	root	
+@@FILE@@	/usr/bin/nice	36712	33261	1768521600	c35a0082a3dc2418723621ae30e7d20fe06c50dcbfce7fe2058be7b6b1abc351	0	root	root	
+@@FILE@@	/usr/bin/nl	45088	33261	1768521600	96bbd385ca2e39a64efceb489b8531b3473161dfb9d65b41b716a1c5a4246587	0	root	root	
+@@FILE@@	/usr/bin/nohup	36640	33261	1768521600	b2ee007fabf8d78ff90ad8fe1d453f91787ce0610314e5ee0c62ac7d513501d2	0	root	root	
+@@FILE@@	/usr/bin/nproc	36752	33261	1768521600	6ac0df0d75b6c11f27de2945e77a5ac267f3926c87c589170fef82a1d90201a7	0	root	root	
+@@FILE@@	/usr/bin/numfmt	61512	33261	1768521600	cad6c8933ebe7e03f8b163ee403022f3b0969276650da331b59606e6be3eda88	0	root	root	
+@@FILE@@	/usr/bin/od	74064	33261	1768521600	34adfe18e335bda1a74fc40f9d6d8e61771fab750e0325ef0a24a390e5904a92	0	root	root	
+@@FILE@@	/usr/bin/paste	36664	33261	1768521600	3e425e3ac765707d02e0a1cf3622700ae20a3b27c72a886e5e095241a27ddf0b	0	root	root	
+@@FILE@@	/usr/bin/pathchk	36744	33261	1768521600	dbb11d250960ba330d66629f690670320ea8ce22bb6881e722e9f2b0a36af033	0	root	root	
+@@FILE@@	/usr/bin/pinky	44896	33261	1768521600	042a7410c269c2ef1791f9cd4383ff1bdf284f2b3cef9eedee2237b1e787641a	0	root	root	
+@@FILE@@	/usr/bin/pr	78368	33261	1768521600	11ab61387b20ccbee48b171029d9075e71b881332904950c9eb00903eab14faf	0	root	root	
+@@FILE@@	/usr/bin/printenv	32456	33261	1768521600	5e7dd91c145667aa1ddc6186e3729e7aac3208c9b42731528afae97297c2e480	0	root	root	
+@@FILE@@	/usr/bin/printf	61392	33261	1768521600	2a7f700d7a988ab3f543defa7cf0d422f25591849e1472293ee30bf0a1a892b0	0	root	root	
+@@FILE@@	/usr/bin/ptx	53344	33261	1768521600	e6373560fab3f6a2aae32f6720a47bb4b4cad93253b113534faa3e64d3fdeddf	0	root	root	
+@@FILE@@	/usr/bin/pwd	36752	33261	1768521600	8a2860ecfcce979d020a80a14c02b16c81b9bd9dfb59f8616a42c9b1fa14c6aa	0	root	root	
+@@FILE@@	/usr/bin/readlink	40920	33261	1768521600	e1c2478fbf300f86d755861c461f5d4daa6a94ee8c12d3e04b0a49aac453327b	0	root	root	
+@@FILE@@	/usr/bin/realpath	40984	33261	1768521600	415af62abb263dd9d146ec5df127dc68e81122374f6c46f2eb443f067b3b70dc	0	root	root	
+@@FILE@@	/usr/bin/rm	66032	33261	1768521600	0d234623afdcfa6be6a5b540779fff6c1f05d6f59987b243bf83d5b3421bfc7d	0	root	root	
+@@FILE@@	/usr/bin/rmdir	36664	33261	1768521600	f6eeef9e6d6b6e2b3e41d425eb1a26ed3080ef4e7ddeeabfa0517e22d6282cef	0	root	root	
+@@FILE@@	/usr/bin/runcon	36680	33261	1768521600	5506581836550880469a5d0d66e4f66e4ac500d1c896ee7b02c21e5927f00594	0	root	root	
+@@FILE@@	/usr/bin/seq	40880	33261	1768521600	2a0cc752d719a862defcc759cc03f7a8d29d1f6d58ea09d8d16713810bf66ab1	0	root	root	
+@@FILE@@	/usr/bin/sha1sum	44912	33261	1768521600	921ed144a53902d916b94fcb990bb698a25236fdb6ac0e4f48a4dca0697f7435	0	root	root	
+@@FILE@@	/usr/bin/sha224sum	44912	33261	1768521600	5a19c1bdfa22baaa73853193226704f06ecdc7fe36e44df802e97615fccd5257	0	root	root	
+@@FILE@@	/usr/bin/sha256sum	44912	33261	1768521600	958cf8b1876d040d40ac455216d018e6205b35d737e6b1795088cdd4fc0bb297	0	root	root	
+@@FILE@@	/usr/bin/sha384sum	44912	33261	1768521600	e5a31ca54667e9a58bd1246c226cd85fe9019358170f19791d33c7a6f445ab6f	0	root	root	
+@@FILE@@	/usr/bin/sha512sum	44904	33261	1768521600	d662fc94881c57627b0fda4e7f74ca947043c37ac040aa92992b560553ee32fb	0	root	root	
+@@FILE@@	/usr/bin/shred	53376	33261	1768521600	8630ab0439294aa708f7042aa8ac88689e5274d5250af1bc96596a10ae8f0116	0	root	root	
+@@FILE@@	/usr/bin/shuf	53528	33261	1768521600	5d694b5bda97efaf2284d301a6bfa9ceaf927858002f140906c0cda8782f5822	0	root	root	
+@@FILE@@	/usr/bin/sleep	32640	33261	1768521600	c7a225ec3333f24f6616e2e4744230c9265b0f9501c415f2959da777a6460e53	0	root	root	
+@@FILE@@	/usr/bin/sort	120288	33261	1768521600	a7c817b5c78bd0c33f44258f6a45a01379ddc4d24c7d400067c4d80139cb33b8	0	root	root	
+@@FILE@@	/usr/bin/split	61944	33261	1768521600	dd52b7876df8f3eab039db61ad367ce14fb29b092c2ac8f169f017d518c45da2	0	root	root	
+@@FILE@@	/usr/bin/stat	90344	33261	1768521600	afaa993c6b588cbed175dd774a040ba187b1170bbb4efc47f81c554215a58a2e	0	root	root	
+@@FILE@@	/usr/bin/stdbuf	36728	33261	1768521600	c314b49d81695a9f31975cb8cfb42950b2e820ba8a11f4512a12f85ebf08e6bd	0	root	root	
+@@FILE@@	/usr/bin/stty	65584	33261	1768521600	968d1e6fd0e2775d5d9e301b65020bc7e5bb6e4c98c013ebf3af3c4692021e03	0	root	root	
+@@FILE@@	/usr/bin/sum	36720	33261	1768521600	e5b804469953333aa92c3ee2175cd408c3b9b1ac7bd04ce2b357c8823155097f	0	root	root	
+@@FILE@@	/usr/bin/sync	32528	33261	1768521600	509b433bcfa38f00d773f8a15ca886ad24271bc71c5c5f37e02d99d673a675f8	0	root	root	
+@@FILE@@	/usr/bin/tac	36680	33261	1768521600	e9925d9d70db6210fbe0d364132d5e3a38681d4a04a455543a0856dbcb70b727	0	root	root	
+@@FILE@@	/usr/bin/tail	70008	33261	1768521600	40cb110c0a996a83c6090647e7cfd695df503d7a48bf24aa137dec7c4012a927	0	root	root	
+@@FILE@@	/usr/bin/tee	36864	33261	1768521600	ef3cb19f412cfa3e4b03ba92cc3d0ac21da857fa4462b9f289a1ef296f604394	0	root	root	
+@@FILE@@	/usr/bin/test	36832	33261	1768521600	a9341596fe5648cc0032717dd63c8f7371afa9ddd26df1541424e97169397606	0	root	root	
+@@FILE@@	/usr/bin/timeout	41336	33261	1768521600	24e26e181ae27f15e0903fd17be48e8afa3f3c4b1e5a86223045b2504e7766cb	0	root	root	
+@@FILE@@	/usr/bin/touch	73920	33261	1768521600	9f0d78babda32995d6f9db61a80b85111f08ef413196679dc648f82d21b1a2af	0	root	root	
+@@FILE@@	/usr/bin/tr	49192	33261	1768521600	a5e0266bf4d5314397c0f98c5673e44d0c843bf94a0ee6e2a16516e6035031a5	0	root	root	
+@@FILE@@	/usr/bin/true	28336	33261	1768521600	03fd72156e071f4cd7a1fbd930750a923005a7f7bb0f62fa5850ae4da5a096ca	0	root	root	
+@@FILE@@	/usr/bin/truncate	36736	33261	1768521600	e5a46be8bd09139500ae4087b9133317d65a2bbcec61c8474907a241f35da35e	0	root	root	
+@@FILE@@	/usr/bin/tsort	49168	33261	1768521600	96f16884df89349003df881080af40036c8968622bf2cb85a1a8c19884a30a89	0	root	root	
+@@FILE@@	/usr/bin/tty	32608	33261	1768521600	1919633ac9c4e2af14722c8ddb353844cb17ec18e947645ffb9d610263bee481	0	root	root	
+@@FILE@@	/usr/bin/uname	32616	33261	1768521600	470135a5ad35508618c0f2e1e911b1efccb786e6e34a51b41906891ac8fdcea0	0	root	root	
+@@FILE@@	/usr/bin/unexpand	40920	33261	1768521600	c6e20d198cac8fb7f30748bf5e4f636c80b89f03c91066822c4b6c969dc8750a	0	root	root	
+@@FILE@@	/usr/bin/uniq	45128	33261	1768521600	f4ae0d7930eb232c775a87b186b066ab7dabffc36e8083274ccdb58d0bd9dbe5	0	root	root	
+@@FILE@@	/usr/bin/unlink	32624	33261	1768521600	84870f94f116427f02545d602495a3cfc51fa0cd63a4dfebadae2397eb4f8692	0	root	root	
+@@FILE@@	/usr/bin/users	40912	33261	1768521600	8303519985fdcdc23b9054107dd1f0c2d54afcdb42d776cb9ffecc9cd228c583	0	root	root	
+@@FILE@@	/usr/bin/vdir	145312	33261	1768521600	1c0b47c94241062aebe9fc83bb5f038f79902a86fb25ea5db4b2b46379754a5a	0	root	root	
+@@FILE@@	/usr/bin/wc	57472	33261	1768521600	48b528c5992d524e96e08cbaa15b0869cf4896faaae90f715eaef1c363cbcd72	0	root	root	
+@@FILE@@	/usr/bin/who	49152	33261	1768521600	9e68444afd52af418dc26874eeb279313b17b8f9c816539ed9fe39f9b8296a52	0	root	root	
+@@FILE@@	/usr/bin/whoami	32624	33261	1768521600	b220dbaf121a55e1d600f271f2f66d3d98a8dd1e829c09414f5710e44473c1c6	0	root	root	
+@@FILE@@	/usr/bin/yes	32464	33261	1768521600	6b1fe5df17fc5b94daafee42c53fad12a6245ab3cb40782ada11e42a56ea1b37	0	root	root	
+@@FILE@@	/usr/lib/.build-id	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/01	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/01/00374e6ba3989e064b4b5f2fd43fdee6c7dffc	23	41471	1768521600		4096	root	root	../../../../usr/bin/tac
+@@FILE@@	/usr/lib/.build-id/02	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/02/b36b3beb0af6110aa2ef8661b9cfe61911fdf0	26	41471	1768521600		4096	root	root	../../../../usr/bin/mktemp
+@@FILE@@	/usr/lib/.build-id/02/d7eb98758a359401fb4cfe86395059473dfdbc	26	41471	1768521600		4096	root	root	../../../../usr/bin/chroot
+@@FILE@@	/usr/lib/.build-id/03	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/03/0b6ddaf60d0f061a74664f72f8d04822148e35	25	41471	1768521600		4096	root	root	../../../../usr/bin/mkdir
+@@FILE@@	/usr/lib/.build-id/05	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/05/f69744c0e33de94d4abbbab478beb6f3447f1e	26	41471	1768521600		4096	root	root	../../../../usr/bin/factor
+@@FILE@@	/usr/lib/.build-id/06	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/06/c8f06a217aae2d5b5eda88c71ea9e0dee5dc9f	25	41471	1768521600		4096	root	root	../../../../usr/bin/users
+@@FILE@@	/usr/lib/.build-id/08	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/08/1e0dcf359e4cfdeb1e71f4218b895e87bc9da6	26	41471	1768521600		4096	root	root	../../../../usr/bin/expand
+@@FILE@@	/usr/lib/.build-id/0e	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/0e/d902bf436ec7a3c06dc0258751b8b90dae6680	23	41471	1768521600		4096	root	root	../../../../usr/bin/who
+@@FILE@@	/usr/lib/.build-id/0e/f29ed53b630c9ed529884788d713d18ac0c22a	25	41471	1768521600		4096	root	root	../../../../usr/bin/tsort
+@@FILE@@	/usr/lib/.build-id/0f	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/0f/b7d15ace9f8bb37dc7fac48c058ea02b5199ae	24	41471	1768521600		4096	root	root	../../../../usr/bin/fold
+@@FILE@@	/usr/lib/.build-id/11	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/11/e33446dd23d13851d53b74ebd6930c22aecc2e	23	41471	1768521600		4096	root	root	../../../../usr/bin/pwd
+@@FILE@@	/usr/lib/.build-id/18	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/18/af7c168a6192c5f2a2777ecb01438b7ca02f3c	22	41471	1768521600		4096	root	root	../../../../usr/bin/dd
+@@FILE@@	/usr/lib/.build-id/1b	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/1b/3d7e650fe37622d8223ead59f82e9251b78100	25	41471	1768521600		4096	root	root	../../../../usr/bin/nproc
+@@FILE@@	/usr/lib/.build-id/1b/f6dc3420b36058df086d91273c00f024f1543e	24	41471	1768521600		4096	root	root	../../../../usr/bin/stat
+@@FILE@@	/usr/lib/.build-id/1d	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/1d/5b400c2fa608d60552dcfaa311c73846b2a814	26	41471	1768521600		4096	root	root	../../../../usr/bin/numfmt
+@@FILE@@	/usr/lib/.build-id/1d/664ccaa60efc0c1b8e9c19840a0e5e0a08f2b1	25	41471	1768521600		4096	root	root	../../../../usr/bin/sleep
+@@FILE@@	/usr/lib/.build-id/1e	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/1e/4db95ab06e838beb139a4f5ae413f47b368a40	24	41471	1768521600		4096	root	root	../../../../usr/bin/expr
+@@FILE@@	/usr/lib/.build-id/20	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/20/52cfc680002e43aed57b81a7ce863312398ca2	26	41471	1768521600		4096	root	root	../../../../usr/bin/printf
+@@FILE@@	/usr/lib/.build-id/23	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/23/3319a992520210023b3073e64ed0d081826fe6	23	41471	1768521600		4096	root	root	../../../../usr/bin/tee
+@@FILE@@	/usr/lib/.build-id/26	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/26/29120fbef947af6fb791682e2c59a30abe1217	22	41471	1768521600		4096	root	root	../../../../usr/bin/wc
+@@FILE@@	/usr/lib/.build-id/27	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/27/863f1eeb0ad0ab7210ac4a2e3b17ffd1e44d69	24	41471	1768521600		4096	root	root	../../../../usr/bin/comm
+@@FILE@@	/usr/lib/.build-id/29	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/29/b93c913d0aa87f411f4eca158b9f4ceab109a6	24	41471	1768521600		4096	root	root	../../../../usr/bin/date
+@@FILE@@	/usr/lib/.build-id/29/bfec9aaac67b1258e00654a41bcadcf588e689	28	41471	1768521600		4096	root	root	../../../../usr/bin/basename
+@@FILE@@	/usr/lib/.build-id/2a	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/2a/d2b7131f62cfa159318172588fb1411ab7b3aa	23	41471	1768521600		4096	root	root	../../../../usr/bin/yes
+@@FILE@@	/usr/lib/.build-id/2f	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/2f/a9253f0bb8bac6605270c90789688a993fcdcb	22	41471	1768521600		4096	root	root	../../../../usr/bin/ls
+@@FILE@@	/usr/lib/.build-id/30	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/30/1dcc6845dd1d4260f9768dbfe9c8be38f411cb	28	41471	1768521600		4096	root	root	../../../../usr/bin/printenv
+@@FILE@@	/usr/lib/.build-id/35	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/35/8feebe12cf923ac2d5b5e4dfb6a4ba282f9873	25	41471	1768521600		4096	root	root	../../../../usr/bin/chmod
+@@FILE@@	/usr/lib/.build-id/39	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/39/6e087f2f8ff4ec4a483992d0f51dd0b42bc83f	29	41471	1768521600		4096	root	root	../../../../usr/bin/sha384sum
+@@FILE@@	/usr/lib/.build-id/3a	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/3a/094e5933ff5db12df41587e6c33c16dd9d6a3f	27	41471	1768521600		4096	root	root	../../../../usr/bin/install
+@@FILE@@	/usr/lib/.build-id/3e	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/3e/1fd8d25379cd4381e9f171be4ee32f810f2f82	26	41471	1768521600		4096	root	root	../../../../usr/bin/md5sum
+@@FILE@@	/usr/lib/.build-id/44	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/44/cf1635cfabcc43c37ab7bdcec0b6a417507907	24	41471	1768521600		4096	root	root	../../../../usr/bin/sync
+@@FILE@@	/usr/lib/.build-id/45	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/45/3bc3d7308001234462a0d23d21c97caa0c3fa6	36	41471	1768521600		4096	root	root	../../../../usr/bin/coreutils.single
+@@FILE@@	/usr/lib/.build-id/45/99b8a0b6bf1fb964b4f357c6a97bb082a741a4	24	41471	1768521600		4096	root	root	../../../../usr/bin/stty
+@@FILE@@	/usr/lib/.build-id/48	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/48/d5fbaeb1fc129f25918b8771168d351b28b27e	24	41471	1768521600		4096	root	root	../../../../usr/bin/sort
+@@FILE@@	/usr/lib/.build-id/49	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/49/a796d3e973ba17014679d96724e024ec79de71	26	41471	1768521600		4096	root	root	../../../../usr/bin/basenc
+@@FILE@@	/usr/lib/.build-id/4c	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/4c/4c524ce07a15def571ffc297900fd6f7719b09	23	41471	1768521600		4096	root	root	../../../../usr/bin/sum
+@@FILE@@	/usr/lib/.build-id/54	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/54/3824598ec42aee0eb6d691a8da3cf3a8ee2870	25	41471	1768521600		4096	root	root	../../../../usr/bin/rmdir
+@@FILE@@	/usr/lib/.build-id/54/d0c688029ab924af59a786c4e7f31bbdb90ee5	25	41471	1768521600		4096	root	root	../../../../usr/bin/paste
+@@FILE@@	/usr/lib/.build-id/56	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/56/3cf49857a8dec27d2e5cbff09e0ae46a018765	28	41471	1768521600		4096	root	root	../../../../usr/bin/readlink
+@@FILE@@	/usr/lib/.build-id/59	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/59/5744bd2a3c4d47f61e1599f31dd2cd7aca94db	26	41471	1768521600		4096	root	root	../../../../usr/bin/groups
+@@FILE@@	/usr/lib/.build-id/5b	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/5b/2377ff57a5b82adab142af6ef7f0c72c585acf	24	41471	1768521600		4096	root	root	../../../../usr/bin/link
+@@FILE@@	/usr/lib/.build-id/5c	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/5c/e6cfeb6445f3f5d6c104ecd2cad089d4319113	24	41471	1768521600		4096	root	root	../../../../usr/bin/arch
+@@FILE@@	/usr/lib/.build-id/5e	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/5e/b94f474fb3efdac27bec2d0ce6abe0089c0293	25	41471	1768521600		4096	root	root	../../../../usr/bin/touch
+@@FILE@@	/usr/lib/.build-id/5f	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/5f/58945619453a52f76d29617f702da507123b25	25	41471	1768521600		4096	root	root	../../../../usr/bin/pinky
+@@FILE@@	/usr/lib/.build-id/5f/7bea475ab02c11ebbfd692775f9e16e6eb4e47	26	41471	1768521600		4096	root	root	../../../../usr/bin/base32
+@@FILE@@	/usr/lib/.build-id/5f/b0c33c076540c4a619cf449edc3dee4928b67e	23	41471	1768521600		4096	root	root	../../../../usr/bin/seq
+@@FILE@@	/usr/lib/.build-id/60	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/60/a7c37f04a51882dd18f651a9772637bdcc800b	26	41471	1768521600		4096	root	root	../../../../usr/bin/csplit
+@@FILE@@	/usr/lib/.build-id/64	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/64/edac43d1b91aa69d707f98ec5e5ab14afc5995	26	41471	1768521600		4096	root	root	../../../../usr/bin/mkfifo
+@@FILE@@	/usr/lib/.build-id/65	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/65/27b7c054c29c55c8b781a3715e8d36a5e70fd8	25	41471	1768521600		4096	root	root	../../../../usr/bin/cksum
+@@FILE@@	/usr/lib/.build-id/6c	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/6c/32c7b2ec7b702b35a9447dbc65d0293ed334da	22	41471	1768521600		4096	root	root	../../../../usr/bin/du
+@@FILE@@	/usr/lib/.build-id/6d	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/6d/e4ffa5d49babafdb1d4d4ae5bb2fb3dbf74715	29	41471	1768521600		4096	root	root	../../../../usr/bin/sha512sum
+@@FILE@@	/usr/lib/.build-id/6f	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/6f/2eb7947916f8f99622b5a5e277e2979a5f4868	27	41471	1768521600		4096	root	root	../../../../usr/bin/sha1sum
+@@FILE@@	/usr/lib/.build-id/75	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/75/3e8ba3888056ae662e45fa7580fca70ab78fe9	24	41471	1768521600		4096	root	root	../../../../usr/bin/tail
+@@FILE@@	/usr/lib/.build-id/77	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/77/bb61f8778d2c901eafd33700199a9c5a12d722	25	41471	1768521600		4096	root	root	../../../../usr/bin/shred
+@@FILE@@	/usr/lib/.build-id/78	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/78/db8c94dd7c5ee5f1118d028682751ec1905790	25	41471	1768521600		4096	root	root	../../../../usr/bin/false
+@@FILE@@	/usr/lib/.build-id/7d	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/7d/72013a8261f662e692ec3c647178d6ef01dab1	25	41471	1768521600		4096	root	root	../../../../usr/bin/chown
+@@FILE@@	/usr/lib/.build-id/86	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/86/84024a889e7c62609a3136b7d436cf8cf9f922	29	41471	1768521600		4096	root	root	../../../../usr/bin/sha224sum
+@@FILE@@	/usr/lib/.build-id/8c	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/8c/1a1a5beb2bf5c61efb7c8f7d1379e159572460	25	41471	1768521600		4096	root	root	../../../../usr/bin/nohup
+@@FILE@@	/usr/lib/.build-id/8f	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/8f/2bda4b03b2dde70e5bc838065f65e714f6c53b	27	41471	1768521600		4096	root	root	../../../../usr/bin/logname
+@@FILE@@	/usr/lib/.build-id/8f/c84fe281281a3aa2a0d32bc977b34d56a8051e	28	41471	1768521600		4096	root	root	../../../../usr/bin/realpath
+@@FILE@@	/usr/lib/.build-id/93	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/93/4400e85de2cb1bf0491367811011b4ae21ccf7	23	41471	1768521600		4096	root	root	../../../../usr/bin/env
+@@FILE@@	/usr/lib/.build-id/93/c615b157fe292809a8220919eefb7313278392	26	41471	1768521600		4096	root	root	../../../../usr/bin/stdbuf
+@@FILE@@	/usr/lib/.build-id/97	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/97/ff82bf0d3e4651fcc565b9a289136f26d9c856	24	41471	1768521600		4096	root	root	../../../../usr/bin/nice
+@@FILE@@	/usr/lib/.build-id/99	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/99/bd44671c70235894d603ae04120df9d91b3e76	25	41471	1768521600		4096	root	root	../../../../usr/bin/mknod
+@@FILE@@	/usr/lib/.build-id/9b	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/9b/50ffed5832f456249df709da3fb808ce0cf939	27	41471	1768521600		4096	root	root	../../../../usr/bin/dirname
+@@FILE@@	/usr/lib/.build-id/9e	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/9e/d7432a195953c7762f4544c1a4be3748f848aa	22	41471	1768521600		4096	root	root	../../../../usr/bin/pr
+@@FILE@@	/usr/lib/.build-id/a2	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a2/fe8b1c21103956ac11b10a54c5210e5b88eb9c	29	41471	1768521600		4096	root	root	../../../../usr/bin/dircolors
+@@FILE@@	/usr/lib/.build-id/a3	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a3/0e369eee3907aa0877b42dc8d6e35de81f4f38	26	41471	1768521600		4096	root	root	../../../../usr/bin/runcon
+@@FILE@@	/usr/lib/.build-id/a4	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a4/a855394b9c90088ed2e4d736cb81038af21bef	27	41471	1768521600		4096	root	root	../../../../usr/bin/pathchk
+@@FILE@@	/usr/lib/.build-id/a7	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a7/6d360cee57ab47260d9c37659c8447a909e228	26	41471	1768521600		4096	root	root	../../../../usr/bin/whoami
+@@FILE@@	/usr/lib/.build-id/a7/9e99079deacb2d1cbea7f582d0e9bf9e411c16	22	41471	1768521600		4096	root	root	../../../../usr/bin/cp
+@@FILE@@	/usr/lib/.build-id/a8	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a8/b5eca785200f3650b76f0b9f07bfefc1ac1ca1	22	41471	1768521600		4096	root	root	../../../../usr/bin/ln
+@@FILE@@	/usr/lib/.build-id/aa	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/aa/24d9af4d2424c699023606479dba6edd757470	23	41471	1768521600		4096	root	root	../../../../usr/bin/cut
+@@FILE@@	/usr/lib/.build-id/ab	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ab/a475ec311ede573ced0078bf480b4ad1310deb	25	41471	1768521600		4096	root	root	../../../../usr/bin/split
+@@FILE@@	/usr/lib/.build-id/ac	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ac/ef74422398a910f3354c3132de8be82a220a71	24	41471	1768521600		4096	root	root	../../../../usr/bin/shuf
+@@FILE@@	/usr/lib/.build-id/ad	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ad/9466f73fbde9aa730d5aeb9776d03385d48034	27	41471	1768521600		4096	root	root	../../../../usr/bin/timeout
+@@FILE@@	/usr/lib/.build-id/ad/ee2606c9dce24873b4c5e5cd30752f72658f6f	25	41471	1768521600		4096	root	root	../../../../usr/bin/chgrp
+@@FILE@@	/usr/lib/.build-id/b1	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/b1/6a0b3de574156ae9cda6b910ab59cacee4e3b7	24	41471	1768521600		4096	root	root	../../../../usr/bin/echo
+@@FILE@@	/usr/lib/.build-id/b1/a7c4d44ec894905479110c626587aecb6aca51	23	41471	1768521600		4096	root	root	../../../../usr/bin/dir
+@@FILE@@	/usr/lib/.build-id/b6	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/b6/cb478f9f9ba37bccb027fe1c3ea0745123834d	23	41471	1768521600		4096	root	root	../../../../usr/bin/cat
+@@FILE@@	/usr/lib/.build-id/ba	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ba/d6a5eb157b991659e523970ad2c01eba2c85e2	24	41471	1768521600		4096	root	root	../../../../usr/bin/test
+@@FILE@@	/usr/lib/.build-id/bb	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/bb/43fa98edebb352bd3b861ed751444639bcbec7	23	41471	1768521600		4096	root	root	../../../../usr/bin/ptx
+@@FILE@@	/usr/lib/.build-id/c0	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/c0/4c44fe2825e3152c30dbcad8b9eaecca74a2fc	22	41471	1768521600		4096	root	root	../../../../usr/bin/df
+@@FILE@@	/usr/lib/.build-id/c3	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/c3/70e97ec26ab0219862aa27f95d93daa2a9f2cc	22	41471	1768521600		4096	root	root	../../../../usr/bin/mv
+@@FILE@@	/usr/lib/.build-id/c5	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/c5/a997dbd2c433ab6c184ed48ad9f94a2f41b9a1	23	41471	1768521600		4096	root	root	../../../../usr/bin/fmt
+@@FILE@@	/usr/lib/.build-id/cc	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/cc/76592c104d06767e8203420542f8377c73f890	28	41471	1768521600		4096	root	root	../../../../usr/bin/truncate
+@@FILE@@	/usr/lib/.build-id/cd	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/cd/8ebf14fe567ac458e1da79fd1f54b1d2a1c4b0	22	41471	1768521600		4096	root	root	../../../../usr/bin/tr
+@@FILE@@	/usr/lib/.build-id/cf	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/cf/7dd198422810db0dde4fdc17d8b73021b0d7a0	24	41471	1768521600		4096	root	root	../../../../usr/bin/join
+@@FILE@@	/usr/lib/.build-id/d5	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/d5/d9e8475b9f852fec583c47d10dcf9f49bb0a9d	28	41471	1768521600		4096	root	root	../../../../usr/bin/unexpand
+@@FILE@@	/usr/lib/.build-id/d6	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/d6/12bb1cf9c20d730d2ade8c88ac40ec8996f433	22	41471	1768521600		4096	root	root	../../../../usr/bin/id
+@@FILE@@	/usr/lib/.build-id/d9	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/d9/974b92ea15ad4f04cf48b1e86ff959290ea6e4	29	41471	1768521600		4096	root	root	../../../../usr/bin/sha256sum
+@@FILE@@	/usr/lib/.build-id/de	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/de/20560bb21242cc22cb1d144ad4eb1a4ff49574	24	41471	1768521600		4096	root	root	../../../../usr/bin/vdir
+@@FILE@@	/usr/lib/.build-id/e0	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e0/19151038aa22422fd3c0eda240a9539c90ccfb	26	41471	1768521600		4096	root	root	../../../../usr/bin/base64
+@@FILE@@	/usr/lib/.build-id/e2	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e2/cbcbe20896d2d2d3b2bfdd39e1cf6916108861	22	41471	1768521600		4096	root	root	../../../../usr/bin/nl
+@@FILE@@	/usr/lib/.build-id/e4	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e4/dc907ee52122d1df02a3afe17ec9304bf9e0ac	22	41471	1768521600		4096	root	root	../../../../usr/bin/od
+@@FILE@@	/usr/lib/.build-id/e6	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e6/87f829fe928040f87829505a375ecb57bee38f	24	41471	1768521600		4096	root	root	../../../../usr/bin/uniq
+@@FILE@@	/usr/lib/.build-id/e8	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e8/a61d27e0f4c1b8a53696321fdc8b3eff39fddb	26	41471	1768521600		4096	root	root	../../../../usr/bin/unlink
+@@FILE@@	/usr/lib/.build-id/e9	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e9/c1b1ee253e0d1093b6dcbd38ccbc2c4dfbf1f4	25	41471	1768521600		4096	root	root	../../../../usr/bin/uname
+@@FILE@@	/usr/lib/.build-id/e9/cde39578cd702a3326557f34ac670eb4c236dc	46	41471	1768521600		4096	root	root	../../../../usr/libexec/coreutils/libstdbuf.so
+@@FILE@@	/usr/lib/.build-id/ef	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ef/b6899b9d9ee4cb0686c88b50caeff1f18dbd40	23	41471	1768521600		4096	root	root	../../../../usr/bin/tty
+@@FILE@@	/usr/lib/.build-id/f0	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f0/978c754de2414caad1e17251a98e28e0d6111d	24	41471	1768521600		4096	root	root	../../../../usr/bin/true
+@@FILE@@	/usr/lib/.build-id/f6	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f6/25345be5729431ff00f3bd0b889d7b5b208b0b	22	41471	1768521600		4096	root	root	../../../../usr/bin/rm
+@@FILE@@	/usr/lib/.build-id/f6/f9d2266def161e7b69b6453dc3b23bd560db0f	25	41471	1768521600		4096	root	root	../../../../usr/bin/b2sum
+@@FILE@@	/usr/lib/.build-id/f7	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f7/bef782fb4c4e8308977b43c7e6e91fb1031be1	24	41471	1768521600		4096	root	root	../../../../usr/bin/head
+@@FILE@@	/usr/lib/.build-id/f9	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f9/54d03b00730aad3ba63d0b817a7517e42c8d8e	21	41471	1768521600		4096	root	root	../../../../usr/bin/[
+@@FILE@@	/usr/lib/.build-id/fc	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/fc/c8cc4e93ff19ac7a714cc6aaec7bf3636ca2af	25	41471	1768521600		4096	root	root	../../../../usr/bin/chcon
+@@FILE@@	/usr/lib/.build-id/fd	0	16877	1768521600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/fd/a548ee78f8a0c2694d8142f70ba01503e44cfd	26	41471	1768521600		4096	root	root	../../../../usr/bin/hostid
+@@FILE@@	/usr/libexec/coreutils	0	16877	1768521600		0	root	root	
+@@FILE@@	/usr/libexec/coreutils/libstdbuf.so	11440	33261	1768521600	f4ebcc655f94033d153276f872f0bd443ff546491ad6c2d54c63f3a21082c46a	0	root	root	
+@@CL@@	1768564800
+@@CL@@	1759147200
+@@CL@@	1753272000
+@@CL@@	1751284800
+@@CL@@	1748433600
+@@CL@@	1747656000
+@@CL@@	1744200000
+@@CL@@	1740484800
+@@CL@@	1737374400
+@@CL@@	1737028800
+@@CL@@	1736683200
+@@CL@@	1731499200
+@@CL@@	1727438400
+@@CL@@	1724760000
+@@CL@@	1724241600
+@@CL@@	1721217600
+@@CL@@	1721044800
+@@CL@@	1721044800
+@@CL@@	1720526400
+@@CL@@	1720094400
+@@CL@@	1717502400
+@@CL@@	1712059200
+@@CL@@	1706529600
+@@CL@@	1706097600
+@@CL@@	1705665600
+@@CL@@	1705579200
+@@CL@@	1705579200
+@@PKG@@	fedora-release-common	43	26	(none)	noarch	MIT	21019	1769536043	1772261275	fedora-release-43-26.src.rpm	8
+@@FILE@@	/etc/fedora-release	25	41471	1769472000		0	root	root	../usr/lib/fedora-release
+@@FILE@@	/etc/issue	16	41471	1769472000		17	root	root	../usr/lib/issue
+@@FILE@@	/etc/issue.d	0	16877	1769472000		0	root	root	
+@@FILE@@	/etc/issue.net	20	41471	1769472000		17	root	root	../usr/lib/issue.net
+@@FILE@@	/etc/os-release	21	41471	1769472000		0	root	root	../usr/lib/os-release
+@@FILE@@	/etc/redhat-release	14	41471	1769472000		0	root	root	fedora-release
+@@FILE@@	/etc/swid	0	16877	1769472000		0	root	root	
+@@FILE@@	/etc/swid/swidtags.d	0	16877	1769472000		0	root	root	
+@@FILE@@	/etc/swid/swidtags.d/fedoraproject.org	42	41471	1769472000		0	root	root	../../../usr/lib/swidtag/fedoraproject.org
+@@FILE@@	/etc/system-release	14	41471	1769472000		0	root	root	fedora-release
+@@FILE@@	/etc/system-release-cpe	29	41471	1769472000		0	root	root	../usr/lib/system-release-cpe
+@@FILE@@	/usr/lib/fedora-release	32	33188	1769472000	f5b528d891d615335049fa1d2c36661e29355bfd87e6dc2c24224df904bdf8cd	0	root	root	
+@@FILE@@	/usr/lib/issue	25	33188	1769472000	cdf2c7a0ef9bdb27287bb35e415558e9af4ea3dd6a9debe898c1a3eb4c84a1f2	0	root	root	
+@@FILE@@	/usr/lib/issue.net	24	33188	1769472000	33d56eb721a284b3e8a9b36f97c952a85702b7fab04daebcea84d1db245cd04f	0	root	root	
+@@FILE@@	/usr/lib/rpm/macros.d/macros.dist	568	33188	1769472000	36cd7ca8e34b902e9e3d944a6a6b435784a5b9a658b5f89a6dcf0f66a3a33c0b	0	root	root	
+@@FILE@@	/usr/lib/swidtag/fedoraproject.org	0	16877	1769472000		0	root	root	
+@@FILE@@	/usr/lib/swidtag/fedoraproject.org/org.fedoraproject.Fedora-43.swidtag	996	33188	1769472000	8048958b778caf18f547a100e484d4b32e96297e14f34af616770c57d38b8b43	0	root	root	
+@@FILE@@	/usr/lib/system-release-cpe	31	33188	1769472000	65a4b1f2b8534a79650dfa445503025b0a8f86ed06dfa774cbfd69fc62316aa1	0	root	root	
+@@FILE@@	/usr/lib/systemd/system-preset	0	16877	1769472000		0	root	root	
+@@FILE@@	/usr/lib/systemd/system-preset/85-display-manager.preset	369	33188	1769472000	526487ad6b8b95af51449f5c1490b75388213c71d4c4c660d260fa973a01fe1b	0	root	root	
+@@FILE@@	/usr/lib/systemd/system-preset/90-default.preset	14831	33188	1769472000	70828c5d0533d0b473c1fff910b0ce07465023ed5099ba94312e067dbf4bd74e	0	root	root	
+@@FILE@@	/usr/lib/systemd/system-preset/99-default-disable.preset	10	33188	1769472000	3127b197b9eae62eb84eeed69b0413419612238332006183e36a3fba89578378	0	root	root	
+@@FILE@@	/usr/lib/systemd/user-preset	0	16877	1769472000		0	root	root	
+@@FILE@@	/usr/lib/systemd/user-preset/90-default-user.preset	1523	33188	1769472000	73c60a7416bc6aa2b2ab360b25c8320163b409f08117aefad3899e26adf70d30	0	root	root	
+@@FILE@@	/usr/lib/systemd/user-preset/99-default-disable.preset	10	33188	1769472000	3127b197b9eae62eb84eeed69b0413419612238332006183e36a3fba89578378	0	root	root	
+@@FILE@@	/usr/share/dnf5/libdnf.conf.d/20-fedora-defaults.conf	61	33188	1769472000	3cd592db7aa6888d61e097241232125586947add172170c39a0c217984871696	0	root	root	
+@@FILE@@	/usr/share/licenses/fedora-release-common	0	16877	1769472000		0	root	root	
+@@FILE@@	/usr/share/licenses/fedora-release-common/Fedora-Legal-README.txt	1295	33188	1769472000	0914fc8af1eb8caba4af53f2a52a2cfa1fd72d0efc77c518c001bb6edfcbe177	128	root	root	
+@@FILE@@	/usr/share/licenses/fedora-release-common/LICENSE	1063	33188	1769472000	e98708047560db5a5bcf7495c3108709760cbf6202df7b216cbd7918725e7d0f	128	root	root	
+@@CL@@	1769515200
+@@CL@@	1760184000
+@@CL@@	1760184000
+@@CL@@	1759406400
+@@CL@@	1755691200
+@@CL@@	1754913600
+@@CL@@	1753358400
+@@CL@@	1753185600
+@@CL@@	1751976000
+@@CL@@	1750248000
+@@CL@@	1748260800
+@@CL@@	1745409600
+@@CL@@	1745409600
+@@CL@@	1744372800
+@@CL@@	1744113600
+@@CL@@	1744113600
+@@CL@@	1743681600
+@@CL@@	1743681600
+@@CL@@	1742644800
+@@CL@@	1741608000
+@@CL@@	1740484800
+@@CL@@	1739880000
+@@CL@@	1739880000
+@@CL@@	1738756800
+@@CL@@	1738324800
+@@CL@@	1737633600
+@@CL@@	1737547200
+@@CL@@	1737460800
+@@CL@@	1736424000
+@@CL@@	1735214400
+@@CL@@	1733227200
+@@CL@@	1733227200
+@@CL@@	1733140800
+@@CL@@	1730721600
+@@CL@@	1730635200
+@@CL@@	1729252800
+@@CL@@	1729252800
+@@CL@@	1728388800
+@@CL@@	1724068800
+@@CL@@	1724068800
+@@CL@@	1723377600
+@@CL@@	1722772800
+@@CL@@	1722772800
+@@CL@@	1722772800
+@@CL@@	1722254400
+@@CL@@	1720440000
+@@CL@@	1720440000
+@@CL@@	1718971200
+@@CL@@	1716984000
+@@CL@@	1716984000
+@@CL@@	1716897600
+@@CL@@	1713441600
+@@CL@@	1712923200
+@@CL@@	1709121600
+@@CL@@	1709121600
+@@CL@@	1709121600
+@@CL@@	1708948800
+@@CL@@	1708948800
+@@CL@@	1708084800
+@@CL@@	1707825600
+@@CL@@	1707825600
+@@CL@@	1707480000
+@@CL@@	1707393600
+@@CL@@	1707220800
+@@PKG@@	glibc	2.42	10.fc43	(none)	x86_64	LGPL-2.1-or-later AND SunPro AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later WITH GNU-compiler-exception AND GPL-2.0-only AND ISC AND LicenseRef-Fedora-Public-Domain AND HPND AND CMU-Mach AND LGPL-2.0-or-later AND Unicode-3.0 AND GFDL-1.1-or-later AND GPL-1.0-or-later AND FSFUL AND MIT AND Inner-Net-2.0 AND X11 AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GFDL-1.3-only AND GFDL-1.1-only	7014437	1771428496	1772261275	glibc-2.42-10.fc43.src.rpm	8
+@@FILE@@	/etc/gai.conf	0	33188	1771372800		89	root	root	
+@@FILE@@	/etc/ld.so.cache	0	33188	1771372800		89	root	root	
+@@FILE@@	/etc/ld.so.conf	28	33188	1771372800	239c865e4c0746a01f82b03d38d620853bab2a2ba8e81d6f5606c503e0ea379f	17	root	root	
+@@FILE@@	/etc/ld.so.conf.d	0	16877	1771372800		0	root	root	
+@@FILE@@	/etc/rpc	1634	33188	1771372800	3b24a975dcde688434258566813a83ce256a4c73efd7a8a9c3998327b0b4de68	17	root	root	
+@@FILE@@	/usr/bin/iconvconfig	32544	33261	1771372800	02cd0a57ed5f325a5ab6a0e0fd10411f9e3cfb73e646c1587162db8ad897977c	0	root	root	
+@@FILE@@	/usr/bin/ldconfig	1027552	33261	1771372800	2a66052b318205788dc90636c4902997b8c19f2f0dfe82c321db82ee6f281c80	0	root	root	
+@@FILE@@	/usr/lib/.build-id	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/02	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/02/683e2d414931ca42aa8a2b86a79c31d86eed02	51	41471	1771372800		4096	root	root	../../../../usr/libexec/getconf/POSIX_V7_LP64_OFF64
+@@FILE@@	/usr/lib/.build-id/02/683e2d414931ca42aa8a2b86a79c31d86eed02.1	51	41471	1771372800		4096	root	root	../../../../usr/libexec/getconf/POSIX_V6_LP64_OFF64
+@@FILE@@	/usr/lib/.build-id/02/683e2d414931ca42aa8a2b86a79c31d86eed02.2	47	41471	1771372800		4096	root	root	../../../../usr/libexec/getconf/XBS5_LP64_OFF64
+@@FILE@@	/usr/lib/.build-id/04	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/04/3bfa4c9eb91f0326dcbdd69d79223df664160f	41	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/ISO8859-15.so
+@@FILE@@	/usr/lib/.build-id/1e	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/1e/cad4fb5384a11acc02f486833d10aba88020cc	34	41471	1771372800		4096	root	root	../../../../usr/lib64/libutil.so.1
+@@FILE@@	/usr/lib/.build-id/27	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/27/641847078dc15e8a3cbd090af57bbf7072d999	31	41471	1771372800		4096	root	root	../../../../usr/bin/iconvconfig
+@@FILE@@	/usr/lib/.build-id/30	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/30/d6bcc4f45857e36ea16e9bdfa3f078902a6679	37	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/CP1252.so
+@@FILE@@	/usr/lib/.build-id/35	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/35/4b5e7e3f76e7e248ac37ba7373dc0c9160bdea	31	41471	1771372800		4096	root	root	../../../../usr/lib64/libm.so.6
+@@FILE@@	/usr/lib/.build-id/35/eabd0c6c8f5ea41d01a11653a6490eaea8af98	40	41471	1771372800		4096	root	root	../../../../usr/lib64/libnss_compat.so.2
+@@FILE@@	/usr/lib/.build-id/42	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/42/89c54938d12e1c4d48bd18a8c84fdf5724a0bd	37	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/UTF-16.so
+@@FILE@@	/usr/lib/.build-id/45	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/45/fc5798274423d1eba6dac02e5153c52422c9b7	42	41471	1771372800		4096	root	root	../../../../usr/lib64/audit/sotruss-lib.so
+@@FILE@@	/usr/lib/.build-id/49	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/49/7d6957eb7b9a4fad99d23f2287da38fb43568f	37	41471	1771372800		4096	root	root	../../../../usr/lib64/libpcprofile.so
+@@FILE@@	/usr/lib/.build-id/61	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/61/e13d3ead95694132e64b68b28c135c81addc20	37	41471	1771372800		4096	root	root	../../../../usr/lib64/libnss_dns.so.2
+@@FILE@@	/usr/lib/.build-id/66	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/66/4362413009c24c1660da691d00a4221c48b99b	37	41471	1771372800		4096	root	root	../../../../usr/lib64/libpthread.so.0
+@@FILE@@	/usr/lib/.build-id/75	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/75/d40f73b2d901cef01f1036d273919abb26f43d	37	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/UTF-32.so
+@@FILE@@	/usr/lib/.build-id/89	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/89/2c0d9375724ae221adbe32553c4f98884b8f41	36	41471	1771372800		4096	root	root	../../../../usr/lib64/libresolv.so.2
+@@FILE@@	/usr/lib/.build-id/a7	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a7/a85b0c15098e6ec876ba4aa2a4df5ccb208b02	36	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/UTF-7.so
+@@FILE@@	/usr/lib/.build-id/aa	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/aa/071431f0dd59dd3d4f88de8b2775ef2e1dfa9f	33	41471	1771372800		4096	root	root	../../../../usr/lib64/libanl.so.1
+@@FILE@@	/usr/lib/.build-id/ab	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ab/6ca7950cef83057e20989dc2c44ad334d2fabc	42	41471	1771372800		4096	root	root	../../../../usr/lib64/libBrokenLocale.so.1
+@@FILE@@	/usr/lib/.build-id/b1	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/b1/53f014fc1317946a89e23f2ab42529a6765b69	40	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/ISO8859-1.so
+@@FILE@@	/usr/lib/.build-id/c7	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/c7/b554dded54d9e3eb6ee560f22cb3d093b99826	28	41471	1771372800		4096	root	root	../../../../usr/bin/ldconfig
+@@FILE@@	/usr/lib/.build-id/d1	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/d1/e0a5046e9de6f7fe045631eaf3837c289083f2	38	41471	1771372800		4096	root	root	../../../../usr/lib64/gconv/UNICODE.so
+@@FILE@@	/usr/lib/.build-id/d3	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/d3/36fa5c10aaf17333a8aead28bcacb4bd8ba319	42	41471	1771372800		4096	root	root	../../../../usr/lib64/ld-linux-x86-64.so.2
+@@FILE@@	/usr/lib/.build-id/d3/40eda09047692fd257c59dc9462795c8d520d6	39	41471	1771372800		4096	root	root	../../../../usr/lib64/libnss_files.so.2
+@@FILE@@	/usr/lib/.build-id/d5	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/d5/c2ca1e2dacd5ddb5ea2086b91f53a313d75566	39	41471	1771372800		4096	root	root	../../../../usr/lib64/libthread_db.so.1
+@@FILE@@	/usr/lib/.build-id/da	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/da/ff63209b801a0a1c00cb8202683eb91c332fc0	32	41471	1771372800		4096	root	root	../../../../usr/lib64/librt.so.1
+@@FILE@@	/usr/lib/.build-id/ee	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ee/9258590e0351abbf810d1d7c01626dc42f0a02	34	41471	1771372800		4096	root	root	../../../../usr/lib64/libmvec.so.1
+@@FILE@@	/usr/lib/.build-id/f3	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f3/37a7477da057515ee5041426d7f66c4aa28a99	32	41471	1771372800		4096	root	root	../../../../usr/lib64/libdl.so.2
+@@FILE@@	/usr/lib/.build-id/ff	0	16877	1771372800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ff/0267465bc3d76e21003b3bc5598fd5ee63e261	31	41471	1771372800		4096	root	root	../../../../usr/lib64/libc.so.6
+@@FILE@@	/usr/lib64/audit	0	16877	1771372800		0	root	root	
+@@FILE@@	/usr/lib64/audit/sotruss-lib.so	11440	33261	1771372800	135e86515fdb7040883c065bda6fa7251301835c6788023cabb1b65ac63b7ba0	0	root	root	
+@@FILE@@	/usr/lib64/gconv	0	16877	1771372800		0	root	root	
+@@FILE@@	/usr/lib64/gconv/CP1252.so	19584	33261	1771372800	e483436abdf6c488f4d1f0c9dd9b69ceeb093acfa301b63b4901aeedbd402656	0	root	root	
+@@FILE@@	/usr/lib64/gconv/ISO8859-1.so	15488	33261	1771372800	9a790cfbb2bac7963b4486e4c5d7ed8e32602057cf9e6aa19d080ccbeee67df6	0	root	root	
+@@FILE@@	/usr/lib64/gconv/ISO8859-15.so	15496	33261	1771372800	b10473beeaf20f89695460b340092ce903a68cfb019d1eb98ca337815c5bc52c	0	root	root	
+@@FILE@@	/usr/lib64/gconv/UNICODE.so	15496	33261	1771372800	adc49fdc11a2990fdf3e27b397ed07ce465d5fceb822436adbaeb400155474cc	0	root	root	
+@@FILE@@	/usr/lib64/gconv/UTF-16.so	15504	33261	1771372800	279964fb5782bc2b09ff2529e693e3f1d0c57a1ec1ba8955794177a648586579	0	root	root	
+@@FILE@@	/usr/lib64/gconv/UTF-32.so	15504	33261	1771372800	13a961fb5d06046b782668a1a3fb7586add81a73097ed2951fb8b155243a3e96	0	root	root	
+@@FILE@@	/usr/lib64/gconv/UTF-7.so	23768	33261	1771372800	6824c995040cb95d5631b9057b4e9029fd20fdac41519cb52d280568814a429e	0	root	root	
+@@FILE@@	/usr/lib64/gconv/gconv-modules	3916	33188	1771372800	ca370833ebc1ec0283a3e6b66cea63d5b1d2e118272e963d2a25c891564aa89d	17	root	root	
+@@FILE@@	/usr/lib64/gconv/gconv-modules.cache	0	33188	1771372800	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	0	root	root	
+@@FILE@@	/usr/lib64/gconv/gconv-modules.d	0	16877	1771372800		0	root	root	
+@@FILE@@	/usr/lib64/ld-linux-x86-64.so.2	983592	33261	1771372800	e6bc713db9c5095018bd005c14257c4010eb24aaa070bca618513c99e9a3a9cf	0	root	root	
+@@FILE@@	/usr/lib64/libBrokenLocale.so.1	11480	33261	1771372800	fc1d7c7b13bab9fdd7a366dc22a8d4f95d39a80c48a2eea2db3a8d99343cdfe0	0	root	root	
+@@FILE@@	/usr/lib64/libanl.so.1	11384	33261	1771372800	380db20ff3c1026a6b4f9d81ead680c53e18d7b26ce0693790355da6bc90f405	0	root	root	
+@@FILE@@	/usr/lib64/libc.so.6	2455432	33261	1771372800	bccd4fe0b497c9517ed1f8c2877313f21d98351674e25b8afa43ce8b6242380e	0	root	root	
+@@FILE@@	/usr/lib64/libdl.so.2	11384	33261	1771372800	2eca203f7c2971669efef9028a40aee95a77f5f5e7585b7e963580ecb18cf15a	0	root	root	
+@@FILE@@	/usr/lib64/libm.so.6	1013376	33261	1771372800	c840c6e9a75437d97d84cefb9b8edc5357e68b773b923ed6f04d5f15cf9ea1e7	0	root	root	
+@@FILE@@	/usr/lib64/libmvec.so.1	1023568	33261	1771372800	799bf355397a927b730e3bf2a82581161819237643921cabe28688dc60bd075c	0	root	root	
+@@FILE@@	/usr/lib64/libnss_compat.so.2	41176	33261	1771372800	d6cf169a9376d57aa1a920c70ce0ac658e1b22f8e02cb8e8963fe850ed35f7eb	0	root	root	
+@@FILE@@	/usr/lib64/libnss_dns.so.2	11288	33261	1771372800	78135b588ca6158a1b2ad7c12c6a7238b7736c2259c9edc02f73d35058a830aa	0	root	root	
+@@FILE@@	/usr/lib64/libnss_files.so.2	11288	33261	1771372800	2b81018437a8ee415b8cc1985fbdc283df3ab3f9df85e96737a35cdf33886374	0	root	root	
+@@FILE@@	/usr/lib64/libpcprofile.so	11384	33261	1771372800	b4a74a311e4ba3d2609666bc92e8e7ae8fb41092a1cfc2a207457892581d9d0c	0	root	root	
+@@FILE@@	/usr/lib64/libpthread.so.0	11400	33261	1771372800	a8a900170f4f7a372aa8c07c53c7234def2359fe4c9f562c53922156b21fa630	0	root	root	
+@@FILE@@	/usr/lib64/libresolv.so.2	61904	33261	1771372800	90aef466c81cfa7bf52683cab640908150535ee69fa4833dedd96c173f19f0fc	0	root	root	
+@@FILE@@	/usr/lib64/librt.so.1	11544	33261	1771372800	fdc18564ec14413c6434a9359d0c54d49e38d1d9362e212f1eebf7429a8f134d	0	root	root	
+@@FILE@@	/usr/lib64/libthread_db.so.1	45680	33261	1771372800	bb53f6dafb4138b3f7f0d8ec8b1bddcb2d70c741b33417463ea7799f0ae1be44	0	root	root	
+@@FILE@@	/usr/lib64/libutil.so.1	11376	33261	1771372800	9c412d07f36288d88475e8961adc55a072667d95cb860f8ab1e22b8b08b63fcb	0	root	root	
+@@FILE@@	/usr/libexec/getconf	0	16877	1771372800		0	root	root	
+@@FILE@@	/usr/libexec/getconf/POSIX_V6_LP64_OFF64	23848	33261	1771372800	3108705e93a795ba43087292c3c4b455b4e712f2e473fec62c0a871bf1709eec	0	root	root	
+@@FILE@@	/usr/libexec/getconf/POSIX_V7_LP64_OFF64	23848	33261	1771372800	3108705e93a795ba43087292c3c4b455b4e712f2e473fec62c0a871bf1709eec	0	root	root	
+@@FILE@@	/usr/libexec/getconf/XBS5_LP64_OFF64	23848	33261	1771372800	3108705e93a795ba43087292c3c4b455b4e712f2e473fec62c0a871bf1709eec	0	root	root	
+@@FILE@@	/usr/share/licenses/glibc	0	16877	1771372800		0	root	root	
+@@FILE@@	/usr/share/licenses/glibc/COPYING	18092	33188	1771372800	8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643	128	root	root	
+@@FILE@@	/usr/share/licenses/glibc/COPYING.LIB	26530	33188	1771372800	dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551	128	root	root	
+@@FILE@@	/usr/share/licenses/glibc/LICENSES	19665	33188	1771372800	b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce	128	root	root	
+@@FILE@@	/var/cache/ldconfig	0	16832	1771372800		0	root	root	
+@@FILE@@	/var/cache/ldconfig/aux-cache	0	33152	1771372800		89	root	root	
+@@CL@@	1771416000
+@@CL@@	1769169600
+@@CL@@	1769169600
+@@CL@@	1768305600
+@@CL@@	1768219200
+@@CL@@	1765800000
+@@CL@@	1755604800
+@@CL@@	1754654400
+@@CL@@	1754049600
+@@CL@@	1753876800
+@@CL@@	1753272000
+@@CL@@	1752840000
+@@CL@@	1752840000
+@@CL@@	1752753600
+@@CL@@	1750593600
+@@CL@@	1750420800
+@@CL@@	1750420800
+@@CL@@	1750334400
+@@CL@@	1750161600
+@@CL@@	1748606400
+@@CL@@	1748260800
+@@CL@@	1747137600
+@@CL@@	1746100800
+@@CL@@	1745582400
+@@CL@@	1744632000
+@@CL@@	1744200000
+@@CL@@	1743681600
+@@CL@@	1743508800
+@@CL@@	1742904000
+@@CL@@	1742472000
+@@CL@@	1741953600
+@@CL@@	1741348800
+@@CL@@	1740484800
+@@CL@@	1740052800
+@@PKG@@	langpacks-core-en	4.2	5.fc43	(none)	noarch	GPL-2.0-or-later	398	1753387419	1772289257	langpacks-4.2-5.fc43.src.rpm	8
+@@FILE@@	/usr/share/metainfo/org.fedoraproject.LangPack-Core-en.metainfo.xml	398	33188	1753315200	d0ba061c715c73b91d2be66ab40adfab510ed4e69cf5d40970733e211de38ce6	0	root	root	
+@@CL@@	1753358400
+@@CL@@	1737460800
+@@CL@@	1737115200
+@@CL@@	1731585600
+@@CL@@	1729598400
+@@CL@@	1723550400
+@@CL@@	1721217600
+@@CL@@	1718798400
+@@CL@@	1717761600
+@@CL@@	1714046400
+@@CL@@	1706875200
+@@CL@@	1706184000
+@@CL@@	1705838400
+@@CL@@	1692792000
+@@CL@@	1691755200
+@@CL@@	1691150400
+@@CL@@	1690459200
+@@PKG@@	perl-POSIX	2.23	521.fc43	0	x86_64	GPL-1.0-or-later OR Artistic-1.0-Perl	235036	1770736066	1772289257	perl-5.42.0-521.fc43.src.rpm	8
+@@FILE@@	/usr/lib/.build-id	0	16877	1770681600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a5	0	16877	1770681600		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a5/e769bcd674c941db437989a7af84ac488fb4d3	47	41471	1770681600		4096	root	root	../../../../usr/lib64/perl5/auto/POSIX/POSIX.so
+@@FILE@@	/usr/lib64/perl5/POSIX.pm	20445	33188	1770681600	0323a1dc79dd9ebdf63bfde2e6e68e19213d16e25c0bc66ed92030b5238d1be6	0	root	root	
+@@FILE@@	/usr/lib64/perl5/POSIX.pod	84106	33188	1770681600	1155452cdd10917864b2b7199ba95be90d3bfc683829bbd7d810745b054a3643	0	root	root	
+@@FILE@@	/usr/lib64/perl5/auto/POSIX	0	16877	1770681600		0	root	root	
+@@FILE@@	/usr/lib64/perl5/auto/POSIX/POSIX.so	102288	33261	1770681600	dcf3e7840588136985df80b9ba69f2f273d230f104b5eeaefd7abfa008d8d9da	0	root	root	
+@@FILE@@	/usr/share/man/man3/POSIX.3pm.gz	28150	33188	1770681600	d36b1acd366d511084075f261231834671ea1d005e0dc55adf66791b97a83b5c	2	root	root	
+@@CL@@	1770724800
+@@CL@@	1753444800
+@@CL@@	1751976000
+@@CL@@	1751889600
+@@CL@@	1744632000
+@@CL@@	1744632000
+@@CL@@	1737374400
+@@CL@@	1737115200
+@@CL@@	1736424000
+@@CL@@	1728993600
+@@CL@@	1721736000
+@@CL@@	1721304000
+@@CL@@	1718193600
+@@CL@@	1718020800
+@@CL@@	1713355200
+@@PKG@@	rpm	6.0.1	1.fc43	(none)	x86_64	GPL-2.0-or-later	3279537	1765445620	1772261278	rpm-6.0.1-1.fc43.src.rpm	8
+@@FILE@@	/etc/rpm	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/bin/rpm	20440	33261	1765411200	e2a05a7f8b7e8266dd20e69a132d4ac3073d41290c3ec9fda099c9b50b14a336	0	root	root	
+@@FILE@@	/usr/bin/rpm2archive	24280	33261	1765411200	4d135e2ba4b89e89425f90f3bb080ca5eb8c747125ac51b7f484cb17fc302b9b	0	root	root	
+@@FILE@@	/usr/bin/rpm2cpio	11	41471	1765411200		0	root	root	rpm2archive
+@@FILE@@	/usr/bin/rpmdb	16432	33261	1765411200	e8212c75b47a1b929cf345ad132b0b0ca2ea48d4ffe3dca3bbfedd5bdc1bc475	0	root	root	
+@@FILE@@	/usr/bin/rpmkeys	16680	33261	1765411200	919cdac77c899ab3254ec4e1f0173e99bb691a6a296f559930ef8ca0fe3609c4	0	root	root	
+@@FILE@@	/usr/bin/rpmquery	3	41471	1765411200		0	root	root	rpm
+@@FILE@@	/usr/bin/rpmsort	15992	33261	1765411200	7e04b761cfbf1f3c57da311303d9bb4cf9e6766cb08f2ccaadea3c5c71ad67c2	0	root	root	
+@@FILE@@	/usr/bin/rpmverify	3	41471	1765411200		0	root	root	rpm
+@@FILE@@	/usr/lib/.build-id	0	16877	1765411200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/18	0	16877	1765411200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/18/a6d8d8a382dd23cccf79b02565dbc524f10142	31	41471	1765411200		4096	root	root	../../../../usr/bin/rpm2archive
+@@FILE@@	/usr/lib/.build-id/2f	0	16877	1765411200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/2f/dee8a29c35165b51586f5c8829c8d7fdb06410	27	41471	1765411200		4096	root	root	../../../../usr/bin/rpmsort
+@@FILE@@	/usr/lib/.build-id/59	0	16877	1765411200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/59/8411701e22fe25f461db61f5087cbd04ec4c91	25	41471	1765411200		4096	root	root	../../../../usr/bin/rpmdb
+@@FILE@@	/usr/lib/.build-id/62	0	16877	1765411200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/62/69550df4208be7ad9a31b85cc0a8074e759ae5	27	41471	1765411200		4096	root	root	../../../../usr/bin/rpmkeys
+@@FILE@@	/usr/lib/.build-id/8b	0	16877	1765411200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/8b/3d213c3183adc0ec17b358edd25c4d1ca4cad2	23	41471	1765411200		4096	root	root	../../../../usr/bin/rpm
+@@FILE@@	/usr/lib/rpm	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/fileattrs	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/lua	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/macros	47499	33188	1765411200	9213130c5a657851b66fb16d3644f8bb0a45f727d7a51113a906afc4c1f7266e	0	root	root	
+@@FILE@@	/usr/lib/rpm/macros.d	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/aarch64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/aarch64-linux/macros	2832	33188	1765411200	444b79d56230b1bc9f6c1c3f6a9fbd8b31fc1ad708407eefb944620d75c306f8	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alpha-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alpha-linux/macros	2831	33188	1765411200	35c7d8c8efb068783383c9c93b40c3a5f49386b71b972e0d53db51290f47e21a	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev5-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev5-linux/macros	2842	33188	1765411200	e2cc16a271123b730bd83a27431c9a6ed9b35f225b7c3b31adb6262a48a9756e	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev56-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev56-linux/macros	2843	33188	1765411200	02504582c5cd353954d2d35b87b4f97ceab4fe19c90fa93a0838f321d813e811	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev6-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev6-linux/macros	2842	33188	1765411200	350dbe7c8f46508fb9f075f67927d6951caeacbd61b642e6aff9a401e29251be	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev67-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphaev67-linux/macros	2843	33188	1765411200	b5bc5fca09d432e63a9c36341083cba9c555be79f5e00ee8648686282a4a8c42	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphapca56-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/alphapca56-linux/macros	2844	33188	1765411200	be26776f6721f4f7b429869826f4667bea6efc97437869575149107d07e1728d	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/amd64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/amd64-linux/macros	2828	33188	1765411200	1487d166dda20c9ebd0f88369f8e639d7f6107c311591977a8eac7aadfd0907f	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv3l-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv3l-linux/macros	2834	33188	1765411200	80c1e70595bb27a0f97199ff2f4bcd98a45322f9224865cc1dcde534ce4366ea	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv4b-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv4b-linux/macros	2834	33188	1765411200	29283eddc6fd809f1e26d4845f4f684e8f5028a85aa385abf82fd4da634425f9	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv4l-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv4l-linux/macros	2834	33188	1765411200	35094a77f010e832c9071d016145d37798a38fca7463dbc7467c77abbdda200c	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv5tejl-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv5tejl-linux/macros	2839	33188	1765411200	dabb02aa980273b46fe8b87de42af79b3f014070d814ee6aa3947d17db62e5fe	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv5tel-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv5tel-linux/macros	2838	33188	1765411200	67dd5346fc8bcc81d73d8e158db64110063ef3a01be3d07b598f731bce423f45	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv5tl-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv5tl-linux/macros	2836	33188	1765411200	6c4732b828e347183177bac0b3204165315ec151955df8d86884bff4c40a2ba9	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv6hl-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv6hl-linux/macros	2862	33188	1765411200	9e8564c538b45261643920ab61cf760e96714d342ea2284fc1ee9ba4508d9e3f	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv6l-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv6l-linux/macros	2834	33188	1765411200	71b64ffd7e5051a2ac26ea55ea6d5ed6747ebf52cd8523ab94fed75d083e0393	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv7hl-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv7hl-linux/macros	2870	33188	1765411200	d55e4f699c897532eda7bf6fc52c3e982a8a9565b78452d4f1864b5e539abf65	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv7hnl-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv7hnl-linux/macros	2865	33188	1765411200	b049d62d886225e2615d8b01b10cacf5a53a9734bdaf499b882c45e539a18242	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv7l-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv7l-linux/macros	2834	33188	1765411200	d2432c670f6f43b5c71d2c03e7f583ee74c38892589aa8f57311af9d9d219cc7	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv8hl-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv8hl-linux/macros	2866	33188	1765411200	6244ec13d42e61fb7cef55eaa4268708ee1a0ca038c7332d20b64971fec86655	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv8l-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/armv8l-linux/macros	2836	33188	1765411200	76e3da87b604aece26db1aa6a7ef50f023dfce3461930c89bf2ad4bae0cc40fa	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/athlon-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/athlon-linux/macros	2834	33188	1765411200	f9c97934bca49a1ebc69c47164add5b17983837f2db730c8518bb5d1103897ca	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k-linux/macros	2846	33188	1765411200	87cb6e9aa1c6885e3532b92fe7c8ed8c184783005301de27ac3833f1ab834ece	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k16c-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k16c-linux/macros	2847	33188	1765411200	f6a4d123c6caaafa10b30e878402238fd5f7e48ed8e855598777f56a2f21a55b	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k1cp-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k1cp-linux/macros	2847	33188	1765411200	dc0db04c686dbd79db02b468b4febe3412591f6af3683556652d6962d6de863d	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k2c3-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k2c3-linux/macros	2847	33188	1765411200	a0890b91af2d0a5b632ede08308e1b1798d0c42a9280c1911b2b784c0e1c42b4	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k8c-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k8c-linux/macros	2846	33188	1765411200	696b50ed61b7355547b0c77e8d0799efbc545d3537235f5b0688093ddf52a334	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k8c2-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2k8c2-linux/macros	2847	33188	1765411200	dda846d5ecbca289dc4e70f1d728dcd700d5dcf2ee271e13f5587b680d2a1839	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2kv4-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2kv4-linux/macros	2846	33188	1765411200	d51700dd3f198b3b889e503d4f0945765241f3050a065d4c0234789425767356	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2kv5-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2kv5-linux/macros	2846	33188	1765411200	672fea6ef594cd528d54814d9f9d2ab68fae013462fd6929e1ffc91e221719ec	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2kv6-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/e2kv6-linux/macros	2846	33188	1765411200	d863e07f340300ecd127aedee76838908d229434593bd8abcf1135a37605d371	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/geode-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/geode-linux/macros	2838	33188	1765411200	0c9c66c7cc1ac6f1ab9d760b8f798d0655cbcb73e7d516bf7e0c5e9430cda4a1	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i386-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i386-linux/macros	2844	33188	1765411200	56b5079c2c82372e22de22f2c0a7f83c0474b350c8874b53f907a85400489397	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i486-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i486-linux/macros	2832	33188	1765411200	28e7ecc9e29468132a59c3832e49fb18d7c77d42848d9c7917923c50980d6ee9	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i586-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i586-linux/macros	2832	33188	1765411200	69abe837ec4ffe578f2e44ff5f949a48116dae33a61ea31572a04396aa5bc653	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i686-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/i686-linux/macros	2832	33188	1765411200	3f76b8431ea7203157a3ee1ae4fc6ca2272088f74f60eafad28d1ffa94325dd3	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ia32e-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ia32e-linux/macros	2828	33188	1765411200	1487d166dda20c9ebd0f88369f8e639d7f6107c311591977a8eac7aadfd0907f	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ia64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ia64-linux/macros	2819	33188	1765411200	da2686a45903979bc519f8030db66fdb8936c8ad6a3a01870f1777f207179142	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/loongarch64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/loongarch64-linux/macros	2844	33188	1765411200	a7219f77de863a4d81d193398fae522bfda7be6306ca18819930ac1126fe9183	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/m68k-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/m68k-linux/macros	2870	33188	1765411200	12c42d255880adf626857ea4090c5100c9e0ed18b299c082cfa25f7627443087	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips-linux/macros	2821	33188	1765411200	0cbe4c0fe0e146e652409038ffe4745562fdf405e11921d63789f54d89e7c978	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64-linux/macros	2829	33188	1765411200	d93c762123ae93ccfe8278f47b21391899b3e113e7937eba3b852cfc006f1b10	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64el-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64el-linux/macros	2833	33188	1765411200	2000e8c990e38776197989526b301395c8d658f62b08a54880d6a15943eb36c7	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64r6-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64r6-linux/macros	2835	33188	1765411200	d519f860c1cae8410999726b9e2a761ac33ff48ebfa564d8389caf9f10b625a8	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64r6el-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mips64r6el-linux/macros	2839	33188	1765411200	ef146a283a59c8c12610ce152f2127760573c7b58f8a6f18a03a50c37a27ace8	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mipsel-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mipsel-linux/macros	2825	33188	1765411200	a11532fe5f39ca4891e709669372ff9c4458cffa3164accdb85e17a9467fef91	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mipsr6-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mipsr6-linux/macros	2827	33188	1765411200	599c7e543b0d1dfd5af87e916b325744229b8fc14c5c19c830ce572c977556c6	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mipsr6el-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/mipsr6el-linux/macros	2831	33188	1765411200	45851d26557d7fac31f022b973e644e7e358e11b7fe6cb060517c35b32976f6d	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/noarch-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/noarch-linux/macros	2736	33188	1765411200	1dd3819c6c20d8843931b8a35d9ff475715166d0dc3de0115c412951c80628fc	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/pentium3-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/pentium3-linux/macros	2836	33188	1765411200	b07b1e9d55d787957643726e0bc69e5d94e0522fde01af2b3fdd86ce35d5e719	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/pentium4-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/pentium4-linux/macros	2836	33188	1765411200	452a18e8a9fef67f15edb86460c6d8c377eeea7669708de5e6505b85a3590c57	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc-linux/macros	2818	33188	1765411200	0086c34b4ea729af34f7f9ac08471d42727c9bca19a8532c6bc976d4bbd50420	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc32dy4-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc32dy4-linux/macros	2818	33188	1765411200	0086c34b4ea729af34f7f9ac08471d42727c9bca19a8532c6bc976d4bbd50420	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64-linux/macros	2826	33188	1765411200	3f902d92e5b511f524008eb5857af35e0f11a315c28ba20382f454f5e77d051e	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64iseries-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64iseries-linux/macros	2815	33188	1765411200	813f5949aa0a7b14ffcc64833f0a330dd4ed4dca029f2abf4d6ca88f77ca8d52	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64le-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64le-linux/macros	2830	33188	1765411200	0f2fad0435222fd71bade1804eb95eb214458555364d9261e44eba84aec581a1	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64p7-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64p7-linux/macros	2853	33188	1765411200	4576a4bcb5a4149ee91a74cabcaf33030953d0da2545ddec6e6e439805ee395e	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64pseries-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc64pseries-linux/macros	2815	33188	1765411200	813f5949aa0a7b14ffcc64833f0a330dd4ed4dca029f2abf4d6ca88f77ca8d52	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc8260-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc8260-linux/macros	2818	33188	1765411200	0086c34b4ea729af34f7f9ac08471d42727c9bca19a8532c6bc976d4bbd50420	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc8560-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppc8560-linux/macros	2818	33188	1765411200	0086c34b4ea729af34f7f9ac08471d42727c9bca19a8532c6bc976d4bbd50420	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppciseries-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppciseries-linux/macros	2818	33188	1765411200	0086c34b4ea729af34f7f9ac08471d42727c9bca19a8532c6bc976d4bbd50420	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppcpseries-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/ppcpseries-linux/macros	2818	33188	1765411200	0086c34b4ea729af34f7f9ac08471d42727c9bca19a8532c6bc976d4bbd50420	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/riscv64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/riscv64-linux/macros	2832	33188	1765411200	024d5c0465fae0fd51526295b303cf7c48e68e3d15b3d41dbef01692e53e6167	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/s390-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/s390-linux/macros	2821	33188	1765411200	2c200d3cc0cce0adeddff29f041c30472fff5da7b34f3ee9c95d7706677ebf88	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/s390x-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/s390x-linux/macros	2827	33188	1765411200	648b25cf97c3bc3c98b160db9b41e50e02d1b67ef5a178357745d6569fd92a00	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh-linux/macros	2812	33188	1765411200	6a1cfa8288edf976143d60e7bfb6f6a430d44a6ad0c193cd6c698e293bd2a5d0	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh3-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh3-linux/macros	2817	33188	1765411200	6cbfd388e51d3752ebeb5146c195a8f5a302168a085cc80c3a183c9ce2d37ac1	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh4-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh4-linux/macros	2824	33188	1765411200	ed21f419061afc7c8d00674fd2c03618ca33e2899140b4ab7f26a2d94b547ee7	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh4a-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sh4a-linux/macros	2826	33188	1765411200	a698d64300d62b47e2abc0764185efe78196d9dfad4e12e2b0bf71475c953b22	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparc-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparc-linux/macros	2847	33188	1765411200	f4917a76788ae671f09e1f90bc903aab16ccd59ebf1cac2bf27859bb90915f8a	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparc64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparc64-linux/macros	2855	33188	1765411200	ce71e043dd3a05bdbc8f196f7de552421b9eb4ef679a7b4929b4e05c4ac4200a	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparc64v-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparc64v-linux/macros	2852	33188	1765411200	555f3d1ac7aae67ca465806ab41a1ea012abbf46a0c30520d3447819d538aaee	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparcv8-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparcv8-linux/macros	2852	33188	1765411200	1f88bfdb237d2ea854105f2295e6bb1e54f155c42cb7ccb82737e60d71ad191b	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparcv9-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparcv9-linux/macros	2847	33188	1765411200	f4917a76788ae671f09e1f90bc903aab16ccd59ebf1cac2bf27859bb90915f8a	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparcv9v-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/sparcv9v-linux/macros	2844	33188	1765411200	e119ae60f970741fd70d68d5279dd29459c5c6ebdcf8c9059643b5286ca29dfb	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64-linux/macros	2828	33188	1765411200	1487d166dda20c9ebd0f88369f8e639d7f6107c311591977a8eac7aadfd0907f	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64_v2-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64_v2-linux/macros	2845	33188	1765411200	7c19c2a786073bac847c1144b97a3b1920af12c407b432c3379c581173a0095d	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64_v3-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64_v3-linux/macros	2845	33188	1765411200	1360bf8fac8d26421e603c47dd02c5a666de5abe598d4c80162c54b8c00e75b9	0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64_v4-linux	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/rpm/platform/x86_64_v4-linux/macros	2845	33188	1765411200	f8d6fcebc998675aaee9ca34dba90643f221fad4550a38b194b073af9fa8722d	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpm.daily	296	33188	1765374509	b98748f664b3245cb7f3d22927b541ee659c221094df7e4d7e5950b6d73eb37d	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpm.log	61	33188	1765374509	ed0a8b7f8ec41ea0d6d8d7ccdc698d216cd7a7154e77bbdaf8eb02bc4535ab0a	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpm.supp	688	33188	1765374509	d88d7b62b79bf754a47ba69d0997ae82c4f0e5ea6af3f8fe2e40ffb1fc3fe054	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpm2cpio.sh	1597	33261	1765374509	e23cd42e7200d3ac193d2d299ecf0fadda19f2306a9a232be71147be0c3cb31b	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpmdb_dump	41	33261	1765374509	bf09433a9284ba72a3e7e698d74f7d3873dab852d4aa4a0e1ef78b2a1711c96c	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpmdb_load	41	33261	1765374509	9e924a2590ec3c4322f07e24f1ed7f3aa16f13e2c38496a78f7ab873d238b27e	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpmpopt-6.0.1	12008	33188	1765411200	b476791958350096dc113e094fdb95145cdf0975f0fb3eda0da1b7d617dafff2	0	root	root	
+@@FILE@@	/usr/lib/rpm/rpmrc	20323	33188	1765411200	6cd0fd9f17438bf43d1c8f0d3b378afd773b416979111cf731a5d62537526045	0	root	root	
+@@FILE@@	/usr/lib/rpm/sysusers.sh	4036	33261	1765374509	27dcf27ae8154bfc0a894b633d189701cf21629041632275915dad4a91cb218f	0	root	root	
+@@FILE@@	/usr/lib/rpm/tgpg	937	33261	1765374509	2301f06a63659cc2acd2f8c3c00f19a4cfeb427b916345299a3112844ae2b5b0	0	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm/.rpm.lock	0	33188	1765411200		64	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm/Index.db	372736	33188	1765411200		89	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm/Packages.db	4096	33188	1765411200		89	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm/rpmdb.sqlite	212992	33188	1765411200		89	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm/rpmdb.sqlite-shm	32768	33188	1765411200		89	root	root	
+@@FILE@@	/usr/lib/sysimage/rpm/rpmdb.sqlite-wal	0	33188	1765411200		89	root	root	
+@@FILE@@	/usr/lib/systemd/system/rpmdb-rebuild.service	464	33188	1765411200	f1e69c90488d183a50ad1b79257a5e2c1fbc793664682cfd177737dbef8075d5	0	root	root	
+@@FILE@@	/usr/share/doc/rpm	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/share/doc/rpm/CONTRIBUTING.md	8141	33188	1765374509	f283e23ae9a60418821b96e85b517258402a0aa1dd76ae295aa84863abcf49e6	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/COPYING	44195	33188	1765374509	f4af48a570b4ac09fce37fbaaa80324565405bb07d257070f509bdaf9994b73b	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/CREDITS	3749	33188	1765374509	eca98e23b93ba154007bc76bb763d52167255a5def83715727946e2b14bc847d	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/INSTALL	14901	33188	1765374509	30c8eb198527995602235b16a8b85034ef04ac0f9189352901d4284d675c3c5d	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/README	606	33188	1765374509	a35251ffdfd9b38965c6ab979a9d932849514ece0079b4bf7db359b75ca568fa	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/about.md	1393	33188	1765374509	58b264dca41cdd346b7e1f57bb513c8e2cb8dc0cb08b07d5d2f5a6eb796fd3fd	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/arch_dependencies.md	5413	33188	1765374509	5c779e0e797a547f43295ba5c40facf8ffba5382ec3673e3051140876ce365ed	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/autosetup.md	4267	33188	1765374509	9a9278b8ba233d6965d54044b51ffe916906e8c7baa2261609a3505282a1cb0a	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/boolean_dependencies.md	3761	33188	1765374509	67958f8dbf6f1210e0326527b6e79332a7bf93f66a11bd8daae5c1ddf7ca228b	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/buildprocess.md	5736	33188	1765374509	24697bc0e1590537d20c47f169c71dcd041e9b338b70d4190b871898d4e34000	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/buildsystem.md	4464	33188	1765374509	5263aa630507aa593ddc203162d8ff12d3e09d26a9103b6a557d77e59b09e5ba	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/conditionalbuilds.md	3888	33188	1765374509	b845f9e081136a73a1a0b95b735ee9e9ef21d6f94db13f8a6ebfe45b119cfc4a	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/dependencies.md	9559	33188	1765374509	b57149523bd621b6fa8b6790de29750a015972668fba8953dc3d295c380776b6	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/dependency_generators.md	11133	33188	1765374509	2348bea56fbbddc42c973639b0f712262a4736895dbd85fa9b118a443f7e70ae	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/devel_documentation.md	3139	33188	1765374509	cb6fb6ace093c5553b3c3950d69ffd19f0b47483f3fc3dd036d0a0ee86b85fc6	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/dynamic_specs.md	2166	33188	1765374509	15ed866febbba7f66d6abcb5fae33812ceb418056616abd22f8ac00ab272a5f6	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/file_triggers.md	4453	33188	1765374509	f3cf095c79bb64ac53ebb55468bdb0e93d85f9d9bad80e7a6a136ef6379cc0e2	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/format_header.md	7431	33188	1765374509	70f10216b1bc7039e015f2d4a8642db349f6a5515ddfe46b07b24e5a8066a645	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/format_lead.md	2269	33188	1765374509	90ffcd25c695e0e78e9f4efa67663d77bdf907459a7cc75acc5225681aa61390	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/format_v3.md	2335	33188	1765374509	80ac89b5935375c2949a480fb12fce750e8ee49ca237f0eca9dd31ba0653dca7	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/format_v4.md	5374	33188	1765374509	4ed5c3fc49f6174095d3f6a89eebf4de64bea9f800c6d9e78cba2380db514d25	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/format_v6.md	6245	33188	1765374509	1116a9d64b63abe2a48c540be9fdd8e3c57f5095d42f312f1d62cf506e28d430	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/index.md	842	33188	1765374509	21549106fdda92737d224904f4003840f7b32413d33959ae4f4d4c527f67a758	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/large_files.md	2650	33188	1765374509	7b13b84390cee0b92432911fc66129d85ff167ae72db691efba67e7f486d5d55	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/lua.md	72	33188	1765374509	34dbd2ca224541502ac191ab2593aa49dd929253515c6cdadc920db57cf05833	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/macros.md	75	33188	1765374509	f848fa85ac77beca463a4c3b4930f830263b9c1e7a02298fa89b0d19a94be63c	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/more_dependencies.md	7221	33188	1765374509	82afbc2197fbabc97f4c6f53246f4fd269ebd1c8abdd944d7bfae8461984ce1a	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/philosophy.md	7320	33188	1765374509	8d37459f8092e32a724a21a444cbb0cecd8c4d73a3a73b216761091bc48dca2a	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/plugins.md	4552	33188	1765374509	a747a8f1ce3633f642e578d55ecc16d0cf0aeed3872d137a1ba9094e19ed2c0f	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/queryformat.md	80	33188	1765374509	cd002173b0c2461abc4b2e4f30f2a84460cbd128edbf64f8c26992f0ad1db289	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/relocatable.md	1971	33188	1765374509	b0c3dc33fab362b0bcc0b92c4b6def5ad5e7b51b24d75d9ea9de4788529ab57b	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/scriptlet_expansion.md	5277	33188	1765374509	49dffc30b27e8b77e052892a939198d90720761b5d22462810203b4d396513ef	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/signatures_digests.md	2055	33188	1765374509	f3d4372a83cc91bd9439070ce454be088cc685d5cd9a1b2155662ebe272b3f5b	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/spec.md	31042	33188	1765374509	507ac5a3d1b406bc31e39b0c212536d64ea9fb225657a2f1239b87b9bcb2e0ec	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/tags.md	25049	33188	1765374509	52dcecb1d36d5a485dc4617d40d5d80b0a3b19d8ba3fab129ea6191675879b9a	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/triggers.md	5535	33188	1765374509	7fdb6472a14d0b11f8af9dc86bf6ef69db7e71de8ec026dae93adfa0adda2999	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/tsort.md	2943	33188	1765374509	f7e4cf08617cb41331968b58aa679ec3237e9458d848ee5b9d74567c55a04bb4	2	root	root	
+@@FILE@@	/usr/share/doc/rpm/users_and_groups.md	4407	33188	1765374509	26831b3f2df108410fb2e5a24853bcbe67bf3e3b82d6adb1f042eb7204348ff7	2	root	root	
+@@FILE@@	/usr/share/licenses/rpm	0	16877	1765411200		0	root	root	
+@@FILE@@	/usr/share/licenses/rpm/COPYING	44195	33188	1765374509	f4af48a570b4ac09fce37fbaaa80324565405bb07d257070f509bdaf9994b73b	128	root	root	
+@@FILE@@	/usr/share/locale/ar/LC_MESSAGES/rpm.mo	6074	33188	1765411200	f45f55ebab3c38a83f007dcec53f2d217bf0b4fd82ee633757dc5fcf97eead2c	0	root	root	
+@@FILE@@	/usr/share/locale/br/LC_MESSAGES/rpm.mo	12256	33188	1765411200	c2d7511d77f8f08838bb0261f016d14d1ac34ac012b81ee147529232bc7f0f26	0	root	root	
+@@FILE@@	/usr/share/locale/ca/LC_MESSAGES/rpm.mo	59091	33188	1765411200	664b8da9a43ab9fb2fd33297172d4f7d5e2750c3fcf40f56d71c3a9f97de5daf	0	root	root	
+@@FILE@@	/usr/share/locale/cmn/LC_MESSAGES/rpm.mo	49205	33188	1765411200	95e168104720ac2543f4b643d93adca26f51acffe63b461e51a12bef243958a2	0	root	root	
+@@FILE@@	/usr/share/locale/cs/LC_MESSAGES/rpm.mo	82840	33188	1765411200	a161c4ba16886619be1c04e888fae08692202735ae5282ffb59375ff6d16684b	0	root	root	
+@@FILE@@	/usr/share/locale/da/LC_MESSAGES/rpm.mo	24528	33188	1765411200	54260f165ecfc0dd9c7bdcef9d5d19c809488e2b673c118de644bac6a4b6656b	0	root	root	
+@@FILE@@	/usr/share/locale/de/LC_MESSAGES/rpm.mo	85445	33188	1765411200	c19e57041110310856fb9b2202e970b8b5a530046ff65149045b00f1bc4d6538	0	root	root	
+@@FILE@@	/usr/share/locale/el/LC_MESSAGES/rpm.mo	4023	33188	1765411200	0b0043350d0d14e41884c81e1ebfd55eb94d6317b439c6cfcb051ffc08e4e385	0	root	root	
+@@FILE@@	/usr/share/locale/eo/LC_MESSAGES/rpm.mo	58700	33188	1765411200	df2145b19ad73e2043dbda4320e0b9fdd6243909b98c82a2fc3aabe19c5e1d9f	0	root	root	
+@@FILE@@	/usr/share/locale/es/LC_MESSAGES/rpm.mo	84700	33188	1765411200	691ad868179497369cc1e43a3d5d157f05c4d1cee15a12ca3e67276b48e69017	0	root	root	
+@@FILE@@	/usr/share/locale/fi/LC_MESSAGES/rpm.mo	83822	33188	1765411200	e1c0499e06e7d765756f371ad98510bdfe01f9ac049eca8cd9f5346f76427bcf	0	root	root	
+@@FILE@@	/usr/share/locale/fr/LC_MESSAGES/rpm.mo	86558	33188	1765411200	6bbbf011750e59fc5915e60eb484ac4e8619e9bffe405f1fee1cadecdd99c474	0	root	root	
+@@FILE@@	/usr/share/locale/gu/LC_MESSAGES/rpm.mo	490	33188	1765411200	facb6322f373253ad221ba222d4ec66f050811b1f1967f9130db1e179f5c87d1	0	root	root	
+@@FILE@@	/usr/share/locale/he/LC_MESSAGES/rpm.mo	353	33188	1765411200	bb36cf3f80040438239ca6a44ec1135ce47187612b9dc6bb3b8d5a5c4e24fa2d	0	root	root	
+@@FILE@@	/usr/share/locale/id/LC_MESSAGES/rpm.mo	15006	33188	1765411200	983011b0d56284617dbaf08666bed1e53d25a9ff8d719c7cd3d54d27637d9527	0	root	root	
+@@FILE@@	/usr/share/locale/ie/LC_MESSAGES/rpm.mo	10637	33188	1765411200	160fca46b1303a466f9c3ea9a14a40465ec41147b0940d931ebc05a7653083e1	0	root	root	
+@@FILE@@	/usr/share/locale/is/LC_MESSAGES/rpm.mo	5345	33188	1765411200	4242004ec11d45d22bfcab02e0f5b29bcb6bb0bd2713b5b92830cc99fb72e649	0	root	root	
+@@FILE@@	/usr/share/locale/it/LC_MESSAGES/rpm.mo	84204	33188	1765411200	a49cc8396a37f17f94d6aff865aa2d0f08da2a844f22d07ffefa5dc0b72a44fb	0	root	root	
+@@FILE@@	/usr/share/locale/ja/LC_MESSAGES/rpm.mo	83587	33188	1765411200	7e550e4427e5295547c6e35a8cf4397f98e36e12ed1eb6344f53894acbd7b5a3	0	root	root	
+@@FILE@@	/usr/share/locale/ka/LC_MESSAGES/rpm.mo	32587	33188	1765411200	ac3f6deaee2875c2446bd78f36eb4203c05ee3a3aba7ad21af95e3517b0b36dc	0	root	root	
+@@FILE@@	/usr/share/locale/ko/LC_MESSAGES/rpm.mo	101411	33188	1765411200	93e79bfbecdd67dcb96e456dd891420555fb886e50285c9f426708bbf4441548	0	root	root	
+@@FILE@@	/usr/share/locale/ms/LC_MESSAGES/rpm.mo	2554	33188	1765411200	b2ced3e1a21a35a80a073872f73adfe6fa3c8c2d0ea54b3ff1786030d7a68915	0	root	root	
+@@FILE@@	/usr/share/locale/nb/LC_MESSAGES/rpm.mo	18239	33188	1765411200	d91de1ce18e5ef752781c17a6d59c1d3f6625ae76274ee1e86f5128458a9117d	0	root	root	
+@@FILE@@	/usr/share/locale/nl/LC_MESSAGES/rpm.mo	6803	33188	1765411200	5a3beae96806ac17a0a490edaa4c57016805905f7f7a3589c038a0d9de85e6e5	0	root	root	
+@@FILE@@	/usr/share/locale/pa/LC_MESSAGES/rpm.mo	683	33188	1765411200	ae88bd0bc12b79ef0f7f46003e106556b3dd0028fd58cf42124d4d6a985f2c6a	0	root	root	
+@@FILE@@	/usr/share/locale/pl/LC_MESSAGES/rpm.mo	97381	33188	1765411200	75acc31f3287a768eda15dbf783b3cf1c5ee87700899c95cb0fdad8021dcb280	0	root	root	
+@@FILE@@	/usr/share/locale/pt/LC_MESSAGES/rpm.mo	30541	33188	1765411200	2c8a8822667bb84a15283dcd6c94f76c6c51bf52761a2071a1cde48630c4e519	0	root	root	
+@@FILE@@	/usr/share/locale/pt_BR/LC_MESSAGES/rpm.mo	70747	33188	1765411200	d1085f5d4af70e6dd7563e3419b04bf90ef1abc219b581e459a0fc68d7b58528	0	root	root	
+@@FILE@@	/usr/share/locale/ru/LC_MESSAGES/rpm.mo	59317	33188	1765411200	b593dc838cd312edfb11235b8c5defd7b9f870147d7d122f4d617a0527722566	0	root	root	
+@@FILE@@	/usr/share/locale/si/LC_MESSAGES/rpm.mo	559	33188	1765411200	9fbafa262c6a94262e5ac06923c0387dc2a3eb985b4ccb41c2800afa5fbf0713	0	root	root	
+@@FILE@@	/usr/share/locale/sk/LC_MESSAGES/rpm.mo	51821	33188	1765411200	4a146f321b21d8e7176292b008901287b2d8214d5160eb2a0d160af406fd1aa4	0	root	root	
+@@FILE@@	/usr/share/locale/sl/LC_MESSAGES/rpm.mo	12207	33188	1765411200	c76ac2a7df6289da457941b753e98e1cecd9b914787ed2c594afe5743b757d70	0	root	root	
+@@FILE@@	/usr/share/locale/sr/LC_MESSAGES/rpm.mo	52275	33188	1765411200	0c8940ccf449d252c6241ca26e373cdc7ea8b6debb28adb6428852fcc702b35f	0	root	root	
+@@FILE@@	/usr/share/locale/sr@latin/LC_MESSAGES/rpm.mo	41678	33188	1765411200	201cd772d101044a8caa04177a5521f12567feaeb09f6654d306c91ddfcd04a2	0	root	root	
+@@FILE@@	/usr/share/locale/sv/LC_MESSAGES/rpm.mo	91063	33188	1765411200	004ed4074dfa451a5b9a117cc00e731181464e8ccfec5a00aee2ba64364b9263	0	root	root	
+@@FILE@@	/usr/share/locale/te/LC_MESSAGES/rpm.mo	2060	33188	1765411200	301f943e668367443c4eaaa9a86e2461d3775d78818731b941e30833433494bc	0	root	root	
+@@FILE@@	/usr/share/locale/tr/LC_MESSAGES/rpm.mo	48312	33188	1765411200	165a5bc2877ccae2cdfa72dfea7df64357680015ec530e21c46b77ef395f3f35	0	root	root	
+@@FILE@@	/usr/share/locale/uk/LC_MESSAGES/rpm.mo	124805	33188	1765411200	965a4acfe844c6abbcec4fd45c5c253200537104fde1f2c48eb52cb8cee13ecc	0	root	root	
+@@FILE@@	/usr/share/locale/vi/LC_MESSAGES/rpm.mo	67620	33188	1765411200	da83983509f90f5382f04ef64233686af7cd28c4348eb7d3e525e8159e1e1965	0	root	root	
+@@FILE@@	/usr/share/locale/zh_CN/LC_MESSAGES/rpm.mo	76576	33188	1765411200	971ca79199653b5925f2b9772e697b015cffb434c221c0673fedcf7ed9894d6a	0	root	root	
+@@FILE@@	/usr/share/locale/zh_TW/LC_MESSAGES/rpm.mo	77882	33188	1765411200	c4a9b3d8525da99bb30b9d4fbae507fbe64f1f2c6ed79f875308c049bfebb536	0	root	root	
+@@FILE@@	/usr/share/man/man1/rpm2archive.1.gz	1189	33188	1765411200	7ff17e90ccb4ae34caddd1c7051c1e8393b8dc5ea7e90933ea32241f7a18024e	2	root	root	
+@@FILE@@	/usr/share/man/man1/rpm2cpio.1.gz	705	33188	1765411200	01f3723e9d58b710d72f897bb8be7d25afa208e538a35b5d0c6498de4fbeaa79	2	root	root	
+@@FILE@@	/usr/share/man/man1/rpmsort.1.gz	622	33188	1765411200	01624c7d9d73fdd4d8e6d6d82b1ea9ee1970146aa13a1f93cc9ebb044f71011d	2	root	root	
+@@FILE@@	/usr/share/man/man5/rpm-config.5.gz	3477	33188	1765411200	a3ef7e4f7a91354a4629f1c55fcbaa4b49fea572ac35de284724899d326a34ff	2	root	root	
+@@FILE@@	/usr/share/man/man5/rpm-macrofile.5.gz	1051	33188	1765411200	40fe1c4405752ef7802e919a293810e75b44be3a79171d06b5539d3e87eea31e	2	root	root	
+@@FILE@@	/usr/share/man/man5/rpm-manifest.5.gz	1145	33188	1765411200	4f3ba02db4518a20a1355c3f70365d7f68ca56879c851f84fc4ad76190791ee0	2	root	root	
+@@FILE@@	/usr/share/man/man5/rpm-rpmrc.5.gz	1692	33188	1765411200	261c10011a15eb31478409eb00fc35c782ca045cec47b07f7fa9f883bcc10367	2	root	root	
+@@FILE@@	/usr/share/man/man7/rpm-lua.7.gz	8129	33188	1765411200	2fe219b47e333fc51ba2550f25dc3579eabe4ef4bfc724a11e4b00f94e1dec43	2	root	root	
+@@FILE@@	/usr/share/man/man7/rpm-macros.7.gz	8048	33188	1765411200	2a48649323fcf2f4829c479b9e679740e5e22efc5edbbe43484164f527e04bc5	2	root	root	
+@@FILE@@	/usr/share/man/man7/rpm-payloadflags.7.gz	1250	33188	1765411200	c9552919ebb003ae4bed09b4fbf27edc51334724c014ae4bb430242a90a91ae0	2	root	root	
+@@FILE@@	/usr/share/man/man7/rpm-queryformat.7.gz	4472	33188	1765411200	9aeab287abc6ea94a0907aa5f406b1634655a08420027efb961b1211300fd02e	2	root	root	
+@@FILE@@	/usr/share/man/man7/rpm-version.7.gz	2523	33188	1765411200	913cea185b802f727ffb7ca56f1355e40d420ea57d4d4b5457f6b66436454b06	2	root	root	
+@@FILE@@	/usr/share/man/man8/rpm-common.8.gz	2353	33188	1765411200	83b92bc7cbafcdb40b45d6edcf9ce1b9cbe5b5158b292a42cfca8c1b46235be1	2	root	root	
+@@FILE@@	/usr/share/man/man8/rpm-plugins.8.gz	929	33188	1765411200	4c85db5916db465cc7266a45977ff1af8575bf1a83e8c19d668391688e01760b	2	root	root	
+@@FILE@@	/usr/share/man/man8/rpm.8.gz	6593	33188	1765411200	905f64eb838ce72ef2d00299b68e0052cf35dd548ada7289a976be42762143ad	2	root	root	
+@@FILE@@	/usr/share/man/man8/rpmdb.8.gz	1283	33188	1765411200	47d0868b363ed667e6612683ca8df0781111ca85e3865941bdc9ab05b6049a60	2	root	root	
+@@FILE@@	/usr/share/man/man8/rpmkeys.8.gz	1638	33188	1765411200	cd4b64e350be1fde14b64d7af8128b10f2de07cbcd2a78a39d70d95b23aca8fc	2	root	root	
+@@CL@@	1765454400
+@@CL@@	1758542400
+@@CL@@	1758283200
+@@CL@@	1756296000
+@@CL@@	1756123200
+@@CL@@	1755259200
+@@CL@@	1754395200
+@@CL@@	1753444800
+@@CL@@	1751457600
+@@CL@@	1748865600
+@@CL@@	1747051200
+@@CL@@	1745841600
+@@CL@@	1744891200
+@@CL@@	1744804800
+@@CL@@	1744632000
+@@CL@@	1743422400
+@@CL@@	1743422400
+@@CL@@	1740571200
+@@CL@@	1737547200
+@@CL@@	1737201600
+@@CL@@	1736942400
+@@CL@@	1736769600
+@@CL@@	1736510400
+@@CL@@	1734004800
+@@CL@@	1733832000
+@@CL@@	1728302400
+@@CL@@	1725969600
+@@CL@@	1725364800
+@@CL@@	1722513600
+@@CL@@	1721390400
+@@CL@@	1721217600
+@@CL@@	1720526400
+@@CL@@	1720094400
+@@CL@@	1719230400
+@@CL@@	1718193600
+@@CL@@	1718107200
+@@CL@@	1718107200
+@@CL@@	1718020800
+@@CL@@	1717761600
+@@CL@@	1717588800
+@@CL@@	1717502400
+@@CL@@	1717156800
+@@CL@@	1717156800
+@@CL@@	1716984000
+@@CL@@	1716897600
+@@CL@@	1716811200
+@@CL@@	1716465600
+@@CL@@	1714996800
+@@CL@@	1707307200
+@@CL@@	1706270400
+@@CL@@	1705924800
+@@CL@@	1702641600
+@@CL@@	1702382400
+@@PKG@@	setup	2.15.0	26.fc43	(none)	noarch	LicenseRef-Fedora-Public-Domain	742387	1753516856	1772261275	setup-2.15.0-26.fc43.src.rpm	8
+@@FILE@@	/etc/aliases	1529	33188	1753401600	a4c569569f893bc22fbe696c459f8fba0fe4565022637300b705b54a95c47bce	17	root	root	
+@@FILE@@	/etc/bashrc	2709	33188	1753401600	f6b3fca4ccae04e1df17b59b3b09ff07cebd257daa8a36233ff3395e654cf17f	17	root	root	
+@@FILE@@	/etc/csh.cshrc	1401	33188	1753401600	441b02ec287f3bd2b94e2df4462e29f1f2f49d5fa41b8cce9dddd7865775868d	17	root	root	
+@@FILE@@	/etc/csh.login	1569	33188	1753401600	a11c8dcbe932a238ec46548c725ba6b53eb85bb4f5f886e549c2bd86a4523414	17	root	root	
+@@FILE@@	/etc/dnf/protected.d/setup.conf	6	33188	1753401600	9752eb62a6845a78a9e2eaeb4a6eb2d93a1b654ee8665f71d516cfaca3e7cf57	0	root	root	
+@@FILE@@	/etc/environment	0	33188	1753401600	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	17	root	root	
+@@FILE@@	/etc/ethertypes	1362	33188	1753401600	ed38f9d644befc87eb41a8649c310073240d9a8cd75b2f9c115b5d9d7e5d033c	17	root	root	
+@@FILE@@	/etc/exports	0	33188	1753401600	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	17	root	root	
+@@FILE@@	/etc/filesystems	66	33188	1753401600	ba1ed4fe76cd63c37dbd44a040921db7810c4b63f46ee6635779627a4a36a196	17	root	root	
+@@FILE@@	/etc/fstab	0	33188	1753401600		89	root	root	
+@@FILE@@	/etc/group	336	33188	1753401600	b24694f744a1abc44388000f16309a1acd6efd06f3c44b2fb9402c2844fd1bab	17	root	root	
+@@FILE@@	/etc/gshadow	308	32768	1753401600	36fc74ecf1a18f8bca2d9a3fb215181c198a71064a1c131945a8f05b03d77d01	25	root	root	
+@@FILE@@	/etc/host.conf	9	33188	1753401600	380f5fe21d755923b44203b58ca3c8b9681c485d152bd5d7e3914f67d821d32a	17	root	root	
+@@FILE@@	/etc/hosts	384	33188	1753401600	8c30e3d37cccf8e58c2fddb25100624bc6a1476591a2e2e07f579d0e58a49f29	17	root	root	
+@@FILE@@	/etc/inputrc	943	33188	1753401600	e016c93c4ded93c7e08e92957345746618c5893eae0c8528b0392a6e0d6e447a	17	root	root	
+@@FILE@@	/etc/motd	0	33188	1753401600	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	17	root	root	
+@@FILE@@	/etc/motd.d	0	16877	1753401600		0	root	root	
+@@FILE@@	/etc/networks	58	33188	1753401600	ae89ab2e35076a070ae7cf5b0edf600c3ea6999e15db9b543ef35dfc76d37cb1	17	root	root	
+@@FILE@@	/etc/passwd	575	33188	1753401600	20f397fda486be2f4a6199cf39e7ce4e2a99abcecb571574bd1b375ea0d99228	17	root	root	
+@@FILE@@	/etc/printcap	233	33188	1753401600	f809352567a37d932b014311cf626774b97b63ec06d4f7bdd8a9cfcc34c691d9	17	root	root	
+@@FILE@@	/etc/profile	2058	33188	1753401600	5d89db46c1c53757e962280a1a188dacc436c13eb4e5a2c4cac65203d76ae55f	17	root	root	
+@@FILE@@	/etc/profile.d	0	16877	1753401600		0	root	root	
+@@FILE@@	/etc/profile.d/csh.local	83	33188	1753401600	e0d4250de6039a7a9b07bce5634fcda0d7bc66201bb32b6f11f87f99100d942f	17	root	root	
+@@FILE@@	/etc/profile.d/lang.csh	3424	33188	1753401600	5486ae2358f54ba086017a5a7d89fc71855e4071c06fe1866a278838b465b161	0	root	root	
+@@FILE@@	/etc/profile.d/lang.sh	3187	33188	1753401600	58bf8b07428754b273560c5ea4040c672440b2bb04709842cf94163e15dc144f	0	root	root	
+@@FILE@@	/etc/profile.d/sh.local	81	33188	1753401600	3c5de252d65ae8c40e54c21be09dc574ca3641d036d7b44174939a7e64863920	17	root	root	
+@@FILE@@	/etc/protocols	6963	33188	1753401600	c3ce463ee0919ece4e03406c2605576036cdb04be4cf45583335cb781ce3a82d	17	root	root	
+@@FILE@@	/etc/services	701707	33188	1753401600	2d84c0e7fe5ee474f8dc0096ccce7a5b10286be3da82d276acc5e79e7b8e42c0	17	root	root	
+@@FILE@@	/etc/shadow	280	32768	1753401600	019a5860892e88a79149a1eda178e7401d993061b1473165a5caecb0e1b10ea7	25	root	root	
+@@FILE@@	/etc/shells	44	33188	1753401600	4ec4e8c524a4f10ca5898ccfaa6d29e7e08aff3a681f6bafbb62e7bec91aa154	17	root	root	
+@@FILE@@	/etc/subgid	0	33188	1753401600	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	17	root	root	
+@@FILE@@	/etc/subuid	0	33188	1753401600	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	17	root	root	
+@@FILE@@	/run/motd	0	33188	1753401600		64	root	root	
+@@FILE@@	/run/motd.d	0	16877	1753401600		0	root	root	
+@@FILE@@	/usr/lib/motd	0	33188	1753401600	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855	17	root	root	
+@@FILE@@	/usr/lib/motd.d	0	16877	1753401600		0	root	root	
+@@FILE@@	/usr/lib/sysusers.d/setup.conf	1456	33188	1753401600	cc53e09861ebfbe07375e16d8ce56a3150509b2032ad8567e80ff0b4d49958a3	0	root	root	
+@@FILE@@	/usr/lib/tmpfiles.d/setup.conf	60	33188	1753401600	b1a7958d03497b0e231f8f14ee501ebb4d15a822d096c180226af5429df15f78	0	root	root	
+@@FILE@@	/usr/share/dnf5	0	16877	1753401600		0	root	root	
+@@FILE@@	/usr/share/dnf5/libdnf.conf.d	0	16877	1753401600		0	root	root	
+@@FILE@@	/usr/share/dnf5/libdnf.conf.d/protect-setup.conf	34	33188	1753401600	f958799a76bc65629d8997f22c1b0621ffa1b338da3f002eb2b5d5eb81539432	0	root	root	
+@@FILE@@	/usr/share/doc/setup	0	16877	1753401600		0	root	root	
+@@FILE@@	/usr/share/doc/setup/uidgid	11404	33188	1753401600	8b65768fc39ba4f43c1c1a431c30190ec5624bad7cda54c828b0ce398089a24f	2	root	root	
+@@FILE@@	/usr/share/licenses/setup	0	16877	1753401600		0	root	root	
+@@FILE@@	/usr/share/licenses/setup/COPYING	118	33188	1753401600	628095e1ef656bbe9034cf5bfa3c220880a16cd0ceea25b17cd2198ea3503e03	128	root	root	
+@@CL@@	1753444800
+@@CL@@	1747224000
+@@CL@@	1747051200
+@@CL@@	1742472000
+@@CL@@	1742472000
+@@CL@@	1742040000
+@@CL@@	1742040000
+@@CL@@	1741953600
+@@CL@@	1741953600
+@@CL@@	1741608000
+@@CL@@	1741176000
+@@CL@@	1739188800
+@@CL@@	1737547200
+@@CL@@	1737288000
+@@CL@@	1735300800
+@@CL@@	1735300800
+@@CL@@	1735300800
+@@CL@@	1727179200
+@@CL@@	1721476800
+@@CL@@	1717761600
+@@CL@@	1717070400
+@@CL@@	1716811200
+@@CL@@	1716811200
+@@CL@@	1716811200
+@@CL@@	1706356800
+@@CL@@	1701259200
+@@PKG@@	shadow-utils	4.18.0	3.fc43	2	x86_64	BSD-3-Clause AND GPL-2.0-or-later	4097602	1753814912	1772261278	shadow-utils-4.18.0-3.fc43.src.rpm	8
+@@FILE@@	/etc/default/useradd	119	33188	1753747200	b121fd1b90c1a2fb6081a137dd7b441c7e7fec61bc17ca60db401a952d7b8825	17	root	root	
+@@FILE@@	/etc/login.defs	8888	33188	1753747200	33af2d813e701a8a4cdd51012be216b7cf0827dd9815acafdec6be3e3f3dd0b3	17	root	root	
+@@FILE@@	/etc/pam.d/passwd	168	33188	1753747200	0fe34a8fecd71df3dea92e3aeaa8243b136b71e2853263c65fd89969bd2f8425	17	root	root	
+@@FILE@@	/usr/bin/adduser	7	41471	1753747200		0	root	root	useradd
+@@FILE@@	/usr/bin/chage	70760	35309	1753747200	99464fb55f4ac3f4e52a4154a04ffd17120cba732f3bbd5e605d7b119b33cab8	0	root	root	
+@@FILE@@	/usr/bin/chgpasswd	57528	33261	1753747200	82e433ca9b88c70b7de4eb6f8fdc77ff15b8ad3f0cdb7b7975cc413ffa14e0ca	0	root	root	
+@@FILE@@	/usr/bin/chpasswd	66536	33261	1753747200	00a4225089f89170b4656afd0d2596be3964d64374adb2e068d62c5ff72c7eac	0	root	root	
+@@FILE@@	/usr/bin/gpasswd	74272	35309	1753747200	5b566694cecf4d2584b390d585a6c21114eba954f8b9b67f6ee5c4803abf92b6	0	root	root	
+@@FILE@@	/usr/bin/groupadd	70840	33261	1753747200	122f3b87fd80211ae06cee6e73f437bae72f6b0df014b2c1d51ac586e70534df	0	root	root	
+@@FILE@@	/usr/bin/groupdel	62304	33261	1753747200	1c8021d08213f95649eb1a566ad817722fdb348a0968ece09fdfc1db430c6d12	0	root	root	
+@@FILE@@	/usr/bin/groupmems	49320	33261	1753747200	d452f85db49aec645c492f15a26f7737542bf2ff8b5a4103ca312cf101d49412	0	root	root	
+@@FILE@@	/usr/bin/groupmod	66712	33261	1753747200	582856dcade4d9457fdc90145bc859b2703a785eb741decb81ad22a1282b2cab	0	root	root	
+@@FILE@@	/usr/bin/grpck	53352	33261	1753747200	30739c715421fb8c9f8b60081e028a607746d04ea15d7f7823761e6add10d0e8	0	root	root	
+@@FILE@@	/usr/bin/grpconv	49056	33261	1753747200	8330e94b8edb4a1ff6166aa4906fa85c12d0556f66fbfd5ef2cda60e1d3f7080	0	root	root	
+@@FILE@@	/usr/bin/grpunconv	44928	33261	1753747200	12ad2b27732ef38351112ac97828f14a6b8348dcf3f650883b982c8ce9b4af1d	0	root	root	
+@@FILE@@	/usr/bin/newgidmap	39408	33261	1753747200	8325b43db200831917c527116e8f3fcaf7c84aa4f65e028333877eb94254be0b	0	root	root	
+@@FILE@@	/usr/bin/newgrp	38144	35309	1753747200	78aaaf67461d0ad55996a777dcd8cb12b74f8a6fe0393cf49a7fcb13a4f78f7b	0	root	root	
+@@FILE@@	/usr/bin/newuidmap	35288	33261	1753747200	0b87df33583cae9b1f02b48aa58bc7ec917621da2b7e21dd1cf97c107670ba59	0	root	root	
+@@FILE@@	/usr/bin/newusers	78736	33261	1753747200	59c9a2982ff9c0e5ede1621467808ea0be3564b03c25822678963c7edd9af884	0	root	root	
+@@FILE@@	/usr/bin/passwd	91736	35309	1753747200	2b3156e10c21e4f07faa384b323b18928c1a856084e566cc7e70db11b58a3d4f	0	root	root	
+@@FILE@@	/usr/bin/pwck	49144	33261	1753747200	632e046273515a5f0f4a74413c14b70485b7ed914c79ca7a2222fd3593f6fdf3	0	root	root	
+@@FILE@@	/usr/bin/pwconv	44896	33261	1753747200	0f63d5244833c835817247b2f7cc091abca507b5cfc0831f0e99e68687686586	0	root	root	
+@@FILE@@	/usr/bin/pwunconv	44848	33261	1753747200	9ffec969cf678b4fe05a47c9e73f49ebfd2b55ea22782a2cc0b3490fd4ff42c6	0	root	root	
+@@FILE@@	/usr/bin/sg	6	41471	1753747200		0	root	root	newgrp
+@@FILE@@	/usr/bin/useradd	121128	33261	1753747200	41f714e9a4c3735140a291c605756ebddd0111e8649a36e50d6c3a81a388be1f	0	root	root	
+@@FILE@@	/usr/bin/userdel	83120	33261	1753747200	a167640dd02077bcda3d1796a84a8a4d54ed25634ebb195f02f031fa01c250c1	0	root	root	
+@@FILE@@	/usr/bin/usermod	112744	33261	1753747200	c6dfa048d7b3473edf157fff21363efaf4cf3903bc22dcb616d63263b092388e	0	root	root	
+@@FILE@@	/usr/bin/vigr	4	41471	1753747200		0	root	root	vipw
+@@FILE@@	/usr/bin/vipw	51656	33261	1753747200	30976ee47310dc91e029d7bcd6e192efa7cfee08e20cb277330e5849183158df	0	root	root	
+@@FILE@@	/usr/lib/.build-id	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/02	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/02/cf64ee4740e07a11ec7499e6aa655eead57039	28	41471	1753747200		4096	root	root	../../../../usr/bin/groupadd
+@@FILE@@	/usr/lib/.build-id/0b	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/0b/1e65deca0c71243d99b53c60f9342e577e4f3e	26	41471	1753747200		4096	root	root	../../../../usr/bin/pwconv
+@@FILE@@	/usr/lib/.build-id/11	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/11/eb4fafec3c389212170276d882f0b2ce8e2da8	29	41471	1753747200		4096	root	root	../../../../usr/bin/newuidmap
+@@FILE@@	/usr/lib/.build-id/3a	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/3a/63f5cda7c2bc0dd8d7a03a07ee7d53b05131dc	27	41471	1753747200		4096	root	root	../../../../usr/bin/useradd
+@@FILE@@	/usr/lib/.build-id/45	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/45/555c88a4f0cd815039d83e48dc9cbbe435f312	29	41471	1753747200		4096	root	root	../../../../usr/bin/groupmems
+@@FILE@@	/usr/lib/.build-id/59	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/59/00bfa194e39284c7b77081186300e8cac99125	27	41471	1753747200		4096	root	root	../../../../usr/bin/gpasswd
+@@FILE@@	/usr/lib/.build-id/5b	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/5b/8093cbf4afed96c6f2180b35fa7763962ce86b	26	41471	1753747200		4096	root	root	../../../../usr/bin/passwd
+@@FILE@@	/usr/lib/.build-id/63	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/63/807fe4e894531f00d3de1492821cca9656d645	27	41471	1753747200		4096	root	root	../../../../usr/bin/usermod
+@@FILE@@	/usr/lib/.build-id/68	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/68/76242e73fb1a9f7ed997271ac74e64a90df00e	24	41471	1753747200		4096	root	root	../../../../usr/bin/vipw
+@@FILE@@	/usr/lib/.build-id/6d	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/6d/3180a32522940decb1f05a2da37421cbd7385a	29	41471	1753747200		4096	root	root	../../../../usr/bin/chgpasswd
+@@FILE@@	/usr/lib/.build-id/77	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/77/1d477d0786f568437cee459f58a878d9e0f098	29	41471	1753747200		4096	root	root	../../../../usr/bin/newgidmap
+@@FILE@@	/usr/lib/.build-id/7b	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/7b/a8fde16efea13356274557a35abdeaa49163d4	29	41471	1753747200		4096	root	root	../../../../usr/bin/grpunconv
+@@FILE@@	/usr/lib/.build-id/99	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/99/598b92c6d1e9b9b3ce003db9463d28c9303805	28	41471	1753747200		4096	root	root	../../../../usr/bin/groupmod
+@@FILE@@	/usr/lib/.build-id/a1	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/a1/e72d3804ec84f3126eb5a1206839f4c6c2fc6b	27	41471	1753747200		4096	root	root	../../../../usr/bin/userdel
+@@FILE@@	/usr/lib/.build-id/b1	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/b1/478548a4f14ea41485fa1660c74a75641d057a	25	41471	1753747200		4096	root	root	../../../../usr/bin/grpck
+@@FILE@@	/usr/lib/.build-id/b6	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/b6/f4c5bf6e404c2f777e62cfc9eed4c89e294356	28	41471	1753747200		4096	root	root	../../../../usr/bin/newusers
+@@FILE@@	/usr/lib/.build-id/bf	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/bf/de09ee23e70087d7ed15cfaf645d5d9f5d7b75	28	41471	1753747200		4096	root	root	../../../../usr/bin/chpasswd
+@@FILE@@	/usr/lib/.build-id/db	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/db/346de19de72d2a10d42e44216c6d333055c359	26	41471	1753747200		4096	root	root	../../../../usr/bin/newgrp
+@@FILE@@	/usr/lib/.build-id/e5	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e5/787af107bf41f4d307afb9cab5d95d7b60e004	28	41471	1753747200		4096	root	root	../../../../usr/bin/pwunconv
+@@FILE@@	/usr/lib/.build-id/e6	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/e6/d1b23eb63139c3a1f0c16701873d11a3f89dec	24	41471	1753747200		4096	root	root	../../../../usr/bin/pwck
+@@FILE@@	/usr/lib/.build-id/f0	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f0/1b26a8992f9be3a0420c44811f045a5d067ad4	27	41471	1753747200		4096	root	root	../../../../usr/bin/grpconv
+@@FILE@@	/usr/lib/.build-id/f2	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f2/60c11a6ab318b71408b6267f7832bc7dfe3545	25	41471	1753747200		4096	root	root	../../../../usr/bin/chage
+@@FILE@@	/usr/lib/.build-id/f3	0	16877	1753747200		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/f3/882dbe810a4fb96645261737ef614bcbfc0b26	28	41471	1753747200		4096	root	root	../../../../usr/bin/groupdel
+@@FILE@@	/usr/share/doc/shadow-utils	0	16877	1753747200		0	root	root	
+@@FILE@@	/usr/share/doc/shadow-utils/HOWTO	68465	33188	1753747200	a7a39af12d546717241aa9c9e32ca1eda94f410714e13541b758c6cacf252e4f	2	root	root	
+@@FILE@@	/usr/share/doc/shadow-utils/NEWS	106758	33188	1750796881	ade5e13391382add6184640732b61cc3307a721fb03244f030ac251f51b167e7	2	root	root	
+@@FILE@@	/usr/share/doc/shadow-utils/README	1918	33188	1750796881	1c6659a119cd68ce70e4b05b40f1a2a0a94c359c5718a9fa4684be6975052b98	2	root	root	
+@@FILE@@	/usr/share/licenses/shadow-utils	0	16877	1753747200		0	root	root	
+@@FILE@@	/usr/share/licenses/shadow-utils/gpl-2.0.txt	18092	33188	1753747200	8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643	128	root	root	
+@@FILE@@	/usr/share/licenses/shadow-utils/shadow-bsd.txt	1724	33188	1753747200	f062266d929e3157924e7a48dd77d8852b246d911ae382b1c06a0b35a724ac3b	128	root	root	
+@@FILE@@	/usr/share/locale/bs/LC_MESSAGES/shadow.mo	2971	33188	1750796925	9a52b7f02d537ecc1b1f3bbd66e3d0aa8f23eeb62e9f6d9ca4da2812787f268e	0	root	root	
+@@FILE@@	/usr/share/locale/ca/LC_MESSAGES/shadow.mo	84073	33188	1750796925	cad047a00936fd6306f426d3f7d3ca94be3fc287fae2018fa173eb711f1476fc	0	root	root	
+@@FILE@@	/usr/share/locale/cs/LC_MESSAGES/shadow.mo	65007	33188	1750796925	d751ca00e81643cd2d260f5100d520a192b7e407e650d8966cf22e77bedf23e2	0	root	root	
+@@FILE@@	/usr/share/locale/da/LC_MESSAGES/shadow.mo	58588	33188	1750796925	9e371b034ef777ce14d6c95eab69c073eef37d74be7b1535cef8a49c96bb99a0	0	root	root	
+@@FILE@@	/usr/share/locale/de/LC_MESSAGES/shadow.mo	64287	33188	1750796925	aabb6b58ee20ce65008151476ad27b1a992fc4a699be03be605ec78c2ca7d762	0	root	root	
+@@FILE@@	/usr/share/locale/dz/LC_MESSAGES/shadow.mo	29413	33188	1750796925	453f0e28e4fc2a9c38affb0b4f5e794fbbe2c3a9fbec6faffef28976b9685d8d	0	root	root	
+@@FILE@@	/usr/share/locale/el/LC_MESSAGES/shadow.mo	78839	33188	1750796925	8647f2e65ab54488b3475a71c99630467592daaa5fc9572231f72994ae0e5594	0	root	root	
+@@FILE@@	/usr/share/locale/es/LC_MESSAGES/shadow.mo	56311	33188	1750796926	1ad6a98ee6793ca8607709710b71a834ad31405ccb778a5e0f862ccf912b24f9	0	root	root	
+@@FILE@@	/usr/share/locale/eu/LC_MESSAGES/shadow.mo	44034	33188	1750796926	bcb431359d9ab26747ccabf54e6d8cad38bab1d0ceb83c272603bae27d9df090	0	root	root	
+@@FILE@@	/usr/share/locale/fi/LC_MESSAGES/shadow.mo	17112	33188	1750796926	0a7b6aaf7677ea3fc979e009f8c4062ed067b6019da6e4502a49725853d2f798	0	root	root	
+@@FILE@@	/usr/share/locale/fr/LC_MESSAGES/shadow.mo	86149	33188	1750796926	0e849d03c4663aaabd8d5582759cfdafe52e7cee5955da7b67db9129351b85e9	0	root	root	
+@@FILE@@	/usr/share/locale/gl/LC_MESSAGES/shadow.mo	17157	33188	1750796926	a39bdccb44c855666d811828e42eff94408dfbd6e969b3a1f77e341a2de12ea9	0	root	root	
+@@FILE@@	/usr/share/locale/he/LC_MESSAGES/shadow.mo	4188	33188	1750796926	47aa5e26c93d05ee7ace0bd9ba0454b85eb79cd8e702091a3fa9e0ed1441f282	0	root	root	
+@@FILE@@	/usr/share/locale/hu/LC_MESSAGES/shadow.mo	16898	33188	1750796926	74c88450881b115d525b721c962caa4eb3626070175c72311117f3642e92eb13	0	root	root	
+@@FILE@@	/usr/share/locale/id/LC_MESSAGES/shadow.mo	14392	33188	1750796926	580edefcf57e296726b15629dffe35170bab727097c27ce9850d2d56e453bb1d	0	root	root	
+@@FILE@@	/usr/share/locale/it/LC_MESSAGES/shadow.mo	19160	33188	1750796926	b22df39a7754adac609717b288d665966281e6a8f88554351130966377cdf318	0	root	root	
+@@FILE@@	/usr/share/locale/ja/LC_MESSAGES/shadow.mo	67564	33188	1750796926	0b53e1057131b259c539ffdf1d0ba23ebdfa6e728c81b8745abf4842ddb06c29	0	root	root	
+@@FILE@@	/usr/share/locale/ka/LC_MESSAGES/shadow.mo	122082	33188	1750796926	40ec04027fe340142c9fa725093b1b41691a3c69c77969fa61ccc2a687e0a693	0	root	root	
+@@FILE@@	/usr/share/locale/kk/LC_MESSAGES/shadow.mo	78115	33188	1750796926	20be20f4ea35e266888b60449ac49fd0a65effb2b0d4b0d88eddd449a8045a05	0	root	root	
+@@FILE@@	/usr/share/locale/km/LC_MESSAGES/shadow.mo	25182	33188	1750796926	8d09b8e49ac9d90a4492c283ebbb8d95887681a1abe6b90062cc5622634a08eb	0	root	root	
+@@FILE@@	/usr/share/locale/ko/LC_MESSAGES/shadow.mo	28476	33188	1750796926	336849440e9c6170e3033ff534f35da0c5776c444f522946d1bd80f2c71676d6	0	root	root	
+@@FILE@@	/usr/share/locale/nb/LC_MESSAGES/shadow.mo	61685	33188	1750796926	f2baa06385888bc852fd14368396e3610233df360fdd51e4562016bd26173610	0	root	root	
+@@FILE@@	/usr/share/locale/ne/LC_MESSAGES/shadow.mo	25464	33188	1750796926	5ffd51d84aa43d44f236af51807c065a642b4b59a2854a25ff29d1e5208b1168	0	root	root	
+@@FILE@@	/usr/share/locale/nl/LC_MESSAGES/shadow.mo	83207	33188	1750796926	6580fd951d39f4a526aea9aa7ac04c06dcbb1110099e34a82ae148112814ee6f	0	root	root	
+@@FILE@@	/usr/share/locale/nn/LC_MESSAGES/shadow.mo	11360	33188	1750796926	40f270c14eb8ff3d34307f3947e685d025c47694406c7e63eb2691b1b70fa623	0	root	root	
+@@FILE@@	/usr/share/locale/pl/LC_MESSAGES/shadow.mo	17248	33188	1750796926	be48ef771cbf82d227749d2b6cae9d00e9b13e1662513899f118721cd5d6eea8	0	root	root	
+@@FILE@@	/usr/share/locale/pt/LC_MESSAGES/shadow.mo	62327	33188	1750796926	42cc2f3b07a370677c87b0ac3b1eaa69e08170da403ef2e2fd25a8477075cd69	0	root	root	
+@@FILE@@	/usr/share/locale/pt_BR/LC_MESSAGES/shadow.mo	53495	33188	1750796926	dfd2fc04e33682d05415d0efe408be368c4487482c40c7b8b3c93603da9e6d47	0	root	root	
+@@FILE@@	/usr/share/locale/ro/LC_MESSAGES/shadow.mo	86468	33188	1750796926	78755be6e57d0b60848f68a8acd99f646fe0919d27cb9dbf60b650b21a696ade	0	root	root	
+@@FILE@@	/usr/share/locale/ru/LC_MESSAGES/shadow.mo	84062	33188	1750796926	9670d7c6ff7479ba772fab11cfc78be20cf2c7c678ac35e57f938c6ae7452228	0	root	root	
+@@FILE@@	/usr/share/locale/sk/LC_MESSAGES/shadow.mo	40520	33188	1750796926	ee3fc8d069c9b2ebd50022f8683ccd412f2adcea3ea86cddff2a9dfd4cdf57e0	0	root	root	
+@@FILE@@	/usr/share/locale/sq/LC_MESSAGES/shadow.mo	960	33188	1750796926	781ff25d3b589fc141d303b141c78b367c5737c579ecfd0c8eb5decf126f3ad0	0	root	root	
+@@FILE@@	/usr/share/locale/sv/LC_MESSAGES/shadow.mo	51065	33188	1750796926	0e121dcd8c4839711c0af86a1448d474a5b1066c1596b13b812e1462c7f27988	0	root	root	
+@@FILE@@	/usr/share/locale/tl/LC_MESSAGES/shadow.mo	17082	33188	1750796926	283752444dd0357fe0afbe61b0105bc8c97cb3997b93b3a5984bbb94f554d45c	0	root	root	
+@@FILE@@	/usr/share/locale/tr/LC_MESSAGES/shadow.mo	18589	33188	1750796926	4eabf3a93a902fe274ab5fdb43af29176e3bc5a871e5d52bf125c4acfb63dd19	0	root	root	
+@@FILE@@	/usr/share/locale/uk/LC_MESSAGES/shadow.mo	98708	33188	1750796926	82a6c0c0594e9374872dbd037cc26f7f30358b15b07de30d220232258737c296	0	root	root	
+@@FILE@@	/usr/share/locale/vi/LC_MESSAGES/shadow.mo	69762	33188	1750796926	c421cca6ca9845492cc789a780e589c60ff6b9ec890be074791e54031b36c1fc	0	root	root	
+@@FILE@@	/usr/share/locale/zh_CN/LC_MESSAGES/shadow.mo	66763	33188	1750796926	3620a35bcd89c6f642f27f3ed5fb4282c60350e78e963ac49c78ea1a6d3a5d54	0	root	root	
+@@FILE@@	/usr/share/locale/zh_TW/LC_MESSAGES/shadow.mo	62720	33188	1750796926	6b58878a1cf46c14167ada2c271131c6b8bb1c63906a264c4a6dcf0fbc3fd678	0	root	root	
+@@FILE@@	/usr/share/man/cs/man1/gpasswd.1.gz	969	33188	1750796881	f4483464352d5d1b71d326fb10c517669f82f6688229b5d9c78002b837c567f4	2	root	root	
+@@FILE@@	/usr/share/man/cs/man5/gshadow.5.gz	797	33188	1750796881	384edd0e6f9dc0a209533bde62ed8c2432742f6546612fe85b87451151156a15	2	root	root	
+@@FILE@@	/usr/share/man/cs/man5/shadow.5.gz	1017	33188	1750796881	b8693d578738a33c35251acceba964d74b4ead7f1bb6048a0bd64857cd978997	2	root	root	
+@@FILE@@	/usr/share/man/cs/man8/groupadd.8.gz	1504	33188	1750796881	577b43c07f22215a900d44af4b3d9bd3045fe7f59bb13a063f32d0657fb286c6	2	root	root	
+@@FILE@@	/usr/share/man/cs/man8/groupdel.8.gz	721	33188	1750796881	9eb4c196ba7b4eedf2addc45ff19be996943e862ed816354d31581ed186e92e8	2	root	root	
+@@FILE@@	/usr/share/man/cs/man8/groupmod.8.gz	884	33188	1750796881	10717a76c9cd4c7f5b6620ac837783303d63686cf39fdb35fb6c5caa0a488ac0	2	root	root	
+@@FILE@@	/usr/share/man/cs/man8/grpck.8.gz	1329	33188	1750796881	60cb65b9a4a0d723f4f180600fb8cb74ee3471d6edfa43f911797abf41155f06	2	root	root	
+@@FILE@@	/usr/share/man/cs/man8/vipw.8.gz	764	33188	1750796881	173b0e4d1b9de4450ee891bd302f7a45b8f7d015ca195d0bbbdc06c6a3b74a84	2	root	root	
+@@FILE@@	/usr/share/man/da/man1/newgrp.1.gz	1186	33188	1753747200	2568ab4c8513d4267131e16e0ff51066573d0bc8f82fa53fc144dd8b92197ae9	2	root	root	
+@@FILE@@	/usr/share/man/da/man1/sg.1.gz	1016	33188	1753747200	ed6e180c82cdd53b4652ea023c44619e5c9cf4de4ebcd09b72bb3a900b9b24c2	2	root	root	
+@@FILE@@	/usr/share/man/da/man5/gshadow.5.gz	1335	33188	1753747200	6e666eb0ede807e1599424305d0fc2e5a1f1733751ab50dafda69d1a857c90e1	2	root	root	
+@@FILE@@	/usr/share/man/da/man8/groupdel.8.gz	1434	33188	1753747200	cd7e7cebc75e6c65f321c699fce78250d9a86e13e3950dccab0e905f2961c05a	2	root	root	
+@@FILE@@	/usr/share/man/da/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/da/man8/vipw.8.gz	1219	33188	1753747200	9c8bc59e7715c8e6ba5d76d0c4cbc529d7a6939c3696996de41cdba982cfef4f	2	root	root	
+@@FILE@@	/usr/share/man/de/man1/chage.1.gz	2580	33188	1753747200	60a4b21139d9b06b21a4b971818ec16c2fcb15ece83d8eb30913703e6bdf40e6	2	root	root	
+@@FILE@@	/usr/share/man/de/man1/gpasswd.1.gz	1587	33188	1753747200	a3df29dc8cbe99b9f399e0b7dae249bf697ce34fdde8f4d28cc115a9a4c32fb2	2	root	root	
+@@FILE@@	/usr/share/man/de/man1/newgrp.1.gz	1221	33188	1753747200	4ae9ec1213cf4c7e1d22ddf09ea911b4508f4d4ce8d77f8c2ca4970a573c78bb	2	root	root	
+@@FILE@@	/usr/share/man/de/man1/passwd.1.gz	3898	33188	1753747200	16aad39d56cc0c6a4c55b5008965531f4cf7d4ca047aeb08b9b9d2b8c27582df	2	root	root	
+@@FILE@@	/usr/share/man/de/man1/sg.1.gz	1059	33188	1753747200	60210da87de4f5f70a0783f85eb5537ec94f214c26e79fd8fe7402989985f9b6	2	root	root	
+@@FILE@@	/usr/share/man/de/man3/shadow.3.gz	2037	33188	1753747200	2273f8455c453ef0c86e8bcc2c1a26f3f44500af2a2731990e06a69d28576a17	2	root	root	
+@@FILE@@	/usr/share/man/de/man5/gshadow.5.gz	1440	33188	1753747200	f359825aaddbb04e81672f99a91dbeaf672123f849a1b9ae2bcee802d19b4130	2	root	root	
+@@FILE@@	/usr/share/man/de/man5/login.defs.5.gz	2081	33188	1753747200	47e37f1e3102411997489e28429c8b1bcab31c92468ec8f1b8d3c6373664843a	2	root	root	
+@@FILE@@	/usr/share/man/de/man5/shadow.5.gz	2060	33188	1753747200	6d88fb33ebb75419ee59b73576c6708f3f22a002f0cb5eb7cdfd81a6b547142f	2	root	root	
+@@FILE@@	/usr/share/man/de/man5/suauth.5.gz	1989	33188	1753747200	a723b97d9de4ba0d44531da211f7634880111658fc68a60afea780b4d66fb7d5	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/chgpasswd.8.gz	1883	33188	1753747200	2b1ed9c792292ba40183cd189dbc0768f4c2008cdde2f8a2f0ab42759e7a73fa	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/chpasswd.8.gz	2208	33188	1753747200	c06578e0f67b9cbf4ce65d7a3a53d888468c3dfea080943a8a82912860d2f00e	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/groupadd.8.gz	2565	33188	1753747200	7822fa745d8a61f0acef0ea3e72fa94b0f4a96460009e3a09a36d94360933061	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/groupdel.8.gz	1505	33188	1753747200	fdb2b61408223e9a9489d3ac3e2eabc20970cd3c31c80f143aeff571ad12be55	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/groupmems.8.gz	1454	33188	1753747200	2e040c45ff57b4b2a97f0134bb111f5a67fa977b9322ad035a9224356dee8c4f	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/groupmod.8.gz	2208	33188	1753747200	2ca53d35dfd80c4c31a0cba9d0455c1fa362cebabbd03fe632f389dac08f2459	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/grpck.8.gz	1979	33188	1753747200	a38b8c909de0f3478d7b99a899055a9b5dee53efba9b2aca71cc6121884b8f69	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/newusers.8.gz	2686	33188	1753747200	8a776d5bd93f4e08e0eb1edd7ebb4e28489addd1978050f31c929ddb8ee05ff2	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/pwck.8.gz	2215	33188	1753747200	4871c2eb0d88a781b9a06ea8ed21ec0f779c735abe63c2ca5d429fff73d70f45	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/pwconv.8.gz	1636	33188	1753747200	5a2638b217e29ef39f3b9452e1d422d88c5f90f69792c61311d55a3e060c8e41	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/useradd.8.gz	5865	33188	1753747200	72c2111d09edfe622b862c54173a4919b460b1c3edff7f132461aec9758f6606	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/userdel.8.gz	2295	33188	1753747200	33772764fbf6f9946f435390a1a6efb9345e965b0fc65660b16e9a71faf77e8d	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/usermod.8.gz	4163	33188	1753747200	263d9f87a4d28dabd2f3eb2ab22e0a503a8e0d20dab7aa21b57c8839a0527269	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/de/man8/vipw.8.gz	1259	33188	1753747200	1f62cdecd6e6bbf24a30dc3240138347159053746cb922d8f4e799ad168fc762	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/chage.1.gz	2521	33188	1753747200	59f586cdbfeff5a99e0f70c32dac20085f5e392031814773fe02a3a7d46c92ab	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/gpasswd.1.gz	1596	33188	1753747200	7c778e555401ac74076ba621ccd0c8c6ff3d91e256c7a162533f4fc03259b0c2	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/newgidmap.1.gz	1350	33188	1753747200	d2727ea670fee0086102a595f1487bf86e26054f73192da5877acb5b422a7333	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/newgrp.1.gz	1206	33188	1753747200	ea257404d8d340232dc8a1336b694e54943aca2a74eb6a632ec31f7dcd901b8a	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/newuidmap.1.gz	1347	33188	1753747200	bd0ca3b570456cc9bd80de219c2a6e690743e3a5cc6cdb6197214bb1d17b63f7	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/passwd.1.gz	3912	33188	1753747200	3413cb4e50ddda39bab0c55d93767f307460da491ed4c07de98002a1ec32bd40	2	root	root	
+@@FILE@@	/usr/share/man/fr/man1/sg.1.gz	1048	33188	1753747200	3507a5b83ce1fcfff0cb3b6de738050df4aa2c9c9b9bb77468376d7fbdc5e37c	2	root	root	
+@@FILE@@	/usr/share/man/fr/man3/shadow.3.gz	2067	33188	1753747200	f1848810231b137482600555fa3554643e18a22e28c689a8a53a51c1617ed5db	2	root	root	
+@@FILE@@	/usr/share/man/fr/man5/gshadow.5.gz	1463	33188	1753747200	00e46ad8c968f498de733ac7833b2a57fff201a080ca03343770c1ed68c81b37	2	root	root	
+@@FILE@@	/usr/share/man/fr/man5/login.defs.5.gz	2080	33188	1753747200	b1eafe7c3759a5c3572e66527077e7349f57444a3005912ae83c82c90cb2e20c	2	root	root	
+@@FILE@@	/usr/share/man/fr/man5/shadow.5.gz	2042	33188	1753747200	f2584ece85a1949d7082776f1910516604d9ff69de3249c213d3bd80c7966acb	2	root	root	
+@@FILE@@	/usr/share/man/fr/man5/suauth.5.gz	1910	33188	1753747200	4bc0df1727205d84e4ae7d634e3ac4ca6cd6957c035b1959dc8ee263d7bc81d5	2	root	root	
+@@FILE@@	/usr/share/man/fr/man5/subgid.5.gz	1419	33188	1753747200	f1866adf4c7af7c607be59c3f21ae86757700b85e8d11d00ca5ad66f713b148c	2	root	root	
+@@FILE@@	/usr/share/man/fr/man5/subuid.5.gz	1414	33188	1753747200	8f56f8f665fcc43d7669421399fdeab85e0ad1e2f5cdefc891222b7b81f80947	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/chgpasswd.8.gz	1869	33188	1753747200	463449e922e3b2d34666ff192ed62478d73de144bb0009a632c118551d75ade1	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/chpasswd.8.gz	2205	33188	1753747200	e9257636fffd43f3890928c7c7659096160d56813d70f05f7cae638977dd8fd7	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/groupadd.8.gz	2579	33188	1753747200	b975bb850a45b6a9a68b2503fc87712250f03310cd8e5fab8d83b94e9732ee78	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/groupdel.8.gz	1452	33188	1753747200	ad2eab87dedeef1d3d47645418d0448e75345578860e23aa78de0ed22581af9b	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/groupmems.8.gz	1410	33188	1753747200	89f34d2885c1b91a58565c4d2fa20f0dee0b12276cc38a71f90bd9f4dd6f40b3	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/groupmod.8.gz	2178	33188	1753747200	9a05dd83a61b8a7b909e1fd5d78f5f74076028cfd53cd153570b72cc178dc8ba	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/grpck.8.gz	1943	33188	1753747200	270c02392c4e280fa3b03b57e42007cb274a3ff90eec53098d0128a7e6476c9e	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/newusers.8.gz	2681	33188	1753747200	cb30f3e6a1bdc2d259207a4a0dde99d781cb7fe634f0ef3aaa9e4c412e8217fe	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/pwck.8.gz	2194	33188	1753747200	36476a4d7d824f877c678e9746b00cc27439ecb51a645afd0d71e7788d9152c7	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/pwconv.8.gz	1646	33188	1753747200	e7bcab60f1c5a584c9c28fb03a00296bac80ad70d38f46cab1ba9147cb4ae781	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/useradd.8.gz	5814	33188	1753747200	acaa0db5e8571c074521d8cc438ca38748fa77245095f7b23fdce39f6e9498f4	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/userdel.8.gz	2329	33188	1753747200	c46ff938b54b97b418b3f741916e4ce98e4bda27e0240fd70875a0edf2ab9526	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/usermod.8.gz	4121	33188	1753747200	4a6765c45a64f879575e271fb25868c9f7de4e17b1fbb856fb91691667d920e0	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/fr/man8/vipw.8.gz	1237	33188	1753747200	95fca0d719f361182765b108ad53afc0bb144d249dede514c2b00ccde7e15178	2	root	root	
+@@FILE@@	/usr/share/man/hu/man1/gpasswd.1.gz	1028	33188	1750796881	11726b9df7c2df6592437cbadddde7b59bc48bfef272a8c48f3538320724f61c	2	root	root	
+@@FILE@@	/usr/share/man/hu/man1/newgrp.1.gz	1116	33188	1750796881	fd20aaab1289b083de372dace04af8ac8d70443f43b11a65454fd281235a4c9a	2	root	root	
+@@FILE@@	/usr/share/man/hu/man1/passwd.1.gz	2990	33188	1750796881	257d513a26996cbf08aed8b3fe49e1c738527b2901f1b507410bb2b8b65ec66f	2	root	root	
+@@FILE@@	/usr/share/man/hu/man1/sg.1.gz	38	33188	1750796881	146a7bc22100812e1a9cd417a0aafdcd5ba0a0718dea3dabf06e8f2e1a6157f5	2	root	root	
+@@FILE@@	/usr/share/man/id/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/id/man8/useradd.8.gz	3174	33188	1750796881	05dbe60080b2348fce67e6dbae09a4dac3267c8a171b819801756610a6173c55	2	root	root	
+@@FILE@@	/usr/share/man/it/man1/chage.1.gz	2500	33188	1753747200	f9c8e8c9ebed8eb90e35af54cc245433975ba73c5612c01c4eb4a42f5a97145a	2	root	root	
+@@FILE@@	/usr/share/man/it/man1/gpasswd.1.gz	1584	33188	1753747200	222d7702f80e65ccd7975daccea2c7d37e9c9e420d42a4d06c40bebd98c46f77	2	root	root	
+@@FILE@@	/usr/share/man/it/man1/newgrp.1.gz	1193	33188	1753747200	7c17c1a1061bd23564fd8ac0250eca0aa262624df7b1215aacb967b6060bdba5	2	root	root	
+@@FILE@@	/usr/share/man/it/man1/passwd.1.gz	3784	33188	1753747200	a3078240a611045d4af978536c243c5cfc836359bf1dd5484a324d4cb13f8d55	2	root	root	
+@@FILE@@	/usr/share/man/it/man1/sg.1.gz	1031	33188	1753747200	818b45fa810380c64d349fbbda6fd9680ced72671984c55318c3f64c27c022b6	2	root	root	
+@@FILE@@	/usr/share/man/it/man3/shadow.3.gz	1961	33188	1753747200	43cc5a59e779b15aaa27acb844711f4c7567ba93dbfae5e9a6d37fa2fb1fe0d6	2	root	root	
+@@FILE@@	/usr/share/man/it/man5/gshadow.5.gz	1356	33188	1753747200	2e362e3e239c41a04ac88c823bfc8fd4c34a10dffb929e09c52ea510cffca1a1	2	root	root	
+@@FILE@@	/usr/share/man/it/man5/login.defs.5.gz	2040	33188	1753747200	9e4b3ce1b6bc4a451933c8b32b33c341786613753b20c1235e6de2c6cb568b2e	2	root	root	
+@@FILE@@	/usr/share/man/it/man5/shadow.5.gz	1932	33188	1753747200	e87c0b5fb9ca144a18248cbb8160276502efe5035bc55b8ea45296aafe02ea80	2	root	root	
+@@FILE@@	/usr/share/man/it/man5/suauth.5.gz	1925	33188	1753747200	34fb3a2923a867e34eb6a1bcc37cd835db48bdd31bc4dd8359caad01096e91e5	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/chgpasswd.8.gz	1839	33188	1753747200	343c6b69daa27348de07ada438b8623c7c269e60c949e3ecbbd6c8d6b15ca120	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/chpasswd.8.gz	2167	33188	1753747200	2ff3253084a9b77c2d9bf772e6be61862c53a49083215691ddea2a73ae611844	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/groupadd.8.gz	2529	33188	1753747200	6515a51acc2c6f016736181f017234542b710c47f581e4204967c411593a169c	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/groupdel.8.gz	1443	33188	1753747200	0a6fa4032de531f53089457ec90efb777698ba61b126480951f98b1672847e2d	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/groupmems.8.gz	1433	33188	1753747200	5960c96e6585b03fb1ae9cbfc0572b9ba5bb77ab139d57c78dfb31733027c73c	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/groupmod.8.gz	2151	33188	1753747200	cb1048322b2e6a10ec6b2c75ffd30ef82559805cbf76105524ac465a719bd2f4	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/grpck.8.gz	1933	33188	1753747200	29d235a7d1a5568d4163d65a900656688218013d6f1da7a16758110cdd91e3f4	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/newusers.8.gz	2596	33188	1753747200	d5bc9c9641abd0b26f41c7a33f7c03f426fe42f2ac22a37d1121eb3a78fac6b8	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/pwck.8.gz	2104	33188	1753747200	71e764f7ba9ebfe9d7e34c203fcf6897defa08f7b8c1ae42024346562982ca0c	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/pwconv.8.gz	1623	33188	1753747200	863c5f4d01c7809277d63e0d9aea004a4cedbe1040836861312b917dc44a81ed	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/useradd.8.gz	5698	33188	1753747200	5411d1625a5bfd837731f4d3ca410c74a287d8b166f02d8e9e918b6be1195bd8	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/userdel.8.gz	2240	33188	1753747200	539a0512d8d909a5ee945835ce3eaab980d140c608790b87ec7c0ed7bb6dabd7	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/usermod.8.gz	4068	33188	1753747200	fcd99d6fcfc1c6f1bb3af4fce65248c8450233e451151fdd918f03ccaf84a83c	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/it/man8/vipw.8.gz	1244	33188	1753747200	7230789b2f614f8a7c2a1f4eadad34b7685ba3158774e9c3cdef26fb8949e456	2	root	root	
+@@FILE@@	/usr/share/man/ja/man1/chage.1.gz	1688	33188	1750796881	75c420eeb05a7220ebd6511a8c1c06408e6efce8e37792f6e72912878e377e4f	2	root	root	
+@@FILE@@	/usr/share/man/ja/man1/gpasswd.1.gz	1196	33188	1750796881	1ce09f83fa3327ab1d7e2ef42e3465621c0365824c896e2f7c3ed9a61db5731c	2	root	root	
+@@FILE@@	/usr/share/man/ja/man1/newgrp.1.gz	1331	33188	1750796881	ac8fdbc03ec702dea60d7809852ac4bb00cc5b4f2821b625fd097679965d5eff	2	root	root	
+@@FILE@@	/usr/share/man/ja/man1/passwd.1.gz	3662	33188	1750796881	7088e3b1c4f16feeb7e7e293fd716e0ca8a70c0bc34da18e257a5a64fffd4192	2	root	root	
+@@FILE@@	/usr/share/man/ja/man1/sg.1.gz	38	33188	1750796881	146a7bc22100812e1a9cd417a0aafdcd5ba0a0718dea3dabf06e8f2e1a6157f5	2	root	root	
+@@FILE@@	/usr/share/man/ja/man5/login.defs.5.gz	2653	33188	1753747200	25ee48ce1c20e3510732325a7e492458f779d599b5493baaf2c79204c878d423	2	root	root	
+@@FILE@@	/usr/share/man/ja/man5/shadow.5.gz	1365	33188	1750796881	3d54e1e28be271c2f446fd1f079ba5f2ad1cbc97fe3a463099b5072a2e43108e	2	root	root	
+@@FILE@@	/usr/share/man/ja/man5/suauth.5.gz	1862	33188	1750796881	423e1064abbe5cc8fa90ffca9256fc424db0249564bc93324cc144a158264036	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/chpasswd.8.gz	1114	33188	1750796881	b84731fa83090a10323fa4154e8f3d417e53351c6c80dc475fa4395b2a9ca014	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/groupadd.8.gz	948	33188	1750796881	74e2fb0811d843936a792efe9e3340301839caf77a13de3da47f20fcdabc5960	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/groupdel.8.gz	787	33188	1750796881	25c65b56b9d4bf67734ebbfcbcc2d363957690950fb996012f07a9485a5bec36	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/groupmod.8.gz	949	33188	1750796881	60430531651a1087a86b6c1423de07d0d7476bfa5427c0ac57e113aa0316ff25	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/grpck.8.gz	1584	33188	1750796881	132dd4176350bdc864019b57cf43259e4a4cf5644d4dc2ac6c0e8245cc30b9b8	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/grpconv.8.gz	38	33188	1750796881	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/grpunconv.8.gz	38	33188	1750796881	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/newusers.8.gz	1091	33188	1750796881	ca457da93afbf8fc3aac7c2cc38c25c13a1d6ba794ea82efab9cc91eae029757	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/pwck.8.gz	1607	33188	1750796881	0bc7d0f37d78327e7052448aaf64d068357785e9c66581ab3b29992334152848	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/pwconv.8.gz	1332	33188	1750796881	da984d930a18f1884c7f1bd9d472551eb5631b46590f23822f88238985123c92	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/pwunconv.8.gz	38	33188	1750796881	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/useradd.8.gz	2435	33188	1750796881	81d7c9f3501728a94be789f03d74aadc546d87e8ca88beff607e1238bc7b4d91	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/userdel.8.gz	1063	33188	1750796881	8a5f65a89685ad3500ab775f2f95ef00ada40f7907a309e53613bf6ea26c2b3b	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/usermod.8.gz	2205	33188	1750796881	d995cd569439c641a871dc8a27396c10009b520dbe2dc91ff96324f254e7212c	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/vigr.8.gz	36	33188	1750796881	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/ja/man8/vipw.8.gz	694	33188	1750796881	0e6b1dce53bef6c43ff2387bde2c8ff503febd3db32752eda020985f429d4128	2	root	root	
+@@FILE@@	/usr/share/man/ko/man8/vigr.8.gz	36	33188	1750796881	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/ko/man8/vipw.8.gz	619	33188	1750796881	dd674b5e53c53a08411997cdf7f3f055fa87603a8f403fc002e0891e0fe1ca66	2	root	root	
+@@FILE@@	/usr/share/man/man1/chage.1.gz	2458	33188	1753747200	6f7d55d48513e88766620fb1e67f81beb3f034577b847103d31a00dcee39a871	2	root	root	
+@@FILE@@	/usr/share/man/man1/gpasswd.1.gz	2657	33188	1753747200	e31be92366b5b1a35effa788c530f47f1d6bd507521f296a8ff9e15e448c80f0	2	root	root	
+@@FILE@@	/usr/share/man/man1/newgidmap.1.gz	1344	33188	1753747200	8a2d35d7a043a6f01e11e820b7f7a1ce80543b9e284e7ef55129093d94d60d7b	2	root	root	
+@@FILE@@	/usr/share/man/man1/newgrp.1.gz	1228	33188	1753747200	f48c04079c4b0f5dd01779654c07a5b2ab8374a73e3bf5de9422ea9df4704ec0	2	root	root	
+@@FILE@@	/usr/share/man/man1/newuidmap.1.gz	1342	33188	1753747200	dc35882e04de842f866e026260e655466877a5cac9d075080482f4e84cbca8c5	2	root	root	
+@@FILE@@	/usr/share/man/man1/passwd.1.gz	3541	33188	1753747200	528cc33f3bd406bca430583cac2a774ce83b49d80de4f0052b60f3795712144d	2	root	root	
+@@FILE@@	/usr/share/man/man1/sg.1.gz	1061	33188	1753747200	c646ceeb5eb4f36bf1985dd2a054ccc1897d3edf73232d85d2bd33b1b712fd53	2	root	root	
+@@FILE@@	/usr/share/man/man3/shadow.3.gz	1799	33188	1753747200	dcc30eb1dfeff60f1bc94c2f4bd7dcc8d777d6429bf275ece35ddd35c9b15537	2	root	root	
+@@FILE@@	/usr/share/man/man5/gshadow.5.gz	1270	33188	1753747200	62d5104638bf6c84f1f0bd7c378d407c12609d8e2de9887c495d54a637d3d108	2	root	root	
+@@FILE@@	/usr/share/man/man5/login.defs.5.gz	6280	33188	1753747200	abc640a9846ee9006d3477659599f0f80ad352d473f0e7dd7827bcccf633e062	2	root	root	
+@@FILE@@	/usr/share/man/man5/shadow.5.gz	1802	33188	1753747200	670f94d458e4e17c5dbffe0200da2da9a5c3fb0e557541bd0c48cac36525a571	2	root	root	
+@@FILE@@	/usr/share/man/man5/subgid.5.gz	1388	33188	1753747200	ec0d868d36b3434728c7c5520950d7bfd8a0f00cb9cc4814c18ff06d7df61cc8	2	root	root	
+@@FILE@@	/usr/share/man/man5/subuid.5.gz	1385	33188	1753747200	21ce547d680c377b8fdb2594d6153cc0fcb474edad4d15295b79efd00275308c	2	root	root	
+@@FILE@@	/usr/share/man/man8/adduser.8.gz	12	41471	1753747200		2	root	root	useradd.8.gz
+@@FILE@@	/usr/share/man/man8/chgpasswd.8.gz	2862	33188	1753747200	d179140528f72912bc45fac167566f2d5923e1fdf0d8bfc2f2c010a58c6f04f0	2	root	root	
+@@FILE@@	/usr/share/man/man8/chpasswd.8.gz	2506	33188	1753747200	eb89aef7492509e1f8eb39cc7daf134af7cbae6c3ca1483e076a2fbaab7795ff	2	root	root	
+@@FILE@@	/usr/share/man/man8/groupadd.8.gz	2850	33188	1753747200	6ed325e21334d7fc332b75a410c418a995008c270144305ebff0a1f74a06a77a	2	root	root	
+@@FILE@@	/usr/share/man/man8/groupdel.8.gz	1700	33188	1753747200	f8aff552c2975cc5c2eb5eb4216b9992231fe63f301b5e343b036012231b15b3	2	root	root	
+@@FILE@@	/usr/share/man/man8/groupmems.8.gz	1686	33188	1753747200	4c74961e3ebbb3cdf9abde911818471041ad5a7e0ae19f61cca865ff6e470165	2	root	root	
+@@FILE@@	/usr/share/man/man8/groupmod.8.gz	2366	33188	1753747200	34bbe31c24ef0b181fc8db9a6b4a3b56c499823e563a881e3be3a773ba9f6ed1	2	root	root	
+@@FILE@@	/usr/share/man/man8/grpck.8.gz	2183	33188	1753747200	00be06098fd22dc6d0ca039350b3806be3d7a899eef089343bd6ab042e4e219f	2	root	root	
+@@FILE@@	/usr/share/man/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/man8/newusers.8.gz	3383	33188	1753747200	05d26d6a2e3ea1a8d51a357e5b1be3f81ceb37fec7ebf97a034b7369f5bb5e4b	2	root	root	
+@@FILE@@	/usr/share/man/man8/pwck.8.gz	2335	33188	1753747200	300dce4eac9959d425ef65371d0dea671c4fb9fd56272b4bcc41dbc5ddc85afe	2	root	root	
+@@FILE@@	/usr/share/man/man8/pwconv.8.gz	2156	33188	1753747200	25083ab73c0a38c5e133c8a19fa9fd02155815e3911a2472c3495ec73f41e953	2	root	root	
+@@FILE@@	/usr/share/man/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/man8/useradd.8.gz	6866	33188	1753747200	f1559f379ff149a286762d7da34fb353b3b2f02b7eb960f5c286efe178a41fcf	2	root	root	
+@@FILE@@	/usr/share/man/man8/userdel.8.gz	3090	33188	1753747200	6502e59e829305b6ea1c3a428dcc2d4bedb709fb3b3ef76b0343910c51009520	2	root	root	
+@@FILE@@	/usr/share/man/man8/usermod.8.gz	4701	33188	1753747200	2d77e60feea936d9c53c3420e22b151e07e3f95bd0a17f74f17371a5d51ac9a1	2	root	root	
+@@FILE@@	/usr/share/man/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/man8/vipw.8.gz	1179	33188	1753747200	0dd85ccd88152138bb592ad382d099d0e5e99f37b3bd8fe1165f472626f9609d	2	root	root	
+@@FILE@@	/usr/share/man/pl/man1/chage.1.gz	2564	33188	1753747200	85cf02564b4a02359ff45f3dd83d97b3903ba734d196582fea460c19e33e124f	2	root	root	
+@@FILE@@	/usr/share/man/pl/man1/newgrp.1.gz	1209	33188	1753747200	fbb058f295f42b03ede774428caae5d9f47ab733b9adee837e238b37df7495f0	2	root	root	
+@@FILE@@	/usr/share/man/pl/man1/sg.1.gz	1044	33188	1753747200	bbf0ecf232bbab127f6ac9b5642225e31de60249b3e9a064a7b94a5bbb77b7f1	2	root	root	
+@@FILE@@	/usr/share/man/pl/man3/shadow.3.gz	1826	33188	1753747200	9d6a9c0b53fd2a4dc03b4a9de91a817af5a37e897b761bcac79dd160931f3ec9	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/groupadd.8.gz	2546	33188	1753747200	e264577fd5df5314275fbd9a310ef462ef0764e9f6a67d6d4695d6122a72bdc8	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/groupdel.8.gz	1456	33188	1753747200	5be3ebb8d6a740905f0b440d04ed1e5696664fe20e417e85158480dd83da6e3c	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/groupmems.8.gz	1427	33188	1753747200	03d5d4d23ec6486195f257a5750ab3696e730976f528be966c5518ad2ee920bb	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/groupmod.8.gz	2166	33188	1753747200	b84f6ea8d8eae0502c85e3c46ca828cbf8edc95065e1b281c70e626366170301	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/grpck.8.gz	1924	33188	1753747200	9b78677feffa60f2761cc7e3bef3b1edbf464683ef668aff8edbc3c51de50034	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/userdel.8.gz	2203	33188	1753747200	cb821860b5db81b84336a1b37fafd1c8bf8bec2aae55906afd4c0de356d54d47	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/usermod.8.gz	3932	33188	1753747200	87c585f12d0c988277309cef16e3dbcf4d5334140ce1a7956500f7252b5a9b56	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/pl/man8/vipw.8.gz	1249	33188	1753747200	5cdcfeaae351f2ee08c161ae9145189df16cf478b2f536142cea043be69d9045	2	root	root	
+@@FILE@@	/usr/share/man/pt_BR/man1/gpasswd.1.gz	1447	33188	1750796881	9feeef19638bf1a972b7bc2a4f1b5d844e1c146524608c50bef0e63f6760c324	2	root	root	
+@@FILE@@	/usr/share/man/pt_BR/man5/shadow.5.gz	1127	33188	1750796881	89a05571577a8a4415a4d566a45f645cb992a2929d1022c4d8bac1c0eb498fb1	2	root	root	
+@@FILE@@	/usr/share/man/pt_BR/man8/groupadd.8.gz	1627	33188	1750796881	01b4662b47d626be0ae8a9e03d97b47621648c4a8c00a3704bdab062fbec3000	2	root	root	
+@@FILE@@	/usr/share/man/pt_BR/man8/groupdel.8.gz	1182	33188	1750796881	e7d5060ab2b3827ece4002f86c485614c9cf78649b92e41dfa8073a71eb2af0b	2	root	root	
+@@FILE@@	/usr/share/man/pt_BR/man8/groupmod.8.gz	1295	33188	1750796881	ff55fb6f1cb3b42b2baf037de5bf6e4fe8f9a1f803b369949ed9c9e07fa0837c	2	root	root	
+@@FILE@@	/usr/share/man/ru/man1/chage.1.gz	2718	33188	1753747200	6a0e0f0d798910916341c8b61a9725679401228dae9b76071491d60b09502d17	2	root	root	
+@@FILE@@	/usr/share/man/ru/man1/gpasswd.1.gz	1821	33188	1753747200	204374d50562ee6e96d2069dadd402d75d2b26d8290cd3602682984e58ff7133	2	root	root	
+@@FILE@@	/usr/share/man/ru/man1/newgrp.1.gz	1326	33188	1753747200	281a018dd23a0bde0bf59a518d348b770d87304077a9d0c4d95fa2f3741a439c	2	root	root	
+@@FILE@@	/usr/share/man/ru/man1/passwd.1.gz	4286	33188	1753747200	cd6d02e9e89d1f1b654afa9c1df39da3dff2a8802881f1f3c8a9daa7405d754d	2	root	root	
+@@FILE@@	/usr/share/man/ru/man1/sg.1.gz	1169	33188	1753747200	ddba992001ef344742fb313fa36717e7349eb5ef6e7c88440ddb68789aabd2f4	2	root	root	
+@@FILE@@	/usr/share/man/ru/man3/shadow.3.gz	2329	33188	1753747200	5784ce051e9ea1d69070aedf67a5b384d96e9888c0eba4d7de0a1468e2689fce	2	root	root	
+@@FILE@@	/usr/share/man/ru/man5/gshadow.5.gz	1632	33188	1753747200	0d70e5418de618ebcf39c27c6b711a7387ff60b935a491daac1c2324cb220261	2	root	root	
+@@FILE@@	/usr/share/man/ru/man5/login.defs.5.gz	2373	33188	1753747200	1836b5b0a608383d68cd04dc723dba65da47d64c1ca43a3e194a8e31541f8b69	2	root	root	
+@@FILE@@	/usr/share/man/ru/man5/shadow.5.gz	2262	33188	1753747200	347747cc250b1a14aa50e0181187ff8b93098fc72f295c01a89057b3fb0674eb	2	root	root	
+@@FILE@@	/usr/share/man/ru/man5/suauth.5.gz	2247	33188	1753747200	07822b65635e81ad171ba9921ec63c51791fb746412d4d4b4ae6ad15b3e5bafa	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/chgpasswd.8.gz	2136	33188	1753747200	9684f15bcce455720cdfaa85f52b0bcd098e0e2a3bc2cf2fb30c914018dadc0f	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/chpasswd.8.gz	2483	33188	1753747200	8b6768dd104d28dcfc0658aeb7cad0f63d8aedaf4f97b106052012d4facdf8ee	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/groupadd.8.gz	2783	33188	1753747200	d6995915c4ec2182a62b989b04af1e614cd4ebcc9f8b8bff79cd7584100c72be	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/groupdel.8.gz	1716	33188	1753747200	24e8e7b61232c903980faa269a89005d296596775e80b4cbabfd4050c6108869	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/groupmems.8.gz	1611	33188	1753747200	4bf96b6e351e93f0144481af53ae61ccc352fc8a620d05fb5d227621473f9327	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/groupmod.8.gz	2422	33188	1753747200	9387f6400b80ba3b5a14961e3f25dbb7c09ce2db3c763bbe9ffc1cd1b3691151	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/grpck.8.gz	2151	33188	1753747200	f6486dfbf74b6b4b27e32481f18a364db0bbf85e669b24002dabdef889270c3e	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/newusers.8.gz	3068	33188	1753747200	7800f69e40129a66396fea86851b2b822537a5acae9473c7325bc6e607ff99d0	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/pwck.8.gz	2443	33188	1753747200	1a5d055501ddf2b084d2c133923f56c19a492ebef4f7ba9ccf9ab20ca0c2d697	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/pwconv.8.gz	1792	33188	1753747200	812ef991fd9cd1690297b17447bf55717d67662e898b35eb8c8f4534673d6f67	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/useradd.8.gz	6145	33188	1753747200	598a9fa55c5967f2a842b1fafd582ebd45c133f48bca6edb7ebefb71d04a4e2d	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/userdel.8.gz	2588	33188	1753747200	c48171ee1532bda8ca11f38f925a674ef5bb6ac779062e1ec6e312b69ba31a98	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/usermod.8.gz	4396	33188	1753747200	93f8dd3bbc32012c3b5b1a8113bb3d268a3c33e57ba453510471c9b92dd8dbec	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/ru/man8/vipw.8.gz	1441	33188	1753747200	fe2d49e4b3ecb1039ebac961e2ff6e002184d85853a94dfa2a8201dbe119922f	2	root	root	
+@@FILE@@	/usr/share/man/sv/man1/chage.1.gz	2510	33188	1753747200	6c30820b6cc58b5b3dadf2032c68ad606b8b761cd590347125b5fe3796c8614b	2	root	root	
+@@FILE@@	/usr/share/man/sv/man1/newgrp.1.gz	1185	33188	1753747200	1f6e05d4a8991776fc21a9ce07c54e730c9789e5a5f451f304b43f08da2b13f4	2	root	root	
+@@FILE@@	/usr/share/man/sv/man1/passwd.1.gz	3644	33188	1753747200	459391cad724c62500565ba7f06f2cccd72153e3f76e30865774ba14f96411eb	2	root	root	
+@@FILE@@	/usr/share/man/sv/man1/sg.1.gz	1029	33188	1753747200	faeb21df01a5172b15fbd9d771c82dcaec61962a667301838a6ad01eb188eea2	2	root	root	
+@@FILE@@	/usr/share/man/sv/man3/shadow.3.gz	1840	33188	1753747200	d7c4fde5e356b86eb44c51f9148be5678dda6263ed86efb6bce9b1ff95e97391	2	root	root	
+@@FILE@@	/usr/share/man/sv/man5/gshadow.5.gz	1303	33188	1753747200	f4a97834c8bfb5a840738ad0f1261dda2aa3c0ec47a6c5e71e439d2e66308f51	2	root	root	
+@@FILE@@	/usr/share/man/sv/man5/suauth.5.gz	1875	33188	1753747200	9437c070d2b6e69c7ee8f53fd78383c608963c5b7abd5371e97223e7d78998a9	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/groupadd.8.gz	2484	33188	1753747200	c4544f30529d812e89709270f22ee0420a0d1862732ebab3a88ade81ffcad873	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/groupdel.8.gz	1448	33188	1753747200	57b662b786bc06e08ced3412fcb08b1a18b21f1f4c39e4f0ac0af4456ea92d18	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/groupmems.8.gz	1417	33188	1753747200	b652629ba140c61174455d9f0c7c6ccdf51ac09d9e315f5a438bec809f64093f	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/groupmod.8.gz	2115	33188	1753747200	0fb75b0baac407f156581cb1596249d59f5f14c6a911f9550fe5d664194434bd	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/grpck.8.gz	1915	33188	1753747200	3863ca4edd1127b10fedf4fbccbc752a5c8eeb058a16005f011f23223272b371	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/pwck.8.gz	2069	33188	1753747200	ac76ea89dee09d764831a2fb4d12453dd255f7ceb673e619340a8ab82bbe6682	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/userdel.8.gz	2186	33188	1753747200	5178e8beee8280532c565d686668190d38e903bed8f39b4425c362d58498ab18	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/sv/man8/vipw.8.gz	1212	33188	1753747200	2df72742d410ca4eb31753e3c9f9a951412352338c8507634e24939eb4172627	2	root	root	
+@@FILE@@	/usr/share/man/tr/man1/chage.1.gz	1553	33188	1750796881	83f7f32077543664f08efb652d5b81b83d9e8f0e97f0c00096d30959674c465b	2	root	root	
+@@FILE@@	/usr/share/man/tr/man1/passwd.1.gz	2839	33188	1750796881	b540a108be23b29d74c2783bbd5831e86dbef80e7edc10b666a566f708583e9a	2	root	root	
+@@FILE@@	/usr/share/man/tr/man5/shadow.5.gz	1101	33188	1750796881	cd76f9bb340094158fcdf026584676b1ba8bcd59e97e373f420ca28bded1f4a9	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/groupadd.8.gz	1098	33188	1750796881	547a2ffee2c844181887a65c593cae12c77896f029eafcda4743c777eb55b822	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/groupdel.8.gz	706	33188	1750796881	8b289ce7d27d7ec1fb1cfe44bcc3e3ee09c65f73fd4e00d464fa247fae98c36d	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/groupmod.8.gz	805	33188	1750796881	d4fbac31b63bf4d22d839f518f916c8d91a2a72583bd1912e9980bcaf6db5300	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/useradd.8.gz	2638	33188	1750796881	e366a8b4d1bdb4e8ed73b410aa6513cfbf6e27f4648c0dfa4d837998125b2830	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/userdel.8.gz	891	33188	1750796881	2f765d0a8196eb1eecc6843da10fe936aac344551ebabce6672769003476601b	2	root	root	
+@@FILE@@	/usr/share/man/tr/man8/usermod.8.gz	2006	33188	1750796881	7c384ec5e546c0361ad17c4204cf305b7aa2ab6b5ffb82e4820b9bb9399c119f	2	root	root	
+@@FILE@@	/usr/share/man/uk/man1/chage.1.gz	2898	33188	1753747200	792e27c270a69bc03daf521ed10eba1979c5fe6dc7df2a7e280cab9d347ca301	2	root	root	
+@@FILE@@	/usr/share/man/uk/man1/gpasswd.1.gz	1821	33188	1753747200	780293d3a4a40bf2ce60c100910c8eff31a898fe24ce7aac573ba6591b8ad41d	2	root	root	
+@@FILE@@	/usr/share/man/uk/man1/newgrp.1.gz	1325	33188	1753747200	92187e289cb33af964e97202b874d659c6c9d334f6261d3c7d9af7e78904d637	2	root	root	
+@@FILE@@	/usr/share/man/uk/man1/passwd.1.gz	4340	33188	1753747200	4d9ef8f017e91b133e0bfad176705e881c0d409afe2c747a5b842dcf81f98c65	2	root	root	
+@@FILE@@	/usr/share/man/uk/man1/sg.1.gz	1197	33188	1753747200	523e0fec3cd24ddbcf47bc845f7ba65029f040a8dbcd179e3a8003389988fec9	2	root	root	
+@@FILE@@	/usr/share/man/uk/man3/shadow.3.gz	2270	33188	1753747200	7220920985c683da23ca0bb88203af29824adb0978755cbbd1bb4681b4e4451c	2	root	root	
+@@FILE@@	/usr/share/man/uk/man5/gshadow.5.gz	1655	33188	1753747200	59fafee1ff14b05336a8790fede34595c548817d6926339d2a232f6133d1012c	2	root	root	
+@@FILE@@	/usr/share/man/uk/man5/login.defs.5.gz	2337	33188	1753747200	d9459072fd680e59e93939ab026789a5e900a83e218afd3e9acb7f903c28dfb8	2	root	root	
+@@FILE@@	/usr/share/man/uk/man5/shadow.5.gz	2329	33188	1753747200	410899c855bb4f302c3cec8353c07b22aea7956bb0ee15bda6038f18996f19b5	2	root	root	
+@@FILE@@	/usr/share/man/uk/man5/suauth.5.gz	2326	33188	1753747200	8cf84e05560b34d71ddd978b2cb304ff857bc184a8c76846609ebd85d0cb9e89	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/chgpasswd.8.gz	2159	33188	1753747200	4d31bb8a842be5e35ffeafba6245bde0b16a07f08f8c7aba56cf4658655b9af9	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/chpasswd.8.gz	2492	33188	1753747200	51924db8f61f365b11d3227bcadb84427da568f6276167298ae1209684a76388	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/groupadd.8.gz	2855	33188	1753747200	8c1932025e241834297461d4002bf60e8aecadd27ca1c72b43192f495373a4d3	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/groupdel.8.gz	1770	33188	1753747200	f91048bda688701229aa33e59fd95bdd55bcab01c90c7bf156565a69df4ab55c	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/groupmems.8.gz	1653	33188	1753747200	0b7c9cc7328ea459d7cbc1b11228cb6fde0daeb0e3f77ccc59fc80d1841198cc	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/groupmod.8.gz	2522	33188	1753747200	ba2e60b5d328c3100ca42ffd1e637a43051b4c31da42c8bfd705e2746b8a0add	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/grpck.8.gz	2212	33188	1753747200	19110d6cf4a919b46dc74bc13b58c6fbee5dabc538ad3459fea47c2b8809c24f	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/newusers.8.gz	3084	33188	1753747200	b03cb32bae86f19df0716d18989b48128ebf69c211717d12adc9ee9b248f0987	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/pwck.8.gz	2495	33188	1753747200	6bf3c0d06d50a2651bd58d87fa3a163bc52af1a361f44e3b230cb5614611c2b4	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/pwconv.8.gz	1796	33188	1753747200	7f317b5349c8016d53a5948b6bda749321c83b0928d333d48f7745b3c27aaa59	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/useradd.8.gz	6505	33188	1753747200	890bf610b1b7be564779b6722b9ed681364d611166a59f1975e7a3e9a32ab255	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/userdel.8.gz	2623	33188	1753747200	0ef173c87b092e2d152876a1dd5cfff6e9078a25b59c2f9b4796c9db22a87a8e	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/usermod.8.gz	4732	33188	1753747200	c4eac0e2213e19634a332c2c876dcf759ed0220b89fba054c6631070c4bfceff	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/uk/man8/vipw.8.gz	1432	33188	1753747200	bb42fad7846dd03e98244ea31a7f6241b396ae8cdaa7db03005166fb99172839	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man1/chage.1.gz	2567	33188	1753747200	829cca6d98c5bcef4469c90dc6e267c875d7452df1a13e81f61d1da20a2f55e4	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man1/gpasswd.1.gz	1626	33188	1753747200	c9bad6006fc790d6b61420671ec6f3597a8b39398ff7354018ed609ad8bbe28e	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man1/newgrp.1.gz	1236	33188	1753747200	a5590e87b63c9f21cd10548fc473504ac945925a0c60f89e711c5e9337cfb00b	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man1/passwd.1.gz	3932	33188	1753747200	aa02fb15e95ec24fea69b1235cba9a6c3c81b59538aa1be70d371a535b2a5ba5	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man1/sg.1.gz	1080	33188	1753747200	7629f9e35ad97d5d0c504b382891de993d7a453f4fb972cb0457c301fbbe11e6	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man3/shadow.3.gz	2043	33188	1753747200	e82b5dac028afc9ae433e341f94c5ae6e49603c03a486336ce4ed6782e414cea	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man5/gshadow.5.gz	1443	33188	1753747200	a55dd68aa48f03655a03c6323ef08130c0622c58a304500047b6b9547b69bac8	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man5/login.defs.5.gz	2075	33188	1753747200	1689997d877424d18687e3eb584986d344678833173bcf69d45543be2e451a91	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man5/shadow.5.gz	2033	33188	1753747200	55eb878671ae0a12047cd5d3e9b0f5799f7549a81d056d74651e27680c925561	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man5/suauth.5.gz	2002	33188	1753747200	a97c1a7a28e7dbbb40b83f8f80041396ab1388dce348a214e4cf6dc44818e5c0	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/chgpasswd.8.gz	1888	33188	1753747200	695a950168b1b51ae68dbc1ffaca7891f07887a6b1caf595ba13df3c9ccb4958	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/chpasswd.8.gz	2228	33188	1753747200	a70e4f63b1a230dc882f85200d0cdcfa9dfff774b3674a2b4e06f8803c07dd24	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/groupadd.8.gz	2581	33188	1753747200	e18ba95f1358b3747807c177323a3be22d0124505b3ef8f63f070232ad8970ef	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/groupdel.8.gz	1521	33188	1753747200	e2c2b4474f7fe206d79f591edbfe2e84e51179d2edf76df81d6fecfe38549b37	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/groupmems.8.gz	1486	33188	1753747200	2be581a09ebecfbe56a5957b0f716f2fb9f3d9fbc5645b6dea00c7fbc1f0ee94	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/groupmod.8.gz	2175	33188	1753747200	d2ecc0347bd2b9ebf3837fc9b627cf3c232d51ae024064dfda31b2a99c630c82	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/grpck.8.gz	1981	33188	1753747200	cc43ac56c888d32553e641def76157c888484c541d4ae8795e067166826d7d18	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/grpconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/grpunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/newusers.8.gz	2662	33188	1753747200	f6a83b7c7b77bae990d220786e0ed8ed3a34b026b318397493e0b8a1cbdff42c	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/pwck.8.gz	2211	33188	1753747200	583be4ae5c8f01d7574815eb2c4dc59a2770636debe3fc6b4dc5b73b212bb180	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/pwconv.8.gz	1684	33188	1753747200	f404ceaa330ebd8b3a617732b72d48ad89dadfaf51eef9f9e8e9ca64ff07fbc6	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/pwunconv.8.gz	38	33188	1753747200	1de2873f0b66dd4bfc3d78fa621727e9b01a1304dd2f627f8ef92e454c06fdf0	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/useradd.8.gz	5856	33188	1753747200	803c7da8afc9ee9750750fdc88c7631a6c78317d61b522843e8fc8f25fab78e1	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/userdel.8.gz	2302	33188	1753747200	3c70b8fff977fd4a6cb3a8bfad638234a52b7cbecf06ba21b5196e3cee664c8b	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/usermod.8.gz	4132	33188	1753747200	a9acdd4b390245a1bbede132fd5444c5facf1b9e87020c684747a46c15503bc8	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/vigr.8.gz	36	33188	1753747200	d7e13de50506fd087784c5e0c52eb496c3daae11deae8e684eabf69b45ddb3db	2	root	root	
+@@FILE@@	/usr/share/man/zh_CN/man8/vipw.8.gz	1300	33188	1753747200	4522268c1e2d3cc0a6b3ab657a17e7079ccf99e37801f3bbe6fabec07a8a3601	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man1/newgrp.1.gz	776	33188	1750796881	3beca542c9a1e306501afffa3fa3a0dd3c9d89bc4b8747470d181a4cb4502364	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/adduser.8.gz	39	33188	1753747200	ebc495a602be7f6d40bb88895fb539ce32cfaac3ba74c74801e2530c48478f8e	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/chpasswd.8.gz	1117	33188	1750796881	f78b8b6bb7174d94ba24b12fec81eb70f7c3647ce53283573e6a4eabc1b3c5fe	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/groupadd.8.gz	1179	33188	1750796881	b18d60c87ef7e635d460f39a7a42d180505042cd7d4d8702a519919a3df3b77d	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/groupdel.8.gz	593	33188	1750796881	a5a9bed0edcf12f24d8f91598ae01d3f28f9fc40678c6873d0b6ed0155fbd72e	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/groupmod.8.gz	758	33188	1750796881	fc298dfcb2a79bbbc14ac43c1a5cef469c68b1bf286fbca24344451ae7d988a3	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/useradd.8.gz	2403	33188	1750796881	67c11b7e739ce032462a26ceed20c995848bc01b338ec67d53f0288edece2e14	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/userdel.8.gz	732	33188	1750796881	1cf6779a7ce8fe5b9ba4794c704e2914f096efec7487b132671270ab87f0468d	2	root	root	
+@@FILE@@	/usr/share/man/zh_TW/man8/usermod.8.gz	1841	33188	1750796881	234e5e534810a3863b2f05673b26b7c8263ff272723051b9979c24ea05bda714	2	root	root	
+@@CL@@	1753790400
+@@CL@@	1753444800
+@@CL@@	1753185600
+@@CL@@	1752840000
+@@CL@@	1752580800
+@@CL@@	1742904000
+@@CL@@	1742472000
+@@CL@@	1738411200
+@@CL@@	1737288000
+@@CL@@	1736683200
+@@CL@@	1735214400
+@@CL@@	1734868800
+@@CL@@	1733745600
+@@CL@@	1731412800
+@@CL@@	1729080000
+@@CL@@	1728302400
+@@CL@@	1726228800
+@@CL@@	1724846400
+@@CL@@	1721736000
+@@CL@@	1721476800
+@@CL@@	1720526400
+@@CL@@	1717070400
+@@CL@@	1716206400
+@@CL@@	1712836800
+@@CL@@	1711022400
+@@CL@@	1710244800
+@@CL@@	1710158400
+@@CL@@	1707739200
+@@CL@@	1706788800
+@@CL@@	1706529600
+@@CL@@	1706356800
+@@CL@@	1696334400
+@@CL@@	1692187200
+@@PKG@@	util-linux-core	2.41.3	7.fc43	(none)	x86_64	GPL-2.0-only AND GPL-2.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC AND LicenseRef-Fedora-Public-Domain	1528719	1765816859	1772261278	util-linux-2.41.3-7.fc43.src.rpm	8
+@@FILE@@	/etc/mtab	19	41471	1765756800		0	root	root	../proc/self/mounts
+@@FILE@@	/usr/bin/agetty	66728	33261	1765756800	17e2d1496420a588420bb9a4b383352a0398ed96605b54df831492d97afcbca2	0	root	root	
+@@FILE@@	/usr/bin/blkid	57360	33261	1765756800	68b5fcfad71f09680f2d6756aa26a2a70077417b1804c70b44ca3b9e2aad14c8	0	root	root	
+@@FILE@@	/usr/bin/blockdev	32568	33261	1765756800	731368dad83221220cd4afc5482c300ed62c04257573780a72449e3da3133645	0	root	root	
+@@FILE@@	/usr/bin/chrt	28424	33261	1765756800	c615f1f8f0055874e8f38ac94de699b91dde03d09947d29f2308692ca2df5cae	0	root	root	
+@@FILE@@	/usr/bin/dmesg	68152	33261	1765756800	1fa92ae738d059ad2c500844ba260ed9333ece981c359cedc2c4a1877022996d	0	root	root	
+@@FILE@@	/usr/bin/findmnt	83568	33261	1765756800	bd5be140ef88a11d15ab00d7f9a0086a74d9e624b564f053daa76e50a4d652a2	0	root	root	
+@@FILE@@	/usr/bin/flock	20184	33261	1765756800	c75c6e601c9f1a0d2e37cb5293534acb5a6f720baf0dc648695110654a41119f	0	root	root	
+@@FILE@@	/usr/bin/fsck	40888	33261	1765756800	97108bc528a26bab880c286d704dd2cc9d21aba799462c8d6c812e66dab78aa3	0	root	root	
+@@FILE@@	/usr/bin/hardlink	49160	33261	1765756800	49972fa5ae7bf623b5da5f861c7c97d1b965344dd7760f021b21917deaab6264	0	root	root	
+@@FILE@@	/usr/bin/ionice	20040	33261	1765756800	72f2064d9f8617d11d60bc85d98b66489ad8807f9d024096afcdfd42eb057bbb	0	root	root	
+@@FILE@@	/usr/bin/ipcmk	20144	33261	1765756800	fa0d46b2ba19c1a24fcfed7d832221cf01709fc78e36d036d94bfd60a9330517	0	root	root	
+@@FILE@@	/usr/bin/ipcrm	28296	33261	1765756800	36082ba6438e4765de6ce4ede0089c9d1a51f11aa7cff1d76db1ce5465b9e757	0	root	root	
+@@FILE@@	/usr/bin/ipcs	36536	33261	1765756800	556750427a85ad12b9b72db4a0acd885e71cf92d961ecd62ead43b8f2fbabca7	0	root	root	
+@@FILE@@	/usr/bin/kill	32592	33261	1765756800	60b6c6b357b8987fdf0bd5a5ec5858d80eebff8374474ae2ff6a6caac9a42139	0	root	root	
+@@FILE@@	/usr/bin/logger	41376	33261	1765756800	f8b4f0e56c74b0997d787d26a19688124a86ab1e9416ef81a4ac00c150603dba	0	root	root	
+@@FILE@@	/usr/bin/losetup	74296	33261	1765756800	d7207cea12c1d80e1081bc86c1b4c6faa515f7d93950faa5a63075f08a86ce72	0	root	root	
+@@FILE@@	/usr/bin/mkswap	53152	33261	1765756800	af1a33e3515579928549d1d404eb5c22e7bbff845b0f7aa6babf4f129c420c91	0	root	root	
+@@FILE@@	/usr/bin/more	48984	33261	1765756800	eed9e9ce6ac024cc8263b6007e132586f1e3ced7fc4e44119369f65c00b31752	0	root	root	
+@@FILE@@	/usr/bin/mount	48904	35309	1765756800	dd4f3bcd6ad7f27c6fc188ee042ef69b557d2c679a8304ce9bf781227604af2a	0	root	root	
+@@FILE@@	/usr/bin/mountpoint	20000	33261	1765756800	c05d6058dd72f0eb2625001f91ba85720e89cacd38be271829961f04c1e3e52b	0	root	root	
+@@FILE@@	/usr/bin/nsenter	36824	33261	1765756800	b815fc993adcf51296776eda1b82ac42dfad975cf6f9162cff080d5398098912	0	root	root	
+@@FILE@@	/usr/bin/partx	61568	33261	1765756800	a71070ffb2d69898a1b608b569e2a24aa93b44493d2f8a90cf009d0f12c03129	0	root	root	
+@@FILE@@	/usr/bin/renice	19984	33261	1765756800	c03333b43eb9250278485253c83a19800a4ddfc7f9a40646eb90f566e08d25b4	0	root	root	
+@@FILE@@	/usr/bin/setsid	15872	33261	1765756800	43bca1b1888887ad5a7550c01ac80aa7c77545ab6ddc22541e03179996b30bed	0	root	root	
+@@FILE@@	/usr/bin/sulogin	44840	33261	1765756800	1d7d8d3fbbb28ce57b2ce3115ddde45a94e9a69f1029b6143cd6dd2ec8eb107f	0	root	root	
+@@FILE@@	/usr/bin/swapoff	24208	33261	1765756800	7f9682a7cf30bff275a79783489765ecc9ed61ed6f93659377bffc41e2d3fc0d	0	root	root	
+@@FILE@@	/usr/bin/swapon	44776	33261	1765756800	e662dab327f64b82a5fb2892e101f2a6b54fb3877b3906028234d15de5a4ac08	0	root	root	
+@@FILE@@	/usr/bin/switch_root	20032	33261	1765756800	5d0cf8ffe2eab33298575c8f64262e6bc0047e950863e8ce293bb837f53da079	0	root	root	
+@@FILE@@	/usr/bin/taskset	28416	33261	1765756800	608fdecd9b89e5785ccb97eb57485a87cdb45fa6ce9f1d0a4f00a0a3e67c93d3	0	root	root	
+@@FILE@@	/usr/bin/umount	36512	35309	1765756800	e04f1bfcfa35b9e780a5f3c06a41621d3e41eca0aef4267761e13d931e797092	0	root	root	
+@@FILE@@	/usr/bin/unshare	49360	33261	1765756800	1e624aea8d5f7e61031910b19315bafc8f309138d1d83f0aa2c4c20427f069a4	0	root	root	
+@@FILE@@	/usr/lib/.build-id	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/07/94ba756ac65125c0ceaeb730fbfa3939081f91	26	41471	1765756800		4096	root	root	../../../../usr/bin/renice
+@@FILE@@	/usr/lib/.build-id/08	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/08/cad9af8d6dd86a28d554370a870fce96cc8256	25	41471	1765756800		4096	root	root	../../../../usr/bin/ipcrm
+@@FILE@@	/usr/lib/.build-id/10	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/10/a16304180c978d9f12465ea33dcca093aedbfa	24	41471	1765756800		4096	root	root	../../../../usr/bin/more
+@@FILE@@	/usr/lib/.build-id/15	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/15/1a971c399afa59815c8469ad2c8ae7ea236891	26	41471	1765756800		4096	root	root	../../../../usr/bin/mkswap
+@@FILE@@	/usr/lib/.build-id/18	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/18/0844d252ecbca908def5557a44e067f3a4e42e	26	41471	1765756800		4096	root	root	../../../../usr/bin/agetty
+@@FILE@@	/usr/lib/.build-id/1b/53c3c355942098f655a6897ab43f1d4eddb676	26	41471	1765756800		4096	root	root	../../../../usr/bin/setsid
+@@FILE@@	/usr/lib/.build-id/22	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/22/aa97bccf2927ca4ac92ef3e03e3a90f7545c55	27	41471	1765756800		4096	root	root	../../../../usr/bin/unshare
+@@FILE@@	/usr/lib/.build-id/2d	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/2d/ef2df4e8344fcc6ae993a7b6f1139bf81e84fa	26	41471	1765756800		4096	root	root	../../../../usr/bin/swapon
+@@FILE@@	/usr/lib/.build-id/34	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/34/daa637df99bd669e1ceceee505aa7783c4ac00	25	41471	1765756800		4096	root	root	../../../../usr/bin/mount
+@@FILE@@	/usr/lib/.build-id/37	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/37/9a79bd663595bf872be28332cdc3c45627d9d6	25	41471	1765756800		4096	root	root	../../../../usr/bin/blkid
+@@FILE@@	/usr/lib/.build-id/44	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/44/d5158386fd92bc9261ef3be46feb488a38c207	24	41471	1765756800		4096	root	root	../../../../usr/bin/chrt
+@@FILE@@	/usr/lib/.build-id/4f	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/4f/c0e3d8b0c085ff747dae9d684b9431ebdf89a0	26	41471	1765756800		4096	root	root	../../../../usr/bin/ionice
+@@FILE@@	/usr/lib/.build-id/52	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/52/20a3f39fddda82c7c6b1f689b3c196e82179e5	30	41471	1765756800		4096	root	root	../../../../usr/bin/mountpoint
+@@FILE@@	/usr/lib/.build-id/66	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/66/c0a73c8ddd8b0a7f9d42b9a4a7473b0386c035	27	41471	1765756800		4096	root	root	../../../../usr/bin/nsenter
+@@FILE@@	/usr/lib/.build-id/70	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/70/c7f4d9cb43d5014fe8ed4fdd48497e550f722a	27	41471	1765756800		4096	root	root	../../../../usr/bin/losetup
+@@FILE@@	/usr/lib/.build-id/84	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/84/d2727c247df0813ae9c32a51eed893ff4f1945	28	41471	1765756800		4096	root	root	../../../../usr/bin/blockdev
+@@FILE@@	/usr/lib/.build-id/89	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/89/9f2bbaaf140fd5a5c10ed7dc7dffe98a55d07c	26	41471	1765756800		4096	root	root	../../../../usr/bin/umount
+@@FILE@@	/usr/lib/.build-id/8f	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/8f/201fb58a7446526a99692a2b37048030575466	25	41471	1765756800		4096	root	root	../../../../usr/bin/partx
+@@FILE@@	/usr/lib/.build-id/93	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/93/dc121385bec1d66131a979d2d4e9fcd446c43d	31	41471	1765756800		4096	root	root	../../../../usr/bin/switch_root
+@@FILE@@	/usr/lib/.build-id/9d	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/9d/fd9062b83f7bb43eec1ad235f7c136ba6386f9	25	41471	1765756800		4096	root	root	../../../../usr/bin/ipcmk
+@@FILE@@	/usr/lib/.build-id/9f	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/9f/308049d290de84e48b803a8ae33e8beda52cda	27	41471	1765756800		4096	root	root	../../../../usr/bin/swapoff
+@@FILE@@	/usr/lib/.build-id/ac	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ac/07ddd6de4117a0af02fd9be889802be4d80575	27	41471	1765756800		4096	root	root	../../../../usr/bin/taskset
+@@FILE@@	/usr/lib/.build-id/af	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/af/64275891ca205d82451d9a596c0c72d72a4115	24	41471	1765756800		4096	root	root	../../../../usr/bin/ipcs
+@@FILE@@	/usr/lib/.build-id/b2/7d4d81c6db49c2a1555a12ec355c27858264d8	27	41471	1765756800		4096	root	root	../../../../usr/bin/findmnt
+@@FILE@@	/usr/lib/.build-id/b8/2053627d43c70210b7ce5fcd612d785e0dcc4c	24	41471	1765756800		4096	root	root	../../../../usr/bin/fsck
+@@FILE@@	/usr/lib/.build-id/c0	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/c0/bfb6e02c62f6a005f513e268409738fb25c076	27	41471	1765756800		4096	root	root	../../../../usr/bin/sulogin
+@@FILE@@	/usr/lib/.build-id/c6	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/c6/9de5e44fc93375e12951dc4cd5652cc326e29f	24	41471	1765756800		4096	root	root	../../../../usr/bin/kill
+@@FILE@@	/usr/lib/.build-id/c6/d72dc50daf2c698f9837fe6671bc9f08425f00	26	41471	1765756800		4096	root	root	../../../../usr/bin/logger
+@@FILE@@	/usr/lib/.build-id/ce	0	16877	1765756800		4096	root	root	
+@@FILE@@	/usr/lib/.build-id/ce/2f2e6e69e6af90bceb8a53b38f0bfee4cd7bb0	25	41471	1765756800		4096	root	root	../../../../usr/bin/flock
+@@FILE@@	/usr/lib/.build-id/e0/5ef7cc17bbdd86b1ffd2c7b0f8a80d32990cab	28	41471	1765756800		4096	root	root	../../../../usr/bin/hardlink
+@@FILE@@	/usr/lib/.build-id/ee/9e168bfd5fd3648e63d05ef65d03330ddb8a76	25	41471	1765756800		4096	root	root	../../../../usr/bin/dmesg
+@@FILE@@	/usr/share/bash-completion/completions/blkid	2156	33188	1765756800	c4caf372c78ad008a7f21ade517311e0617606d095347176d973fbfcfdf35f4b	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/blockdev	789	33188	1765756800	a78306d69331a0aa9baab6ec2f7908f96a81fef1219a3ae0f61c85a60c142b7e	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/chrt	920	33188	1765756800	1dd13080d71c8d880e628eee89e8f493c979441692ef364e01ca8c8a761d381e	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/dmesg	1239	33188	1765756800	5765edc85385066f4f8427b7218d312c2f568ae6dc7e8dc5bb41d2819dcbce1a	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/findmnt	3263	33188	1765756800	7fd1dcb23eafb7f5c856d73c9fe20cd77f5f0772f4139b00508d07f69d85bc8b	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/flock	886	33188	1765756800	6acc57b694330f74f9e1545a1baa918f6e0795ef7660187a40d4e8cba037b01a	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/fsck	770	33188	1765756800	183d49b2ac2b2dc1c8b1d970c564d1450f2fd941e9cdf035c55d729cc6de4f31	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/hardlink	1530	33188	1765756800	089115278a4f19046e392f7e8e76f1baf7a15860c9224c62f7a43e5f5a4fa20a	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/ionice	1161	33188	1765756800	8a92b4a98b89f6c3af9baf94aab2cc24f58e0e2c4ffc6e2ea822cdc093d940ff	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/ipcmk	882	33188	1765756800	02963407eef1ea70f8c00b3b7ee38c0b93e4e1d287927ac9ab4afb0fb01c06f4	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/ipcrm	1814	33188	1765756800	b9d52bf125a8ebca3f854df9f96c914aa4f0234dd389ac2157c932219703ab38	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/ipcs	514	33188	1761128850	c8d2fc0706082e013fdec16a7b7fcc3aadbc0c3e22f87d8a818d9aa95f364acf	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/logger	1676	33188	1765756800	e16cfdfebd334dc4e0cf6c2c1bb4d1ac5df9f7efb71a8472529f0cd9f9ee9c25	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/losetup	1738	33188	1765756800	97287d6f705c048fe6fa6e78c2e9693af0e3fdcc13efe56bbbebc6c7fdf71a93	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/mkswap	1065	33188	1765756800	ce7daf74c0141b5af576184fc4363499aa4555f1bf8880414b4acc10f2ed50ce	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/more	752	33188	1765756800	b6b9c87cc8d0d095816a3e7a34b9df0613b6fff7136c4810635a4c03f75d3993	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/mountpoint	498	33188	1765756800	192a5df5c85f66a4ae83db659d15b974a7febec7922df62d0f5d17450d717451	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/nsenter	1288	33188	1765756800	e9cd4e7d9bd2f3fd09f220b4b108558ee61e642465f3e72f49b03d1644cf6d8e	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/partx	1301	33188	1765756800	855abe1f098aa44985b3e59602ff184e3a6d69bdae5ca41a2caa8a1e8d755738	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/renice	784	33188	1765756800	6fdf113c8a43356f2bddaff1613e3f66679f5f0b64d061a30e474f146163569b	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/setsid	440	33188	1765756800	376e5ac5d2a289c03bf36a8f9a86ae160cffc6693112043bf33d2d4f99614c30	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/swapoff	743	33188	1765756800	e84478bfbcfb4eb0accf290e7b158085cb0db7f679afade1a270f7e1e731a691	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/swapon	2019	33188	1765756800	934ffea4820419277c8c588ffcf062a22fad9a4b1413a392af63140c2fa23b62	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/taskset	1213	33188	1765756800	3128f328cc438f772ace3b8428c2be81f1bf061e3fe7d4c67a5c89b829654e36	0	root	root	
+@@FILE@@	/usr/share/bash-completion/completions/unshare	936	33188	1765756800	219a4e0e788b1085867c299bb6730bf2f86a9cd22cef9a5747512cc540035788	0	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core	0	16877	1765756800		0	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.BSD-2-Clause	1245	33188	1765756800	527f738966ca396cd5a68c1509390de2a780c6b614d9ee57f7544a6161938ed1	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.BSD-3-Clause	1391	33188	1765756800	9b718a9460fed5952466421235bc79eb49d4e9eacc920d7a9dd6285ab8fd6c6d	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.BSD-4-Clause-UC	1824	33188	1765756800	ba7640f00d93e72e92b94b9d71f25ec53bac2f1682f5c4adcccb0018359f60f8	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.EUPL-1.2	13827	33188	1765756800	6fc9e709ccbfe0d77fbffa2427a983282be2eb88e47b1cdb49f21a83b4d1e665	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.GPL-2.0-only	18092	33188	1765756800	8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.GPL-2.0-or-later	18092	33188	1765756800	8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.GPL-3.0-or-later	35149	33188	1765756800	3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.ISC	697	33188	1761128850	e53348ce276358e9997014071c5294b36a18c4b34f32f00ee57b9acce0aafd63	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.LGPL-2.1-or-later	26530	33188	1765756800	dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551	128	root	root	
+@@FILE@@	/usr/share/licenses/util-linux-core/COPYING.MIT	1054	33188	1765756800	8555341619542abb48c102afd954e42d4478e5be16ad3d5af7b0ff71009e7348	128	root	root	
+@@FILE@@	/usr/share/man/man1/chrt.1.gz	2362	33188	1765756800	271a0e606faeb143c2387eb1aaaff8a5f56715edc1753e16e2ac6715549641bd	2	root	root	
+@@FILE@@	/usr/share/man/man1/dmesg.1.gz	3971	33188	1765756800	77cc4738d19aa01286efd19ca8dd59ac092393bdf1cd13a1bf50c4a7dd09388f	2	root	root	
+@@FILE@@	/usr/share/man/man1/flock.1.gz	3025	33188	1765756800	30cc3599a6e29f04fd70a80a38455d827a712e6e75e70a2419ba1cbe1a3692c5	2	root	root	
+@@FILE@@	/usr/share/man/man1/hardlink.1.gz	3679	33188	1765756800	dc9f43f426fd9d0ad744e5f2993917acf292c143cefdfccb43fd1cc41a72fd3a	2	root	root	
+@@FILE@@	/usr/share/man/man1/ionice.1.gz	2175	33188	1765756800	4b0fafabbb7a36e17aa98e7eccc373720457f470c987a398698a34238b2b9f49	2	root	root	
+@@FILE@@	/usr/share/man/man1/ipcmk.1.gz	1217	33188	1765756800	8e2a4c9cec718f57ea93797ae08dc636773fb43251df5600ef98cc53e20c0403	2	root	root	
+@@FILE@@	/usr/share/man/man1/ipcrm.1.gz	1970	33188	1765756800	6ac1ce154c56e9665d67c0a28cce0fa23e4268938d0f4f8d2d6e142f2937e78b	2	root	root	
+@@FILE@@	/usr/share/man/man1/ipcs.1.gz	1900	33188	1765756800	a69b56d02b8583b04b683a3b7aa7b93a17726c4b94866e2ff700c422e31af6f4	2	root	root	
+@@FILE@@	/usr/share/man/man1/kill.1.gz	3211	33188	1765756800	f7a0c7f102a1db3e8c01d31952248a89c9177c5a2201039e6809a23fb9576e32	2	root	root	
+@@FILE@@	/usr/share/man/man1/logger.1.gz	5225	33188	1765756800	ea9b24668ba4b50a6112bc84c5aa716dd836a03a76e5e8cbfa11dd020e8f3a43	2	root	root	
+@@FILE@@	/usr/share/man/man1/more.1.gz	2650	33188	1765756800	91dc8c4d835aaf3765915af09af73b533ac3a12ac13fe754b3e02c230c1f2d5d	2	root	root	
+@@FILE@@	/usr/share/man/man1/mountpoint.1.gz	1194	33188	1765756800	ec1446577097281b3a6538b38bf8ef76754482d84225e9e158d89794d5de81e8	2	root	root	
+@@FILE@@	/usr/share/man/man1/nsenter.1.gz	3246	33188	1765756800	6a9a3940402e9306ae3d13e46e3449f7f04dc7ff399f779bd73e9bbf4e509bae	2	root	root	
+@@FILE@@	/usr/share/man/man1/renice.1.gz	1863	33188	1765756800	ffaa2cae4cc3470685ce91e00aabd6dc4668a9365e1c50cc306b90a41d97c5d7	2	root	root	
+@@FILE@@	/usr/share/man/man1/setsid.1.gz	937	33188	1765756800	80105167586c8afd7d9cd42f64db945c8f61d3449bc4c9e792796a3640bb0ebe	2	root	root	
+@@FILE@@	/usr/share/man/man1/taskset.1.gz	2495	33188	1765756800	84894bab0574a425aaf2602a8a9ef36c21594034ac4cf292031439e6e4ba845a	2	root	root	
+@@FILE@@	/usr/share/man/man1/unshare.1.gz	6560	33188	1765756800	f8481c78d7b61bd9cc67d31a9296b5a1d89351346d8c19698caf2dcb6d0601b6	2	root	root	
+@@FILE@@	/usr/share/man/man8/agetty.8.gz	7986	33188	1765756800	e16959968f929e9fc57c6b46eeac051a20231f779a6b9fca56da11e5242d7a77	2	root	root	
+@@FILE@@	/usr/share/man/man8/blkid.8.gz	4930	33188	1765756800	3d5d1ac4b9d0b2d82fe5151600cd518dde6531d132ac1ad5fea29dcb7348319a	2	root	root	
+@@FILE@@	/usr/share/man/man8/blockdev.8.gz	1613	33188	1765756800	56af4090b4c111390a428c4736e2586041a7cccdba8a67af664078bffd2e1498	2	root	root	
+@@FILE@@	/usr/share/man/man8/findmnt.8.gz	5651	33188	1765756800	03738ea7e5c5f9f0d2598acca2b394dd457b6ad3570241c479f40f303785a0da	2	root	root	
+@@FILE@@	/usr/share/man/man8/fsck.8.gz	4913	33188	1765756800	aea4a1fcbc910020a75e938ccb5b15be40f200f7969a70a5bad5cfcf928d592c	2	root	root	
+@@FILE@@	/usr/share/man/man8/losetup.8.gz	3385	33188	1765756800	2274d920745880651ec0e104ebdb74deb45b5cec8778c327bc9f36407e6202b6	2	root	root	
+@@FILE@@	/usr/share/man/man8/mkswap.8.gz	3149	33188	1765756800	34931c89458531cec8b281174d4e28b18adedd657b6f023fc518045f5793f27e	2	root	root	
+@@FILE@@	/usr/share/man/man8/mount.8.gz	33771	33188	1765756800	129fd619f296f2bc9490962d05f0f7b636dd61b80ff9f0594ee9536578b38e1c	2	root	root	
+@@FILE@@	/usr/share/man/man8/partx.8.gz	2525	33188	1765756800	9cac4afe4b12f24d495d49eb082024bde03c86c8ed32dff62ab82f5259d999d1	2	root	root	
+@@FILE@@	/usr/share/man/man8/sulogin.8.gz	1452	33188	1765756800	a4c8eb601bc0150f91912496d64a8f861a5a9017e49237a9e1d6ebc2b57090ca	2	root	root	
+@@FILE@@	/usr/share/man/man8/swapoff.8.gz	32	33188	1765756800	44688bfce4c3fc15f07a5e81c049e1db566f35e97ec1b2be4e290a28ae1147cd	2	root	root	
+@@FILE@@	/usr/share/man/man8/swapon.8.gz	3329	33188	1765756800	8d883b8b5b404fd701a98a426423830206a875f2585985853aeda827ee0320fc	2	root	root	
+@@FILE@@	/usr/share/man/man8/switch_root.8.gz	1099	33188	1765756800	3d5edfa256c23ec98cd2bae5a346e838572f9ba1ce8e6eaf1d3ff345fda0742c	2	root	root	
+@@FILE@@	/usr/share/man/man8/umount.8.gz	4354	33188	1765756800	250ca9a52af1a8bf99e713bc00d0ab66aea6a093f15dfd222179949253de6d4f	2	root	root	
+@@CL@@	1765800000
+@@CL@@	1758283200
+@@CL@@	1755259200
+@@CL@@	1754395200
+@@CL@@	1754395200
+@@CL@@	1753444800
+@@CL@@	1752667200

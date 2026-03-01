@@ -21,6 +21,7 @@
   },
   "WorkingDir": "/",
   "Labels": {
+    "io.buildah.version": "1.42.2",
     "mylabel": "myval"
   },
   "StopSignal": "SIGQUIT"
