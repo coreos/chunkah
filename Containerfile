@@ -3,7 +3,6 @@
 #   buildah build --skip-unused-stages=false -t chunkah .
 
 ARG BASE=quay.io/fedora/fedora-minimal:43
-ARG FINAL_FROM=oci-archive:out.ociarchive
 ARG DNF_FLAGS="-y --setopt=install_weak_deps=False"
 
 FROM ${BASE} AS builder
@@ -23,6 +22,10 @@ RUN --mount=type=cache,id=dnf,target=/mnt \
     cp -a /mnt /var/cache/libdnf5 && \
     dnf install ${DNF_FLAGS} openssl zlib && rm -rf /var/cache/*
 COPY --from=builder /usr/bin/chunkah /usr/bin/chunkah
+# Repeat inline config below for the `--no-chunk` flow. See related XXX below.
+ENTRYPOINT ["/usr/bin/chunkah"]
+ENV CHUNKAH_ROOTFS=/chunkah
+WORKDIR /srv
 
 FROM rootfs AS rechunk
 ARG DNF_FLAGS
@@ -34,10 +37,12 @@ RUN for db in /rootfs/var/lib/rpm/rpmdb.sqlite \
               /rootfs/var/lib/dnf/history.sqlite; do \
         if [ -f "${db}" ]; then sqlite3 "${db}" "PRAGMA journal_mode = DELETE;"; fi; \
     done
+## XXX: Work around https://github.com/containers/buildah/issues/6652 for
+## our own image for now by just passing a config manually rather than using
+## Containerfile directives in the final stage.
 RUN --mount=type=bind,target=/run/src,rw \
-    chunkah build --rootfs /rootfs > /run/src/out.ociarchive
+    chunkah build --rootfs /rootfs \
+        --config-str '{"Config": {"Entrypoint": ["/usr/bin/chunkah"], "Env": ["CHUNKAH_ROOTFS=/chunkah"], "WorkingDir": "/srv"}}' \
+        > /run/src/out.ociarchive
 
-FROM ${FINAL_FROM}
-ENTRYPOINT ["/usr/bin/chunkah"]
-ENV CHUNKAH_ROOTFS=/chunkah
-WORKDIR /srv
+FROM oci-archive:out.ociarchive
