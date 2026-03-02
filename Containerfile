@@ -25,7 +25,15 @@ RUN --mount=type=cache,id=dnf,target=/mnt \
 COPY --from=builder /usr/bin/chunkah /usr/bin/chunkah
 
 FROM rootfs AS rechunk
+ARG DNF_FLAGS
+RUN --mount=type=cache,rw,id=dnf,target=/var/cache/libdnf5 \
+    dnf install ${DNF_FLAGS} sqlite
 COPY --from=rootfs / /rootfs
+RUN for db in /rootfs/var/lib/rpm/rpmdb.sqlite \
+              /rootfs/usr/lib/sysimage/libdnf5/transaction_history.sqlite \
+              /rootfs/var/lib/dnf/history.sqlite; do \
+        if [ -f "${db}" ]; then sqlite3 "${db}" "PRAGMA journal_mode = DELETE;"; fi; \
+    done
 RUN --mount=type=bind,target=/run/src,rw \
     chunkah build --rootfs /rootfs > /run/src/out.ociarchive
 
