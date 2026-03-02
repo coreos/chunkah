@@ -99,13 +99,6 @@ argument.
 > For Buildah versions before v1.44, this also requires `-v $(pwd):/run/src
 > --security-opt=label=disable`.
 
-<!-- markdownlint-disable-next-line MD028 -->
-> [!NOTE]
-> There is [a known bug][buildah-annotations-bug] in this workflow preventing
-> informational layer annotations added by chunkah from persisting to the final
-> image. If you're interested in that information, you must use the `podman
-> load` flow below.
-
 Another option is using the chunkah image directly and image mounts:
 
 ```shell
@@ -167,6 +160,15 @@ ENTRYPOINT ["git"]
 >
 > For Buildah versions before v1.44, this also requires `-v $(pwd):/run/src
 > --security-opt=label=disable`.
+
+<!-- markdownlint-disable-next-line MD028 -->
+> [!NOTE]
+> There is [a known bug][buildah-annotations-bug] in this workflow preventing
+> informational layer annotations added by chunkah from persisting to the
+> final image when additional instructions follow the final `FROM`. If you're
+> interested in that information, you must either use `--config-str` instead
+> to pass your config, or run chunkah as a separate step as described in the
+> previous section.
 
 ## Advanced Usage
 
