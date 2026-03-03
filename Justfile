@@ -46,6 +46,8 @@ buildimg no_chunk="" *ARGS:
     set -euo pipefail
     buildah="${BUILDAH:-buildah}"
     args=(-t chunkah --layers=true {{ if no_chunk == "true" { "--target=rootfs" } else { "--skip-unused-stages=false" } }})
+    cache_id=$(realpath "$PWD" | sha256sum | cut -f1 -d' ')
+    args+=(--build-arg CACHE_ID=chunkah-target-${cache_id})
     # drop this once we can assume 1.44
     version=$(${buildah} version --json | jq -r '.version')
     if [[ $(echo -e "${version}\n1.44" | sort -V | head -n1) != "1.44" ]]; then

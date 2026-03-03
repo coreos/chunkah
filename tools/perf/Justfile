@@ -2,8 +2,6 @@
 _perf_run_args := "--rm -ti \
     --security-opt=label=disable \
     -v chunkah-perf-cargo:/root/.cargo \
-    -v chunkah-perf-target:/tmp/target \
-    -e CARGO_TARGET_DIR=/tmp/target \
     -e CARGO_PROFILE_RELEASE_DEBUG=true \
     chunkah-perf"
 
@@ -16,9 +14,10 @@ profile image="quay.io/fedora/fedora-minimal:latest": _buildperfimg
     #!/bin/bash
     set -euo pipefail
     podman pull --policy=missing {{ image }}
+    cache_id=$(realpath "$PWD" | sha256sum | cut -f1 -d' ')
     podman run --privileged -v "${PWD}/../..:/build:z" \
         --mount=type=image,src={{ image }},target=/chunkah \
-        {{ _perf_run_args }} \
+        -v chunkah-perf-target-${cache_id}:/build/target {{ _perf_run_args }} \
         sh -c 'cargo flamegraph -o /build/flamegraph.svg -- build --prune /sysroot/ > /dev/null'
 
     echo "Flamegraph written to flamegraph.svg"
@@ -28,7 +27,8 @@ benchmark image="quay.io/fedora/fedora-minimal:latest": _buildperfimg
     #!/bin/bash
     set -euo pipefail
     podman pull --policy=missing {{ image }}
+    cache_id=$(realpath "$PWD" | sha256sum | cut -f1 -d' ')
     podman run -v "${PWD}/../..:/build:z" \
         --mount=type=image,src={{ image }},target=/chunkah \
-        {{ _perf_run_args }} \
-        sh -c 'cargo build --release && hyperfine --warmup 1 "/tmp/target/release/chunkah build --prune /sysroot/ > /dev/null"'
+        -v chunkah-perf-target-${cache_id}:/build/target {{ _perf_run_args }} \
+        sh -c 'cargo build --release && hyperfine --warmup 1 "target/release/chunkah build --prune /sysroot/ > /dev/null"'

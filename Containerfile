@@ -4,16 +4,18 @@
 
 ARG BASE=quay.io/fedora/fedora-minimal:43
 ARG DNF_FLAGS="-y --setopt=install_weak_deps=False"
+ARG CACHE_ID=chunkah-target
 
 FROM ${BASE} AS builder
 ARG DNF_FLAGS
+ARG CACHE_ID
 RUN --mount=type=cache,rw,id=dnf,target=/var/cache/libdnf5 \
     dnf install ${DNF_FLAGS} cargo rust pkg-config openssl-devel zlib-devel
 WORKDIR /build
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 RUN --mount=type=cache,rw,id=cargo,target=/root/.cargo \
-    --mount=type=cache,rw,id=target,target=/build/target \
+    --mount=type=cache,rw,id=${CACHE_ID},target=/build/target \
     cargo build --release && cp /build/target/release/chunkah /usr/bin
 
 FROM ${BASE} AS rootfs
