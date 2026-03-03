@@ -1,5 +1,5 @@
 # Common podman run args for perf container
-_perf_run_args := "--rm \
+_perf_run_args := "--rm -ti \
     --security-opt=label=disable \
     -v chunkah-perf-cargo:/root/.cargo \
     -v chunkah-perf-target:/tmp/target \
