@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::num::NonZeroUsize;
 
 use anyhow::{Context, Result};
 use camino::Utf8PathBuf;
@@ -103,6 +104,10 @@ pub struct BuildArgs {
     /// absolute.
     #[arg(long = "prune", value_name = "PATH")]
     prune: Vec<Utf8PathBuf>,
+
+    /// Number of threads for parallel layer writing (0 = auto-detect)
+    #[arg(short = 'T', long, default_value_t = 0, env = "CHUNKAH_THREADS")]
+    threads: usize,
 
     /// Write peak memory usage (in bytes) to a file
     #[arg(long, value_name = "PATH", hide = true)]
@@ -216,9 +221,20 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         Compression::None
     };
 
+    let threads = NonZeroUsize::new(args.threads).unwrap_or_else(|| {
+        match std::thread::available_parallelism() {
+            Ok(n) => n,
+            Err(e) => {
+                tracing::warn!(err = %e, "failed to detect available parallelism, defaulting to 1");
+                NonZeroUsize::MIN
+            }
+        }
+    });
+
     let builder = Builder::new(&rootfs, components)
         .context("creating builder")?
         .compression(compression)
+        .threads(threads)
         .annotations(annotations)
         .config(image_config);
 

@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use std::io::Write;
+use std::num::NonZeroUsize;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use anyhow::{Context, Result};
 use cap_std_ext::cap_std::fs::Dir;
@@ -27,10 +29,19 @@ pub struct Builder {
     components: Vec<(String, Component)>,
     /// Compression settings for layers and archive.
     compression: Compression,
+    /// Number of threads for parallel layer writing.
+    threads: NonZeroUsize,
     /// Annotations to add to the image manifest.
     annotations: Option<HashMap<String, String>>,
     /// The image configuration.
     config: Option<oci_image::ImageConfiguration>,
+}
+
+/// Result of writing a single component's tar layer.
+struct ComponentLayer {
+    layer: ocidir::Layer,
+    annotations: HashMap<String, String>,
+    history: oci_image::History,
 }
 
 impl Builder {
@@ -44,6 +55,7 @@ impl Builder {
             oci_dir,
             components,
             compression: Compression::default(),
+            threads: NonZeroUsize::MIN,
             annotations: None,
             config: None,
         })
@@ -52,6 +64,12 @@ impl Builder {
     /// Set the compression settings.
     pub fn compression(mut self, compression: Compression) -> Self {
         self.compression = compression;
+        self
+    }
+
+    /// Set the number of threads for parallel layer writing.
+    pub fn threads(mut self, threads: NonZeroUsize) -> Self {
+        self.threads = threads;
         self
     }
 
@@ -123,35 +141,90 @@ impl Builder {
         Ok(())
     }
 
-    /// Add layers to the OCI directory and update the manifest and config.
+    /// Write layers to the OCI directory in parallel and update the manifest and config.
     fn add_components(
         &self,
         manifest: &mut oci_image::ImageManifest,
         config: &mut oci_image::ImageConfiguration,
     ) -> Result<()> {
-        for (name, component) in &self.components {
-            if component.files.is_empty() {
-                tracing::debug!(component = %name, "skipping empty component");
-                continue;
-            }
-            self.add_component(manifest, config, name, component)
-                .with_context(|| format!("adding component {}", name))?;
+        // filter out empty components
+        let components: Vec<_> = self
+            .components
+            .iter()
+            .filter(|(name, component)| {
+                if component.files.is_empty() {
+                    tracing::debug!(component = %name, "skipping empty component");
+                    false
+                } else {
+                    true
+                }
+            })
+            .collect();
+
+        let num_workers = self.threads.get().min(components.len());
+        tracing::info!(
+            threads = num_workers,
+            layers = components.len(),
+            "writing layers"
+        );
+
+        // farm out to worker threads; they each keep picking the next component
+        // (by index) to work on until there are none and return a Vec of the results
+        let next_i = AtomicUsize::new(0);
+        let mut results: Vec<(usize, Result<ComponentLayer>)> = std::thread::scope(|s| {
+            (0..num_workers)
+                .map(|_| {
+                    s.spawn(|| {
+                        let mut results = Vec::new();
+                        loop {
+                            let i = next_i.fetch_add(1, Ordering::Relaxed);
+                            if i >= components.len() {
+                                break;
+                            }
+                            let (name, component) = components[i];
+                            let result = self
+                                .write_component_layer(name, component)
+                                .with_context(|| format!("adding component {name}"));
+                            results.push((i, result));
+                        }
+                        results
+                    })
+                })
+                // force map() above to evaluate and thus spawn the threads
+                .collect::<Vec<_>>()
+                .into_iter()
+                // join threads and flatten their results into a single Vec
+                // SAFETY: a thread panic here would be a bug somewhere in our code (...or a dep)
+                .flat_map(|h| h.join().expect("worker thread panicked"))
+                .collect()
+        });
+
+        // sort back based on index for reproducible builds
+        results.sort_by_key(|(idx, _)| *idx);
+
+        let oci_dir = ocidir::OciDir::open(self.oci_dir.try_clone().context("cloning oci_dir")?)
+            .context("opening OCI directory")?;
+
+        for (_, result) in results {
+            let cl = result?; // NB: this already has 'adding component {name}' context
+            oci_dir.push_layer_with_history_annotated(
+                manifest,
+                config,
+                cl.layer,
+                Some(cl.annotations),
+                Some(cl.history),
+            );
         }
 
         Ok(())
     }
 
-    /// Add a single component as a layer to the OCI directory.
-    fn add_component(
-        &self,
-        manifest: &mut oci_image::ImageManifest,
-        config: &mut oci_image::ImageConfiguration,
-        name: &str,
-        component: &Component,
-    ) -> Result<()> {
+    /// Write a single component as a tar layer. Returns the layer metadata for
+    /// later assembly into the manifest and config.
+    fn write_component_layer(&self, name: &str, component: &Component) -> Result<ComponentLayer> {
         let oci_dir = ocidir::OciDir::open(self.oci_dir.try_clone().context("cloning oci_dir")?)
             .context("opening OCI directory")?;
-        tracing::debug!(components = name, "creating tar layer");
+        tracing::debug!(component = name, "creating tar layer");
         let mut tar_builder =
             crate::tar::create_layer(&oci_dir, self.compression).context("creating layer")?;
 
@@ -195,15 +268,11 @@ impl Builder {
             .build()
             .context("building history entry")?;
 
-        oci_dir.push_layer_with_history_annotated(
-            manifest,
-            config,
+        Ok(ComponentLayer {
             layer,
-            Some(annotations),
-            Some(history),
-        );
-
-        Ok(())
+            annotations,
+            history,
+        })
     }
 }
 
