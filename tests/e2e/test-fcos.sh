@@ -21,7 +21,9 @@ trap cleanup EXIT
 # build split image using Containerfile.splitter API
 # notice here we --prune /sysroot/
 podman pull "${TARGET_IMAGE}"
+set +x
 config_str=$(podman inspect "${TARGET_IMAGE}")
+set -x
 buildah_build \
     --from "${TARGET_IMAGE}" --build-arg CHUNKAH="${CHUNKAH_IMG:?}" \
     --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
@@ -38,10 +40,27 @@ assert_has_components "${CHUNKED_IMAGE}" "rpm/kernel" "rpm/systemd" "rpm/ignitio
 # verify we got exactly 96 layers
 assert_layer_count "${CHUNKED_IMAGE}" 96
 
-# verify unclaimed component is under 100MB (104857600 bytes)
+# verify unclaimed component is under 5MB (5242880 bytes)
 unclaimed_size=$(jq '.components["chunkah/unclaimed"].size' "${output_dir}/manifest.json")
 [[ -n "${unclaimed_size}" ]]
-[[ ${unclaimed_size} -le 104857600 ]]
+if [[ ${unclaimed_size} -gt 5242880 ]]; then
+    echo "ERROR: unclaimed size ${unclaimed_size} exceeds 5MB"
+    jq '.components["chunkah/unclaimed"]' "${output_dir}/manifest.json"
+    exit 1
+fi
+
+# verify selinux policy files were reclaimed into the selinux-policy
+# component (these files are moved by compose tooling and reclaimed via digest
+# matching today but ideally soon just by path canonicalization through the
+# /var/lib/selinux symlink)
+jq < "${output_dir}/manifest.json" -e \
+    '.components["rpm/selinux-policy"].files[]
+     | select(test("/etc/selinux/targeted/active/modules/100/systemd/cil"))' > /dev/null
+# check the bootupd move to /usr/lib/efi is detected
+shim_dir=$(podman run --rm "${CHUNKED_IMAGE}" ls /usr/lib/efi/shim)
+jq < "${output_dir}/manifest.json" --arg subdir "${shim_dir}" -e \
+    '.components["rpm/shim"].files[]
+     | select(test("/usr/lib/efi/shim/" + $subdir + "/EFI/fedora/shim.efi"))' > /dev/null
 
 # verify chunked image is not larger than original + 1%
 # (catches possible e.g. bad hardlink handling)

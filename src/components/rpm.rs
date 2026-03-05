@@ -1,9 +1,10 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
 use cap_std_ext::cap_std::fs::Dir;
 use indexmap::IndexMap;
+use openssl::hash::{Hasher, MessageDigest};
 use rpm_qa::FileInfo;
 
 use super::{ComponentId, ComponentInfo, ComponentsRepo, FileType};
@@ -26,6 +27,14 @@ pub struct RpmRepo {
     /// from _different_ SRPMs). It's much more uncommon for files/symlinks
     /// though we do handle it to ensure reproducible layers.
     path_to_components: HashMap<Utf8PathBuf, Vec<(ComponentId, FileInfo)>>,
+
+    /// SHA-256 digest index for orphaned RPM files (path in rpmdb but not on
+    /// rootfs). Maps hex digest to ComponentId. See build_orphan_digest_index()
+    /// for more info.
+    orphan_digest_index: HashMap<String, ComponentId>,
+
+    /// File sizes present in the orphan digest index, for fast filtering.
+    orphan_sizes: HashSet<u64>,
 }
 
 impl RpmRepo {
@@ -45,7 +54,9 @@ impl RpmRepo {
         canonicalize_package_paths(rootfs, files, &mut packages)
             .context("canonicalizing package paths")?;
 
-        Self::load_from_packages(packages, now).map(Some)
+        let mut repo = Self::load_from_packages(packages, now)?;
+        build_orphan_digest_index(&mut repo, files);
+        Ok(Some(repo))
     }
 
     pub fn load_from_packages(packages: rpm_qa::Packages, now: u64) -> Result<Self> {
@@ -54,6 +65,7 @@ impl RpmRepo {
             HashMap::new();
 
         let package_count = packages.len();
+        let mut non_sha256_count: usize = 0;
         for pkg in packages.into_values() {
             // Use the source RPM as the component name, falling back to package name
             let component_name: &str = match pkg.sourcerpm.as_deref().map(parse_srpm_name) {
@@ -90,7 +102,23 @@ impl RpmRepo {
                 }
             }
 
-            for (path, file_info) in pkg.files.into_iter() {
+            // We only understand SHA-256 digests for content matching during
+            // weak path claiming. Clear digest fields from packages using other
+            // algorithms so that build_orphan_digest_index naturally skips
+            // them.
+            let is_sha256 = match pkg.digest_algo {
+                Some(rpm_qa::DigestAlgorithm::Sha256) => true,
+                Some(_) => {
+                    non_sha256_count += 1;
+                    false
+                }
+                None => false,
+            };
+
+            for (path, mut file_info) in pkg.files.into_iter() {
+                if !is_sha256 {
+                    file_info.digest = None;
+                }
                 // Accumulate entries for all file types. Skip if this component
                 // already owns this path (can happen when multiple subpackages
                 // from the same SRPM own the same path).
@@ -99,6 +127,13 @@ impl RpmRepo {
                     entries.push((component_id, file_info));
                 }
             }
+        }
+
+        if non_sha256_count > 0 {
+            tracing::warn!(
+                non_sha256_count,
+                "packages with non-SHA-256 digest algorithm, move detection disabled for these"
+            );
         }
 
         tracing::debug!(
@@ -111,6 +146,8 @@ impl RpmRepo {
         Ok(Self {
             components,
             path_to_components,
+            orphan_digest_index: HashMap::new(),
+            orphan_sizes: HashSet::new(),
         })
     }
 }
@@ -146,6 +183,37 @@ impl ComponentsRepo for RpmRepo {
                     .collect()
             })
             .unwrap_or_default()
+    }
+
+    fn weak_claims_for_path(
+        &self,
+        rootfs: &Dir,
+        path: &Utf8Path,
+        file_info: &super::FileInfo,
+    ) -> Result<Vec<ComponentId>> {
+        if self.orphan_digest_index.is_empty() {
+            return Ok(vec![]);
+        }
+
+        // only regular files can be matched by digest
+        if file_info.file_type != super::FileType::File {
+            return Ok(vec![]);
+        }
+
+        // fast filter: skip files whose size doesn't match any orphan
+        if !self.orphan_sizes.contains(&file_info.size) {
+            return Ok(vec![]);
+        }
+
+        let digest = compute_sha256(rootfs, path)
+            .with_context(|| format!("hashing {path} for weak claim"))?;
+        if let Some(id) = self.orphan_digest_index.get(&digest) {
+            // SAFETY: the id we put in orphan_digest_index comes from self.components itself!
+            tracing::trace!(path = %path, component = self.components.get_index(id.0).unwrap().0, "reclaimed by digest");
+            return Ok(vec![*id]);
+        }
+
+        Ok(vec![])
     }
 
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_> {
@@ -199,6 +267,91 @@ fn canonicalize_package_paths(
     }
 
     Ok(())
+}
+
+/// Build an index mapping SHA-256 digests of orphaned RPM files to their
+/// ComponentIds. An "orphaned" file is one recorded in the RPM database but
+/// not present at its declared path on the rootfs (e.g. moved by compose
+/// tooling). Ambiguous digests (mapping to multiple different ComponentIds)
+/// are excluded.
+fn build_orphan_digest_index(repo: &mut RpmRepo, files: &super::FileMap) {
+    // first pass: collect digest -> Vec<ComponentId> for orphaned files
+    let mut digest_to_ids: HashMap<String, Vec<ComponentId>> = HashMap::new();
+    let mut digest_to_size: HashMap<String, u64> = HashMap::new();
+
+    for (path, entries) in &repo.path_to_components {
+        // skip paths that exist on rootfs (not orphaned)
+        if files.contains_key(path) {
+            continue;
+        }
+
+        for (component_id, fi) in entries {
+            // skip ghost files
+            if fi.flags.is_ghost() {
+                continue;
+            }
+
+            // skip empty files; those are too common and may cause false positives
+            if fi.size == 0 {
+                continue;
+            }
+
+            let digest = match &fi.digest {
+                Some(d) if !d.is_empty() => d,
+                _ => continue, // directories, symlinks, or empty digest
+            };
+
+            digest_to_ids
+                .entry(digest.clone())
+                .or_default()
+                .push(*component_id);
+            digest_to_size.insert(digest.clone(), fi.size);
+        }
+    }
+
+    // second pass: remove ambiguous digests and build final index
+    let mut orphan_digest_index: HashMap<String, ComponentId> = HashMap::new();
+    let mut orphan_sizes: HashSet<u64> = HashSet::new();
+    let mut ambiguous_count: usize = 0;
+
+    for (digest, ids) in digest_to_ids {
+        let unique_ids: HashSet<ComponentId> = ids.into_iter().collect();
+        if unique_ids.len() > 1 {
+            ambiguous_count += 1;
+            tracing::trace!(digest = %digest, components = unique_ids.len(), "excluding ambiguous orphan digest");
+            continue;
+        }
+        // SAFETY: by construction in the previous loop, we're guaranteed to
+        // have at least one id and an associated size
+        let id = unique_ids.into_iter().next().unwrap();
+        let size = digest_to_size.get(&digest).unwrap();
+        orphan_digest_index.insert(digest, id);
+        orphan_sizes.insert(*size);
+    }
+
+    tracing::debug!(
+        index_size = orphan_digest_index.len(),
+        unique_sizes = orphan_sizes.len(),
+        ambiguous_excluded = ambiguous_count,
+        "built orphan digest index"
+    );
+
+    repo.orphan_digest_index = orphan_digest_index;
+    repo.orphan_sizes = orphan_sizes;
+}
+
+/// Compute the SHA-256 digest of a file in the rootfs.
+fn compute_sha256(rootfs: &Dir, path: &Utf8Path) -> Result<String> {
+    let rel_path = path.strip_prefix("/").unwrap_or(path.as_ref());
+    let mut file = rootfs
+        .open(rel_path.as_str())
+        .with_context(|| format!("opening {path} for hashing"))?;
+
+    let mut hasher = Hasher::new(MessageDigest::sha256()).context("creating SHA-256 hasher")?;
+    std::io::copy(&mut file, &mut hasher).with_context(|| format!("hashing {path}"))?;
+
+    let digest = hasher.finish().context("finalizing SHA-256 hash")?;
+    Ok(hex::encode(digest))
 }
 
 /// Canonicalize the parent directory of a path by resolving symlinks.
@@ -742,6 +895,101 @@ mod tests {
                 "normalize_path({input})"
             );
         }
+    }
+
+    #[test]
+    fn test_compute_sha256() {
+        let tmp = tempfile::tempdir().unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+
+        rootfs.write("hello.txt", "hello world\n").unwrap();
+        let digest = compute_sha256(&rootfs, Utf8Path::new("/hello.txt")).unwrap();
+        assert_eq!(
+            digest,
+            "a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447"
+        );
+
+        rootfs.write("empty", "").unwrap();
+        let digest = compute_sha256(&rootfs, Utf8Path::new("/empty")).unwrap();
+        assert_eq!(
+            digest,
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+    }
+
+    #[test]
+    fn test_weak_claims_for_path() {
+        let tmp = tempfile::tempdir().unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+
+        // Write a file at a "moved" path. The rootfs has no /usr/bin/bash, so
+        // that entry in the fixture is orphaned. We edit its digest to match
+        // our moved file so the digest matching reclaims it.
+        rootfs.create_dir("moved").unwrap();
+        let content = "x".repeat(1024);
+        rootfs.write("moved/bash", &content).unwrap();
+
+        let files = build_filemap(&rootfs);
+        let digest = compute_sha256(&rootfs, Utf8Path::new("/moved/bash")).unwrap();
+        let size = files.get(Utf8Path::new("/moved/bash")).unwrap().size;
+
+        let mut packages = rpm_qa::load_from_str(FIXTURE).unwrap();
+        let bash = packages.get_mut("bash").unwrap();
+        let bash_fi = bash.files.get_mut(Utf8Path::new("/usr/bin/bash")).unwrap();
+        bash_fi.digest = Some(digest);
+        bash_fi.size = size;
+
+        let mut repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        build_orphan_digest_index(&mut repo, &files);
+
+        // the moved file should be reclaimed by bash's SRPM
+        let moved_fi = files.get(Utf8Path::new("/moved/bash")).unwrap();
+        let claims = repo
+            .weak_claims_for_path(&rootfs, Utf8Path::new("/moved/bash"), moved_fi)
+            .unwrap();
+        assert_eq!(claims.len(), 1);
+        assert_eq!(repo.component_info(claims[0]).name, "bash");
+    }
+
+    #[test]
+    fn test_weak_claims_for_path_ambiguous() {
+        let tmp = tempfile::tempdir().unwrap();
+        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+
+        // Write a file and set two packages from different SRPMs to have the
+        // same orphaned digest. We use /usr/bin/bash from bash and
+        // /usr/lib64/libc.so.6 from glibc.
+        let content = "x".repeat(1024);
+        rootfs.write("data.bin", &content).unwrap();
+
+        let files = build_filemap(&rootfs);
+        let digest = compute_sha256(&rootfs, Utf8Path::new("/data.bin")).unwrap();
+        let size = files.get(Utf8Path::new("/data.bin")).unwrap().size;
+
+        let mut packages = rpm_qa::load_from_str(FIXTURE).unwrap();
+
+        let bash = packages.get_mut("bash").unwrap();
+        let bash_fi = bash.files.get_mut(Utf8Path::new("/usr/bin/bash")).unwrap();
+        bash_fi.digest = Some(digest.clone());
+        bash_fi.size = size;
+
+        let glibc = packages.get_mut("glibc").unwrap();
+        let glibc_fi = glibc
+            .files
+            .get_mut(Utf8Path::new("/usr/lib64/libc.so.6"))
+            .unwrap();
+        glibc_fi.digest = Some(digest);
+        glibc_fi.size = size;
+
+        let mut repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        build_orphan_digest_index(&mut repo, &files);
+
+        // ambiguous digest should not claim anything
+        let data_fi = files.get(Utf8Path::new("/data.bin")).unwrap();
+        let claims = repo
+            .weak_claims_for_path(&rootfs, Utf8Path::new("/data.bin"), data_fi)
+            .unwrap();
+        assert!(claims.is_empty(), "ambiguous digest should not claim");
     }
 
     #[test]
