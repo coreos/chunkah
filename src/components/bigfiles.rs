@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
+use anyhow::Result;
 use camino::{Utf8Path, Utf8PathBuf};
+use cap_std_ext::cap_std::fs::Dir;
 use indexmap::IndexSet;
 
 use super::{ComponentId, ComponentInfo, ComponentsRepo, FileMap, FileType};
@@ -36,6 +38,9 @@ impl BigfilesRepo {
     ///
     /// Returns None if no qualifying files are found. Hardlinked files (same
     /// inode, nlink > 1) are grouped into the same component.
+    // TODO: the upfront scan logic here (inode table, path_to_component map)
+    // could be deferred to weak_claims_for_path time since it receives
+    // &FileInfo with size/inode/nlink.
     pub fn load(files: &FileMap, default_mtime_clamp: u64) -> Option<Self> {
         let mut components: IndexSet<String> = IndexSet::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
@@ -118,15 +123,17 @@ impl ComponentsRepo for BigfilesRepo {
         80
     }
 
-    fn strong_claims_for_path(
+    fn weak_claims_for_path(
         &self,
+        _rootfs: &Dir,
         path: &Utf8Path,
         _file_info: &super::FileInfo,
-    ) -> Vec<ComponentId> {
-        self.path_to_component
+    ) -> Result<Vec<ComponentId>> {
+        Ok(self
+            .path_to_component
             .get(path)
             .map(|id| vec![*id])
-            .unwrap_or_default()
+            .unwrap_or_default())
     }
 
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_> {
@@ -151,8 +158,8 @@ mod tests {
     use super::*;
 
     /// Helper to set up a rootfs, run setup, and scan files.
-    /// Returns (tempdir, files) - caller must keep tempdir alive.
-    fn setup_rootfs<F>(setup: F) -> (tempfile::TempDir, FileMap)
+    /// Returns (tempdir, rootfs, files) - caller must keep tempdir alive.
+    fn setup_rootfs<F>(setup: F) -> (tempfile::TempDir, Dir, FileMap)
     where
         F: FnOnce(&Dir),
     {
@@ -160,7 +167,7 @@ mod tests {
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
         setup(&rootfs);
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
-        (tmp, files)
+        (tmp, rootfs, files)
     }
 
     /// Helper to create a sparse file with the given size (uses no disk space).
@@ -173,9 +180,11 @@ mod tests {
         crate::components::FileInfo::dummy(file_type)
     }
 
-    /// Helper to assert a path is claimed by a specific component.
-    fn assert_component(repo: &BigfilesRepo, path: &str, expected: &str) {
-        let claims = repo.strong_claims_for_path(Utf8Path::new(path), &fi(FileType::File));
+    /// Helper to assert a path is weak-claimed by a specific component.
+    fn assert_component(repo: &BigfilesRepo, rootfs: &Dir, path: &str, expected: &str) {
+        let claims = repo
+            .weak_claims_for_path(rootfs, Utf8Path::new(path), &fi(FileType::File))
+            .unwrap();
         assert_eq!(claims.len(), 1, "{path} should have exactly one claim");
         assert_eq!(
             repo.component_info(claims[0]).name,
@@ -217,20 +226,36 @@ mod tests {
         let repo = BigfilesRepo::load(&files, 12345).unwrap();
 
         // small file should not be claimed
-        let claims =
-            repo.strong_claims_for_path(Utf8Path::new("/usr/bin/small"), &fi(FileType::File));
+        let claims = repo
+            .weak_claims_for_path(
+                &rootfs,
+                Utf8Path::new("/usr/bin/small"),
+                &fi(FileType::File),
+            )
+            .unwrap();
         assert!(claims.is_empty());
 
         // large files should be claimed with their filename
-        assert_component(&repo, "/usr/lib/modules/initramfs.img", "initramfs.img");
+        assert_component(
+            &repo,
+            &rootfs,
+            "/usr/lib/modules/initramfs.img",
+            "initramfs.img",
+        );
 
         // hardlinked files should be claimed by the same component
         assert_component(
             &repo,
+            &rootfs,
             "/usr/lib/sysimage/rpm-ostree-base-db/rpmdb.sqlite",
             "rpmdb.sqlite",
         );
-        assert_component(&repo, "/usr/share/rpm/rpmdb.sqlite", "rpmdb.sqlite");
+        assert_component(
+            &repo,
+            &rootfs,
+            "/usr/share/rpm/rpmdb.sqlite",
+            "rpmdb.sqlite",
+        );
 
         // there should be exactly 2 components (initramfs.img + rpmdb.sqlite)
         assert_eq!(repo.components.len(), 2);
@@ -238,7 +263,7 @@ mod tests {
 
     #[test]
     fn test_bigfiles_duplicate_filenames() {
-        let (_tmp, files) = setup_rootfs(|rootfs| {
+        let (_tmp, rootfs, files) = setup_rootfs(|rootfs| {
             rootfs.create_dir("a").unwrap();
             rootfs.create_dir("b").unwrap();
 
@@ -249,7 +274,7 @@ mod tests {
         let repo = BigfilesRepo::load(&files, 0).unwrap();
 
         // First one uses filename, second uses full path
-        assert_component(&repo, "/a/foobar", "foobar");
-        assert_component(&repo, "/b/foobar", "b/foobar");
+        assert_component(&repo, &rootfs, "/a/foobar", "foobar");
+        assert_component(&repo, &rootfs, "/b/foobar", "b/foobar");
     }
 }
