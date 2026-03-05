@@ -168,7 +168,7 @@ impl ComponentsRepos {
                 // This is O(files x repos), though really the number of active
                 // repos at any time is incredibly small; in the common case, 1.
                 for (repo_idx, repo) in self.repos.iter().enumerate() {
-                    let component_ids = repo.claims_for_path(&path, file_info.file_type);
+                    let component_ids = repo.claims_for_path(&path, &file_info);
                     if !component_ids.is_empty() {
                         tracing::trace!(path = %path, repo_idx = repo_idx, ids = ?component_ids, "path claimed");
                         for id in component_ids {
@@ -295,10 +295,28 @@ trait ComponentsRepo {
     /// Returns a list of component IDs that claim this path. For most paths,
     /// this returns 0 or 1 ID. Directories shared by multiple packages may
     /// return multiple IDs.
-    fn claims_for_path(&self, path: &Utf8Path, file_type: FileType) -> Vec<ComponentId>;
+    fn claims_for_path(&self, path: &Utf8Path, file_info: &FileInfo) -> Vec<ComponentId>;
 
     /// Get info about a component by ID.
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_>;
+}
+
+#[cfg(test)]
+impl FileInfo {
+    /// Create a dummy FileInfo with the given file type for tests.
+    fn dummy(file_type: FileType) -> Self {
+        Self {
+            file_type,
+            mode: 0,
+            size: 0,
+            uid: 0,
+            gid: 0,
+            mtime: 0,
+            ino: 0,
+            nlink: 1,
+            xattrs: Vec::new(),
+        }
+    }
 }
 
 #[cfg(test)]

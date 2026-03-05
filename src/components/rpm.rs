@@ -124,7 +124,7 @@ impl ComponentsRepo for RpmRepo {
         10
     }
 
-    fn claims_for_path(&self, path: &Utf8Path, file_type: FileType) -> Vec<ComponentId> {
+    fn claims_for_path(&self, path: &Utf8Path, file_info: &super::FileInfo) -> Vec<ComponentId> {
         // Don't claim RPM database paths - let them fall into chunkah/unclaimed
         if let Ok(rel_path) = path.strip_prefix("/")
             && RPMDB_PATHS.iter().any(|p| rel_path.starts_with(p))
@@ -137,7 +137,7 @@ impl ComponentsRepo for RpmRepo {
             .map(|entries| {
                 entries
                     .iter()
-                    .filter(|(_, fi)| file_info_to_file_type(fi) == Some(file_type))
+                    .filter(|(_, fi)| file_info_to_file_type(fi) == Some(file_info.file_type))
                     .map(|(id, _)| *id)
                     .collect()
             })
@@ -410,6 +410,10 @@ mod tests {
 
     const FIXTURE: &str = include_str!("../../tests/fixtures/fedora.qf");
 
+    fn fi(file_type: FileType) -> crate::components::FileInfo {
+        crate::components::FileInfo::dummy(file_type)
+    }
+
     #[test]
     fn test_parse_srpm_name() {
         // Package names with no dashes in them
@@ -449,27 +453,28 @@ mod tests {
         let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
 
         // /usr/bin/bash is a file owned by bash
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/bash"), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/bash"), &fi(FileType::File));
         assert_eq!(claims.len(), 1);
         let info = repo.component_info(claims[0]);
         assert_eq!(info.name, "bash");
         assert_eq!(info.mtime_clamp, 1753299195);
 
         // /usr/bin/sh is a symlink owned by bash
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/sh"), FileType::Symlink);
+        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/sh"), &fi(FileType::Symlink));
         assert_eq!(claims.len(), 1);
         let info = repo.component_info(claims[0]);
         assert_eq!(info.name, "bash");
 
         // /usr/lib64/libc.so.6 is a file owned by glibc
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/lib64/libc.so.6"), FileType::File);
+        let claims =
+            repo.claims_for_path(Utf8Path::new("/usr/lib64/libc.so.6"), &fi(FileType::File));
         assert_eq!(claims.len(), 1);
         let info = repo.component_info(claims[0]);
         assert_eq!(info.name, "glibc");
         assert_eq!(info.mtime_clamp, 1771428496);
 
         // Unowned file should not be claimed
-        let claims = repo.claims_for_path(Utf8Path::new("/some/unowned/file"), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new("/some/unowned/file"), &fi(FileType::File));
         assert!(claims.is_empty());
 
         // RPMDB paths should not be claimed even if technically owned by rpm package
@@ -478,7 +483,7 @@ mod tests {
             "/usr/share/rpm/macros",
             "/var/lib/rpm/Packages",
         ] {
-            let claims = repo.claims_for_path(Utf8Path::new(rpmdb_path), FileType::File);
+            let claims = repo.claims_for_path(Utf8Path::new(rpmdb_path), &fi(FileType::File));
             assert!(
                 claims.is_empty(),
                 "RPMDB path {} should not be claimed",
@@ -493,11 +498,11 @@ mod tests {
         let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
 
         // /usr/bin/bash is a file in RPM, but we query as symlink
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/bash"), FileType::Symlink);
+        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/bash"), &fi(FileType::Symlink));
         assert!(claims.is_empty());
 
         // /usr/bin/sh is a symlink in RPM, but we query as file
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/sh"), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/sh"), &fi(FileType::File));
         assert!(claims.is_empty());
     }
 
@@ -507,7 +512,10 @@ mod tests {
         let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
 
         // /usr/lib/.build-id is a well-known directory shared by many packages
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/lib/.build-id"), FileType::Directory);
+        let claims = repo.claims_for_path(
+            Utf8Path::new("/usr/lib/.build-id"),
+            &fi(FileType::Directory),
+        );
         assert!(
             claims.len() >= 2,
             "shared dir should be claimed by multiple components"
@@ -548,16 +556,16 @@ mod tests {
         let repo = RpmRepo::load(&rootfs, &files, now_secs()).unwrap().unwrap();
 
         // Test that paths we know are in filesystem and setup are claimed
-        let claims = repo.claims_for_path(Utf8Path::new("/"), FileType::Directory);
+        let claims = repo.claims_for_path(Utf8Path::new("/"), &fi(FileType::Directory));
         assert!(!claims.is_empty(), "/ should be claimed");
         assert_eq!(repo.component_info(claims[0]).name, "filesystem");
 
-        let claims = repo.claims_for_path(Utf8Path::new("/etc"), FileType::Directory);
+        let claims = repo.claims_for_path(Utf8Path::new("/etc"), &fi(FileType::Directory));
         assert!(!claims.is_empty(), "/etc should be claimed");
         // /etc is owned by filesystem
         assert_eq!(repo.component_info(claims[0]).name, "filesystem");
 
-        let claims = repo.claims_for_path(Utf8Path::new("/etc/passwd"), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new("/etc/passwd"), &fi(FileType::File));
         assert!(!claims.is_empty(), "/etc/passwd should be claimed");
         assert_eq!(repo.component_info(claims[0]).name, "setup");
     }

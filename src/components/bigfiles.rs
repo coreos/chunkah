@@ -79,7 +79,7 @@ impl BigfilesRepo {
 
             // create a component for this path
             let (idx, _) = components.insert_full(component_name);
-            tracing::trace!(path = %path, component = %components[idx], id = idx, "bigfile component created");
+            tracing::trace!(path = %path, component = %components[idx], id = idx, "bigfiles component created");
             let component_id = ComponentId(idx);
             path_to_component.insert(path.clone(), component_id);
 
@@ -118,7 +118,7 @@ impl ComponentsRepo for BigfilesRepo {
         80
     }
 
-    fn claims_for_path(&self, path: &Utf8Path, _file_type: FileType) -> Vec<ComponentId> {
+    fn claims_for_path(&self, path: &Utf8Path, _file_info: &super::FileInfo) -> Vec<ComponentId> {
         self.path_to_component
             .get(path)
             .map(|id| vec![*id])
@@ -165,9 +165,13 @@ mod tests {
         file.set_len(size).unwrap();
     }
 
+    fn fi(file_type: FileType) -> crate::components::FileInfo {
+        crate::components::FileInfo::dummy(file_type)
+    }
+
     /// Helper to assert a path is claimed by a specific component.
     fn assert_component(repo: &BigfilesRepo, path: &str, expected: &str) {
-        let claims = repo.claims_for_path(Utf8Path::new(path), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new(path), &fi(FileType::File));
         assert_eq!(claims.len(), 1, "{path} should have exactly one claim");
         assert_eq!(
             repo.component_info(claims[0]).name,
@@ -209,7 +213,7 @@ mod tests {
         let repo = BigfilesRepo::load(&files, 12345).unwrap();
 
         // small file should not be claimed
-        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/small"), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new("/usr/bin/small"), &fi(FileType::File));
         assert!(claims.is_empty());
 
         // large files should be claimed with their filename
