@@ -118,7 +118,7 @@ impl ComponentsRepo for XattrRepo {
         0
     }
 
-    fn claims_for_path(&self, path: &Utf8Path, _file_type: FileType) -> Vec<ComponentId> {
+    fn claims_for_path(&self, path: &Utf8Path, _file_info: &super::FileInfo) -> Vec<ComponentId> {
         self.path_to_component
             .get(path)
             .map(|id| vec![*id])
@@ -168,9 +168,13 @@ mod tests {
             .unwrap();
     }
 
+    fn fi(file_type: FileType) -> super::FileInfo {
+        super::FileInfo::dummy(file_type)
+    }
+
     /// Helper to assert a path is claimed by a specific component.
     fn assert_component(repo: &XattrRepo, path: &str, file_type: FileType, expected: &str) {
-        let claims = repo.claims_for_path(Utf8Path::new(path), file_type);
+        let claims = repo.claims_for_path(Utf8Path::new(path), &fi(file_type));
         assert_eq!(claims.len(), 1, "{path} should have exactly one claim");
         assert_eq!(
             repo.component_info(claims[0]).name,
@@ -206,7 +210,7 @@ mod tests {
         assert_component(&repo, "/mydir/special", FileType::File, "filecomponent");
 
         // /noattr should not be claimed
-        let claims = repo.claims_for_path(Utf8Path::new("/noattr"), FileType::File);
+        let claims = repo.claims_for_path(Utf8Path::new("/noattr"), &fi(FileType::File));
         assert!(claims.is_empty());
     }
 
