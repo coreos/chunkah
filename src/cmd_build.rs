@@ -207,7 +207,9 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         anyhow::bail!("no supported component repo found in rootfs");
     }
 
-    let components = repos.into_components(files);
+    let components = repos
+        .into_components(&rootfs, files)
+        .context("assigning components")?;
     tracing::info!(components = components.len(), "components assigned");
 
     // pack components down to max layers

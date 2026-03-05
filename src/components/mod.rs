@@ -152,7 +152,11 @@ impl ComponentsRepos {
     /// Repos are sorted by priority (lower values first) before processing.
     /// Higher priority repos "win" - if they claim a path, lower priority repos
     /// are not consulted for that path. All unclaimed paths go into a catch-all.
-    pub fn into_components(mut self, files: FileMap) -> HashMap<String, Component> {
+    pub fn into_components(
+        mut self,
+        rootfs: &Dir,
+        files: FileMap,
+    ) -> Result<HashMap<String, Component>> {
         let mut claims: HashMap<(usize, ComponentId), FileMap> = HashMap::new();
 
         // make sure they're in priority order
@@ -161,29 +165,26 @@ impl ComponentsRepos {
             tracing::trace!(name = %repo.name(), repo_idx = idx, "repo prioritized");
         }
 
-        // check for claims!
-        let unclaimed: FileMap = files
-            .into_iter()
-            .filter_map(|(path, file_info)| {
-                // This is O(files x repos), though really the number of active
-                // repos at any time is incredibly small; in the common case, 1.
-                for (repo_idx, repo) in self.repos.iter().enumerate() {
-                    let component_ids = repo.claims_for_path(&path, &file_info);
-                    if !component_ids.is_empty() {
-                        tracing::trace!(path = %path, repo_idx = repo_idx, ids = ?component_ids, "path claimed");
-                        for id in component_ids {
-                            claims
-                                .entry((repo_idx, id))
-                                .or_default()
-                                .insert(path.clone(), file_info.clone());
-                        }
-                        return None; // claimed
-                    }
-                }
-                tracing::trace!(path = %path, "path unclaimed");
-                Some((path, file_info)) // not claimed
-            })
-            .collect();
+        // all files start unclaimed
+        let unclaimed = files;
+
+        // check for strong path claims, then weak path claims on leftovers
+        let unclaimed = claim_pass(
+            rootfs,
+            &self.repos,
+            unclaimed,
+            &mut claims,
+            ClaimStrength::Strong,
+        )
+        .context("strong claims pass")?;
+        let unclaimed = claim_pass(
+            rootfs,
+            &self.repos,
+            unclaimed,
+            &mut claims,
+            ClaimStrength::Weak,
+        )
+        .context("weak claims pass")?;
 
         #[derive(Default)]
         struct RepoStats {
@@ -217,7 +218,7 @@ impl ComponentsRepos {
             tracing::info!(repo = repo_name, components = stats.components, size = %utils::format_size(stats.total_size), "repo summary");
         }
 
-        // and the catch-all component for anything unclaimed
+        // and the catch-all component for anything still unclaimed
         if !unclaimed.is_empty() {
             let size: u64 = unclaimed.values().map(|f| f.size).sum();
             tracing::info!(files = unclaimed.len(), size = %utils::format_size(size), "unclaimed files");
@@ -260,8 +261,55 @@ impl ComponentsRepos {
             }
         }
 
-        components
+        Ok(components)
     }
+}
+
+/// Whether to use strong or weak claims in a claiming pass.
+#[derive(Debug)]
+enum ClaimStrength {
+    Strong,
+    Weak,
+}
+
+/// Run a claiming pass over all files, consulting each repo in priority order.
+/// Returns the files that were not claimed.
+fn claim_pass(
+    rootfs: &Dir,
+    repos: &[Box<dyn ComponentsRepo>],
+    files: FileMap,
+    claims: &mut HashMap<(usize, ComponentId), FileMap>,
+    strength: ClaimStrength,
+) -> Result<FileMap> {
+    let mut unclaimed = FileMap::new();
+    // This is O(files x repos), though really the number of active
+    // repos at any time is incredibly small; in the common case, 1.
+    for (path, file_info) in files {
+        let mut claimed = false;
+        for (repo_idx, repo) in repos.iter().enumerate() {
+            let ids = match strength {
+                ClaimStrength::Strong => Ok(repo.strong_claims_for_path(&path, &file_info)),
+                ClaimStrength::Weak => repo.weak_claims_for_path(rootfs, &path, &file_info),
+            }
+            .with_context(|| format!("claiming {path}"))?;
+            if !ids.is_empty() {
+                tracing::trace!(path = %path, repo_idx, ids = ?ids, ?strength, "path claimed");
+                for id in ids {
+                    claims
+                        .entry((repo_idx, id))
+                        .or_default()
+                        .insert(path.clone(), file_info.clone());
+                }
+                claimed = true;
+                break;
+            }
+        }
+        if !claimed {
+            tracing::trace!(path = %path, ?strength, "path unclaimed after pass");
+            unclaimed.insert(path, file_info);
+        }
+    }
+    Ok(unclaimed)
 }
 
 /// Opaque identifier for a component within a repo.
@@ -290,12 +338,37 @@ trait ComponentsRepo {
     /// overridable on the CLI in the future.
     fn default_priority(&self) -> usize;
 
-    /// Query which components claim this path.
+    /// Query which components strongly claim this path.
+    ///
+    /// Strong path claims are authoritative claims; i.e. the system itself for
+    /// example may have a database (like the rpmdb) which says that this path
+    /// belongs in a specific component. Must be cheap (no I/O).
     ///
     /// Returns a list of component IDs that claim this path. For most paths,
     /// this returns 0 or 1 ID. Directories shared by multiple packages may
     /// return multiple IDs.
-    fn claims_for_path(&self, path: &Utf8Path, file_info: &FileInfo) -> Vec<ComponentId>;
+    ///
+    /// Default implementation returns no claims.
+    fn strong_claims_for_path(&self, _path: &Utf8Path, _file_info: &FileInfo) -> Vec<ComponentId> {
+        vec![]
+    }
+
+    /// Query which components weakly claim this path.
+    ///
+    /// Weak path claims are best-effort claims; these have lower precedence
+    /// than strong claims but still generally result in a more efficient
+    /// outcome than leaving paths unclaimed. They may involve calculations
+    /// (e.g. hashing) and heuristics.
+    ///
+    /// Default implementation returns no claims.
+    fn weak_claims_for_path(
+        &self,
+        _rootfs: &Dir,
+        _path: &Utf8Path,
+        _file_info: &FileInfo,
+    ) -> Result<Vec<ComponentId>> {
+        Ok(vec![])
+    }
 
     /// Get info about a component by ID.
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_>;
@@ -374,7 +447,7 @@ mod tests {
             default_mtime_clamp: 0,
         };
 
-        let components = loaded.into_components(files);
+        let components = loaded.into_components(&rootfs, files).unwrap();
 
         // example xattr overrides rpm entry
         assert!(
@@ -435,7 +508,7 @@ mod tests {
             default_mtime_clamp: 0,
         };
 
-        let components = loaded.into_components(files);
+        let components = loaded.into_components(&rootfs, files).unwrap();
 
         assert!(components.contains_key("xattr/myapp"));
         assert!(
