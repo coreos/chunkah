@@ -125,9 +125,9 @@ dependencies = [
 
 [[package]]
 name = "cap-std-ext"
-version = "5.0.0"
+version = "5.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d201b8b353bc963f2e8c374be7866dba47082ff041fb0db2d7543f2b9c8367ce"
+checksum = "56f9d7cf114dea582f663f03f4c563d0fc5ca2c8fa4c496eb538d8f01981ea51"
 dependencies = [
  "cap-primitives",
  "cap-tempfile",
