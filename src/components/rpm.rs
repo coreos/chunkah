@@ -65,17 +65,27 @@ impl RpmRepo {
             };
 
             let entry = components.entry(component_name.to_string());
+            let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now)?;
             let component_id = ComponentId(entry.index());
             match entry {
                 indexmap::map::Entry::Occupied(mut e) => {
                     // Build time across subpackages for a given SRPM can vary.
                     // We want the max() of all of them as the clamp.
-                    let (existing_bt, _) = e.get_mut();
+                    let (existing_bt, existing_stability) = e.get_mut();
                     *existing_bt = (*existing_bt).max(pkg.buildtime);
+                    if stability != *existing_stability && !pkg.changelog_times.is_empty() {
+                        // Stability was derived from changelogs only and yet
+                        // they're different? This likely means that the RPMs
+                        // coming from different versions of the same SRPM are
+                        // intermixed in the rootfs. This yields suboptimal
+                        // packing and likely indicates a compose bug. Warn.
+                        tracing::warn!(package = %pkg.name, "package has different changelog than sibling RPM");
+                    }
+                    // for determinism, we want the min() of all stabilities if they differ.
+                    *existing_stability = (*existing_stability).min(stability);
                 }
                 indexmap::map::Entry::Vacant(e) => {
                     tracing::trace!(component = %component_name, id = component_id.0, "rpm component created");
-                    let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now)?;
                     e.insert((pkg.buildtime, stability));
                 }
             }
@@ -394,6 +404,7 @@ fn file_info_to_file_type(fi: &FileInfo) -> Option<FileType> {
 mod tests {
     use camino::Utf8Path;
     use cap_std_ext::cap_std::ambient_authority;
+    use rpm_qa::Package;
 
     use super::*;
 
@@ -641,6 +652,57 @@ mod tests {
 
         let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
         assert_stability_in_range(stability, 0.0, 0.10);
+    }
+
+    #[test]
+    fn test_stability_min_across_subpackages() {
+        use std::collections::BTreeMap;
+
+        // Two binary packages from the same SRPM but with different changelogs.
+        // This simulates a compose bug where a noarch subpackage is from an
+        // older build than the arch-specific one.
+        let now = 1_800_000_000;
+        let srpm = "foo-1.0-1.fc40.src.rpm";
+
+        let foo = rpm_qa::Package {
+            name: "foo".into(),
+            version: "1.0".into(),
+            release: "1.fc40".into(),
+            epoch: None,
+            arch: "x86_64".into(),
+            license: "MIT".into(),
+            size: 1000,
+            buildtime: now - 200000,
+            installtime: now,
+            sourcerpm: Some(srpm.into()),
+            digest_algo: None,
+            changelog_times: vec![now - 200000, now - 300000],
+            files: BTreeMap::new(),
+        };
+
+        // "foo2" has fresher changelogs so should have lower stability
+        let mut foo2 = foo.clone();
+        foo2.name = "foo2".into();
+        foo2.changelog_times = vec![now, now - 100000];
+
+        let stab_foo = calculate_stability(&foo.changelog_times, foo.buildtime, now).unwrap();
+        let stab_foo2 = calculate_stability(&foo2.changelog_times, foo2.buildtime, now).unwrap();
+        assert!(stab_foo > stab_foo2, "foo isn't more stable than foo2");
+
+        let assert_stability = |first: &Package, second: &Package| {
+            let mut packages: rpm_qa::Packages = HashMap::new();
+            packages.insert(first.name.to_string(), first.clone());
+            packages.insert(second.name.to_string(), second.clone());
+            let repo = RpmRepo::load_from_packages(packages, now).unwrap();
+            let info = repo.component_info(ComponentId(0));
+            assert_eq!(info.name, "foo");
+            // the component should use the min (most pessimistic) stability
+            assert_eq!(info.stability, stab_foo2);
+        };
+
+        // try both orders
+        assert_stability(&foo, &foo2);
+        assert_stability(&foo2, &foo);
     }
 
     fn build_filemap(rootfs: &Dir) -> crate::components::FileMap {
