@@ -926,9 +926,9 @@ checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 
 [[package]]
 name = "rpm-qa"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4eebd21e7fb1323b2a350d807e4fde633de019a806e7ba5c31d592ecf6cf6ac"
+checksum = "c36bf91f7decb240440129fd1b53e9a02f1e829f66ceef42c2d11b51ea658990"
 dependencies = [
  "anyhow",
  "camino",
