@@ -105,8 +105,8 @@ impl<'a> Scanner<'a> {
 
                 let file_info = FileInfo::from_metadata(&metadata, file_type, xattrs);
 
+                tracing::trace!(path = %path, size = file_info.size, "scanned file");
                 files.insert(path.to_owned(), file_info);
-                tracing::trace!(path = %path, "scanned file");
 
                 if prune_action == PruneAction::SkipChildren && file_type == FileType::Directory {
                     tracing::debug!(path = %path, "pruning children only");
