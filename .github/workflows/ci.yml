@@ -67,6 +67,12 @@ jobs:
         run: just buildimg -- ${{ matrix.base && format('--build-arg=BASE={0}', matrix.base) || '' }}
       - name: Run tests
         run: just test ${{ matrix.tests }}
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}
+          path: tests/e2e/results/
       - name: Push to ghcr.io
         if: github.event_name == 'push' && matrix.push
         run: |
