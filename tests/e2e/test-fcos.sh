@@ -11,10 +11,10 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 TARGET_IMAGE="quay.io/fedora/fedora-coreos:stable"
 CHUNKED_IMAGE="localhost/fcos-chunked:test"
 
-peak_mem_dir=$(mktemp -d)
+output_dir=$(mktemp -d)
 cleanup() {
     cleanup_images "${CHUNKED_IMAGE}"
-    rm -rf "${peak_mem_dir}"
+    rm -rf "${output_dir}"
 }
 trap cleanup EXIT
 
@@ -25,8 +25,8 @@ config_str=$(podman inspect "${TARGET_IMAGE}")
 buildah_build \
     --from "${TARGET_IMAGE}" --build-arg CHUNKAH="${CHUNKAH_IMG:?}" \
     --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
-    --build-arg "CHUNKAH_ARGS=-v --prune /sysroot/ --max-layers 96 --write-peak-mem-to /run/peak-mem/value" \
-    -v "${peak_mem_dir}:/run/peak-mem" \
+    --build-arg "CHUNKAH_ARGS=-v --prune /sysroot/ --max-layers 96 --write-peak-mem-to /run/output/peak-mem --write-manifest-to /run/output/manifest.json" \
+    -v "${output_dir}:/run/output" \
     -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
 
 # sanity-check it
@@ -38,9 +38,8 @@ assert_has_components "${CHUNKED_IMAGE}" "rpm/kernel" "rpm/systemd" "rpm/ignitio
 # verify we got exactly 96 layers
 assert_layer_count "${CHUNKED_IMAGE}" 96
 
-# verify layer containing unclaimed is under 100MB (104857600 bytes)
-unclaimed_size=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" | \
-    jq '.LayersData[] | select(.Annotations["org.chunkah.component"] | contains("chunkah/unclaimed")) | .Size')
+# verify unclaimed component is under 100MB (104857600 bytes)
+unclaimed_size=$(jq '.components["chunkah/unclaimed"].size' "${output_dir}/manifest.json")
 [[ -n "${unclaimed_size}" ]]
 [[ ${unclaimed_size} -le 104857600 ]]
 
@@ -55,7 +54,7 @@ max_size=$((size_original * 101 / 100))
 assert_no_diff "${TARGET_IMAGE}" "${CHUNKED_IMAGE}" --skip /sysroot/
 
 # verify peak memory is under 200 MiB (209715200 bytes)
-peak_mem_bytes=$(cat "${peak_mem_dir}/value")
+peak_mem_bytes=$(cat "${output_dir}/peak-mem")
 [[ ${peak_mem_bytes} -le 209715200 ]]
 
 # run bootc lint

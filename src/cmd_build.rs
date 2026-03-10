@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::num::NonZeroUsize;
 
 use anyhow::{Context, Result};
@@ -7,7 +7,7 @@ use cap_std_ext::cap_std::ambient_authority;
 use cap_std_ext::cap_std::fs::Dir;
 use clap::Parser;
 use ocidir::oci_spec::image as oci_image;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::components::{Component, ComponentsRepos, FileMap};
 use crate::ocibuilder::{Builder, Compression};
@@ -112,6 +112,10 @@ pub struct BuildArgs {
     /// Write peak memory usage (in bytes) to a file
     #[arg(long, value_name = "PATH", hide = true)]
     write_peak_mem_to: Option<Utf8PathBuf>,
+
+    /// Write a component manifest JSON to a file
+    #[arg(long, value_name = "PATH", hide = true)]
+    write_manifest_to: Option<Utf8PathBuf>,
 }
 
 impl BuildArgs {
@@ -212,6 +216,13 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         .context("assigning components")?;
     tracing::info!(components = components.len(), "components assigned");
 
+    // write the component manifest before packing merges components
+    if let Some(path) = &args.write_manifest_to {
+        let file = std::fs::File::create(path)
+            .with_context(|| format!("creating manifest file {path}"))?;
+        write_manifest(&components, file).with_context(|| format!("writing manifest to {path}"))?;
+    }
+
     // pack components down to max layers
     let components = pack_components(args, components).context("packing components")?;
     tracing::info!(layers = components.len(), "packing complete");
@@ -258,6 +269,27 @@ pub fn run(args: &BuildArgs) -> Result<()> {
 
     tracing::info!("build complete");
     Ok(())
+}
+
+/// Serialize the component map into a JSON manifest.
+fn write_manifest(
+    components: &HashMap<String, Component>,
+    writer: impl std::io::Write,
+) -> Result<()> {
+    let manifest = Manifest {
+        components: components
+            .iter()
+            .map(|(name, component)| {
+                let entry = ManifestComponent {
+                    file_count: component.files.len(),
+                    size: component.files.values().map(|f| f.size).sum(),
+                    files: component.files.keys().map(|p| p.to_string()).collect(),
+                };
+                (name.clone(), entry)
+            })
+            .collect(),
+    };
+    serde_json::to_writer_pretty(writer, &manifest).context("serializing manifest to JSON")
 }
 
 /// Parse config from a JSON string.
@@ -307,6 +339,20 @@ enum ConfigInput {
     InspectOne(ParsedConfig),
     /// Direct OCI config (e.g., `{"Entrypoint": [...]}`)
     Direct(oci_image::Config),
+}
+
+/// Top-level manifest written via --write-manifest-to.
+#[derive(Serialize)]
+struct Manifest {
+    components: BTreeMap<String, ManifestComponent>,
+}
+
+/// Per-component entry in the embedded manifest.
+#[derive(Serialize)]
+struct ManifestComponent {
+    file_count: usize,
+    size: u64,
+    files: Vec<String>,
 }
 
 /// Resolve the created epoch from CLI, config, or current time.
