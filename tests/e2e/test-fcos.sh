@@ -11,10 +11,9 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 TARGET_IMAGE="quay.io/fedora/fedora-coreos:stable"
 CHUNKED_IMAGE="localhost/fcos-chunked:test"
 
-output_dir=$(mktemp -d)
+output_dir="${OUTPUT_DIR:?}"
 cleanup() {
     cleanup_images "${CHUNKED_IMAGE}"
-    rm -rf "${output_dir}"
 }
 trap cleanup EXIT
 
@@ -27,7 +26,7 @@ set -x
 buildah_build \
     --from "${TARGET_IMAGE}" --build-arg CHUNKAH="${CHUNKAH_IMG:?}" \
     --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
-    --build-arg "CHUNKAH_ARGS=-v --prune /sysroot/ --max-layers 96 --write-peak-mem-to /run/output/peak-mem --write-manifest-to /run/output/manifest.json" \
+    --build-arg "CHUNKAH_ARGS=-v --prune /sysroot/ --max-layers 96 --write-peak-mem-to /run/output/peak-mem --write-manifest-to /run/output/manifest.json --trace-logfile /run/output/trace.log" \
     -v "${output_dir}:/run/output" \
     -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
 
