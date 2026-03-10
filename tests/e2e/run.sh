@@ -9,8 +9,9 @@ Usage: $(basename "$0") [OPTIONS] [TEST...]
 Run end-to-end tests for chunkah.
 
 Options:
-    -v, --verbose    Show test output in real-time (default: only on failure)
-    -h, --help       Show this help message
+    -v, --verbose        Show test output in real-time (default: only on failure)
+    --output-dir DIR     Directory for test artifacts (default: \${SCRIPT_DIR}/results)
+    -h, --help           Show this help message
 
 Arguments:
     TEST             Test name(s) to run (without 'test-' prefix and '.sh' suffix).
@@ -34,6 +35,7 @@ cd "${SCRIPT_DIR}"
 
 ONLY_TESTS=()
 VERBOSE=false
+output_dir="${SCRIPT_DIR}/results"
 while [[ $# -gt 0 ]]; do
     case $1 in
         --help|-h)
@@ -43,6 +45,10 @@ while [[ $# -gt 0 ]]; do
         --verbose|-v)
             VERBOSE=true
             shift
+            ;;
+        --output-dir)
+            output_dir="$2"
+            shift 2
             ;;
         -*)
             echo "Error: Unknown option: $1" >&2
@@ -82,11 +88,22 @@ echo ""
 
 for test in "${tests[@]}"; do
     echo "=== Running ${test} ==="
+    test_name="${test%.sh}"
+
+    # Create per-test output directory and export for the test script
+    test_output_dir="${output_dir}/${test_name}"
+    mkdir -p "${test_output_dir}"
+    export OUTPUT_DIR="${test_output_dir}"
+
     TMPDIR=$(mktemp -d)
     export TMPDIR
     abstest=$(realpath "${test}")
 
-    if [[ ${VERBOSE} == true ]]; then exec 3>&2; else exec 3>"${TMPDIR}/.out"; fi
+    if [[ ${VERBOSE} == true ]]; then
+        exec 3>&2
+    else
+        exec 3>"${test_output_dir}/output.log"
+    fi
     if (cd "${TMPDIR}" && bash "${abstest}") >&3 2>&3; then
         echo "=== PASSED: ${test} ==="
         passed=$((passed+1))
@@ -96,7 +113,7 @@ for test in "${tests[@]}"; do
         failed_tests+=("${test}")
         if [[ ${VERBOSE} == false ]]; then
             echo "--- Test output ---"
-            cat "${TMPDIR}/.out"
+            cat "${test_output_dir}/output.log"
             echo "--- End output ---"
         fi
     fi

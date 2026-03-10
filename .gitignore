@@ -1,3 +1,4 @@
 /.opencode/plans
 /target
+/tests/e2e/results
 __pycache__/
