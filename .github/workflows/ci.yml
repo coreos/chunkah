@@ -32,6 +32,7 @@ jobs:
     needs: unit-tests
     runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: e2e-tests (fedora, amd64)
