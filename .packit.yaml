@@ -9,6 +9,11 @@ srpm_build_deps:
   - zlib-devel
 
 actions:
+  # Packit defaults to `git describe` for the version, but for PRs that bump the
+  # Cargo.toml release, the versioned tarball that create-archive produces will
+  # not match what Packit expects. Always get the version from Cargo.toml.
+  get-current-version:
+    - bash -c 'cargo metadata --no-deps --format-version=1 | python3 -c "import json,sys; print(json.load(sys.stdin)[\"packages\"][0][\"version\"])"'
   create-archive:
     - tools/create-archives.sh --outdir packaging
   # Packit only handles Source0 by default; we need to also rewrite Source1
