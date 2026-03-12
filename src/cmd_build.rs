@@ -160,6 +160,15 @@ impl BuildArgs {
 pub fn run(args: &BuildArgs) -> Result<()> {
     tracing::info!(rootfs = %args.rootfs, "starting build");
 
+    const CONTAINERS_STORAGE_LAYER_LIMIT: usize = 500;
+    if args.max_layers > CONTAINERS_STORAGE_LAYER_LIMIT {
+        tracing::warn!(
+            max_layers = args.max_layers,
+            limit = CONTAINERS_STORAGE_LAYER_LIMIT,
+            "image exceeds known containers-storage layer limit"
+        );
+    }
+
     // load base config from file, string, or use empty default
     let parsed = if let Some(path) = &args.config {
         tracing::debug!(source = %path, "loading config from file");
