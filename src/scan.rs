@@ -351,10 +351,12 @@ mod tests {
             .unwrap();
         rootfs.create_dir_all("zkeep/nested").unwrap();
         rootfs.write("zkeep/nested/file.txt", "keep").unwrap();
+        rootfs.write("zkeep/nested/prune-me.txt", "prune").unwrap();
 
         let prune = vec![
             Utf8PathBuf::from("/prune"),
             Utf8PathBuf::from("/prune-children-only/"),
+            Utf8PathBuf::from("/zkeep/nested/prune-me.txt"),
         ];
         let files = Scanner::new(&rootfs).prune(&prune).unwrap().scan().unwrap();
 
@@ -371,5 +373,6 @@ mod tests {
         assert!(files.contains_key(Utf8Path::new("/zkeep")));
         assert!(files.contains_key(Utf8Path::new("/zkeep/nested")));
         assert!(files.contains_key(Utf8Path::new("/zkeep/nested/file.txt")));
+        assert!(!files.contains_key(Utf8Path::new("/zkeep/nested/prune-me.txt")));
     }
 }
