@@ -7,6 +7,8 @@ use indexmap::IndexMap;
 use openssl::hash::{Hasher, MessageDigest};
 use rpm_qa::FileInfo;
 
+use crate::utils::{calculate_stability, canonicalize_parent_path};
+
 use super::{ComponentId, ComponentInfo, ComponentsRepo, FileType};
 
 const REPO_NAME: &str = "rpm";
@@ -77,7 +79,7 @@ impl RpmRepo {
             };
 
             let entry = components.entry(component_name.to_string());
-            let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now)?;
+            let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now);
             let component_id = ComponentId(entry.index());
             match entry {
                 indexmap::map::Entry::Occupied(mut e) => {
@@ -354,134 +356,6 @@ fn compute_sha256(rootfs: &Dir, path: &Utf8Path) -> Result<String> {
     Ok(hex::encode(digest))
 }
 
-/// Canonicalize the parent directory of a path by resolving symlinks.
-///
-/// Given `/lib/modules/5.x/vmlinuz`, if `/lib` -> `usr/lib`, returns
-/// `/usr/lib/modules/5.x/vmlinuz`. Only symlinks in directory components are
-/// resolved, not the final component (the reason is that if the final component
-/// is supposed to be a file/directory according to the rpmdb, but it turns out
-/// to be symlink, then something is off and we don't want the RPM to claim it).
-///
-/// The path must be absolute.
-fn canonicalize_parent_path(
-    rootfs: &Dir,
-    files: &super::FileMap,
-    path: &Utf8Path,
-    cache: &mut HashMap<Utf8PathBuf, Utf8PathBuf>,
-) -> Result<Utf8PathBuf> {
-    assert!(path.is_absolute(), "path must be absolute: {}", path);
-
-    if path == Utf8Path::new("/") {
-        return Ok(Utf8PathBuf::from("/"));
-    }
-
-    // recursively canonicalize the parent
-    let parent = path
-        .parent()
-        .expect("non-root absolute path must have parent");
-    let canonical_parent = canonicalize_dir_path(rootfs, files, parent, cache, 0)?;
-
-    let filename = path
-        .file_name()
-        .expect("non-root absolute path must have filename");
-    Ok(canonical_parent.join(filename))
-}
-
-/// Maximum depth for symlink resolution to prevent infinite loops.
-const MAX_SYMLINK_DEPTH: usize = 40;
-
-/// Recursively canonicalize a directory path by resolving symlinks.
-fn canonicalize_dir_path(
-    rootfs: &Dir,
-    files: &super::FileMap,
-    path: &Utf8Path,
-    cache: &mut HashMap<Utf8PathBuf, Utf8PathBuf>,
-    depth: usize,
-) -> Result<Utf8PathBuf> {
-    assert!(path.is_absolute(), "path must be absolute: {}", path);
-
-    if depth > MAX_SYMLINK_DEPTH {
-        anyhow::bail!("too many levels of symbolic links: {}", path);
-    }
-
-    // check cache first
-    if let Some(cached) = cache.get(path) {
-        return Ok(cached.clone());
-    }
-
-    // base case: root
-    if path == Utf8Path::new("/") {
-        return Ok(Utf8PathBuf::from("/"));
-    }
-
-    // recursively canonicalize the parent
-    let parent = path
-        .parent()
-        .expect("non-root absolute path must have parent");
-    let canonical_parent = canonicalize_dir_path(rootfs, files, parent, cache, depth)?;
-
-    let filename = path
-        .file_name()
-        .expect("non-root absolute path must have filename");
-    let current_path = canonical_parent.join(filename);
-
-    let is_symlink = files
-        .get(&current_path)
-        .map(|fi| fi.file_type == FileType::Symlink)
-        // Technically if we fallback here it means it doesn't even exist in the
-        // rootfs so it won't even be claimed. But it feels overkill to try to
-        // e.g. return an Option and handle that everywhere.
-        .unwrap_or(false);
-
-    let canonical = if is_symlink {
-        let rel_path = current_path
-            .strip_prefix("/")
-            .expect("path must be absolute");
-        let target = rootfs
-            .read_link_contents(rel_path.as_str())
-            .with_context(|| format!("reading symlink target for {}", current_path))?;
-
-        let target_utf8 = Utf8Path::from_path(&target)
-            .ok_or_else(|| anyhow::anyhow!("non-UTF-8 symlink target for {}", current_path))?;
-
-        if target_utf8.is_absolute() {
-            // absolute symlink - recurse to resolve any symlinks in target
-            canonicalize_dir_path(rootfs, files, target_utf8, cache, depth + 1)?
-        } else {
-            // relative symlink - join with parent and normalize
-            let resolved = canonical_parent.join(target_utf8);
-            let normalized = normalize_path(&resolved)?;
-            // recurse to resolve any symlinks in the resolved path
-            canonicalize_dir_path(rootfs, files, &normalized, cache, depth + 1)?
-        }
-    } else {
-        current_path
-    };
-
-    cache.insert(path.to_owned(), canonical.clone());
-    Ok(canonical)
-}
-
-/// Normalize a path by resolving `.` and `..` components.
-fn normalize_path(path: &Utf8Path) -> Result<Utf8PathBuf> {
-    let mut result = Utf8PathBuf::new();
-    for component in path.components() {
-        use camino::Utf8Component;
-        match component {
-            Utf8Component::RootDir => result.push("/"),
-            Utf8Component::ParentDir => {
-                result.pop();
-            }
-            Utf8Component::Normal(n) => result.push(n),
-            Utf8Component::CurDir => {}
-            Utf8Component::Prefix(p) => {
-                anyhow::bail!("invalid path prefix: {:?}", p);
-            }
-        }
-    }
-    Ok(result)
-}
-
 /// Parse the SRPM name from a full SRPM filename.
 ///
 /// e.g., "bash-5.2.15-5.fc40.src.rpm" -> "bash"
@@ -497,54 +371,6 @@ fn parse_srpm_name(srpm: &str) -> &str {
     } else {
         without_suffix
     }
-}
-
-/// Calculate stability from changelog timestamps and build time.
-///
-/// Uses a Poisson model. I used Gemini Pro 3 to analyzing RPM changelogs from
-/// Fedora and found that once you filter out high-activity event-driven periods
-/// (mass rebuilds, Fedora branching events), package updates over a large
-/// enough period generally follow a Poisson distribution.
-///
-/// The lookback period is limited to STABILITY_LOOKBACK_DAYS (1 year).
-/// If there are no changelog entries, the build time is used as a fallback.
-fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) -> Result<f64> {
-    use super::{SECS_PER_DAY, STABILITY_LOOKBACK_DAYS, STABILITY_PERIOD_DAYS};
-
-    let lookback_start = now.saturating_sub(STABILITY_LOOKBACK_DAYS * SECS_PER_DAY);
-
-    // If there are no changelog entries, use the buildtime as a single data point
-    let mut relevant_times: Vec<u64> = if changelog_times.is_empty() {
-        vec![buildtime]
-    } else {
-        changelog_times.to_vec()
-    };
-
-    // Filter to entries within the lookback window
-    relevant_times.retain(|&t| t >= lookback_start);
-
-    if relevant_times.is_empty() {
-        // All changelog entries are older than lookback period.
-        // No changes in the past year = very stable.
-        return Ok(0.99);
-    }
-
-    // Find the oldest timestamp in the window
-    let oldest = relevant_times.iter().min().copied().unwrap();
-
-    let span_days = (now.saturating_sub(oldest)) as f64 / SECS_PER_DAY as f64;
-
-    if span_days < 1.0 {
-        // Very recent package, assume unstable
-        return Ok(0.0);
-    }
-
-    let num_changes = relevant_times.len() as f64;
-
-    // lambda in our case is changes per day
-    let lambda = num_changes / span_days;
-
-    Ok((-lambda * STABILITY_PERIOD_DAYS).exp())
 }
 
 fn file_info_to_file_type(fi: &FileInfo) -> Option<FileType> {
@@ -756,7 +582,7 @@ mod tests {
         let changelog_times = vec![old_time, old_time - SECS_PER_DAY];
         let buildtime = old_time;
 
-        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now);
         assert_eq!(stability, 0.99);
     }
 
@@ -768,7 +594,7 @@ mod tests {
         let changelog_times = vec![recent_time];
         let buildtime = recent_time;
 
-        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now);
         assert_eq!(stability, 0.0);
     }
 
@@ -781,7 +607,7 @@ mod tests {
         let buildtime = now - (30 * SECS_PER_DAY); // 30 days ago
         let changelog_times: Vec<u64> = vec![];
 
-        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now);
         // 1 change over 30 days = lambda of 1/30
         // stability = e^(-lambda * 7) = e^(-7/30) ≈ 0.79
         assert_stability_in_range(stability, 0.75, 0.85);
@@ -803,7 +629,7 @@ mod tests {
         ];
         let buildtime = now - (100 * SECS_PER_DAY);
 
-        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now);
         assert_stability_in_range(stability, 0.70, 0.80);
     }
 
@@ -820,7 +646,7 @@ mod tests {
             .collect();
         let buildtime = now - (20 * SECS_PER_DAY);
 
-        let stability = calculate_stability(&changelog_times, buildtime, now).unwrap();
+        let stability = calculate_stability(&changelog_times, buildtime, now);
         assert_stability_in_range(stability, 0.0, 0.10);
     }
 
@@ -855,8 +681,8 @@ mod tests {
         foo2.name = "foo2".into();
         foo2.changelog_times = vec![now, now - 100000];
 
-        let stab_foo = calculate_stability(&foo.changelog_times, foo.buildtime, now).unwrap();
-        let stab_foo2 = calculate_stability(&foo2.changelog_times, foo2.buildtime, now).unwrap();
+        let stab_foo = calculate_stability(&foo.changelog_times, foo.buildtime, now);
+        let stab_foo2 = calculate_stability(&foo2.changelog_times, foo2.buildtime, now);
         assert!(stab_foo > stab_foo2, "foo isn't more stable than foo2");
 
         let assert_stability = |first: &Package, second: &Package| {
@@ -873,28 +699,6 @@ mod tests {
         // try both orders
         assert_stability(&foo, &foo2);
         assert_stability(&foo2, &foo);
-    }
-
-    fn build_filemap(rootfs: &Dir) -> crate::components::FileMap {
-        crate::scan::Scanner::new(rootfs).scan().unwrap()
-    }
-
-    #[test]
-    fn test_normalize_path() {
-        let cases = [
-            ("/", "/"),
-            ("/a/..", "/"),
-            ("/a/b/../c", "/a/c"),
-            ("/a/./b/c", "/a/b/c"),
-            ("/a/b/c/..", "/a/b"),
-        ];
-        for (input, expected) in cases {
-            assert_eq!(
-                normalize_path(Utf8Path::new(input)).unwrap(),
-                Utf8PathBuf::from(expected),
-                "normalize_path({input})"
-            );
-        }
     }
 
     #[test]
@@ -929,7 +733,7 @@ mod tests {
         let content = "x".repeat(1024);
         rootfs.write("moved/bash", &content).unwrap();
 
-        let files = build_filemap(&rootfs);
+        let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
         let digest = compute_sha256(&rootfs, Utf8Path::new("/moved/bash")).unwrap();
         let size = files.get(Utf8Path::new("/moved/bash")).unwrap().size;
 
@@ -962,7 +766,7 @@ mod tests {
         let content = "x".repeat(1024);
         rootfs.write("data.bin", &content).unwrap();
 
-        let files = build_filemap(&rootfs);
+        let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
         let digest = compute_sha256(&rootfs, Utf8Path::new("/data.bin")).unwrap();
         let size = files.get(Utf8Path::new("/data.bin")).unwrap().size;
 
@@ -990,56 +794,5 @@ mod tests {
             .weak_claims_for_path(&rootfs, Utf8Path::new("/data.bin"), data_fi)
             .unwrap();
         assert!(claims.is_empty(), "ambiguous digest should not claim");
-    }
-
-    #[test]
-    fn test_canonicalize_path() {
-        let tmp = tempfile::tempdir().unwrap();
-        let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
-        rootfs.create_dir_all("usr/lib/modules").unwrap();
-        rootfs.symlink("usr/lib", "lib").unwrap();
-        rootfs.create_dir_all("usr/bar").unwrap();
-        rootfs.symlink(".././../bar", "foo").unwrap();
-        rootfs.symlink("usr/bar", "bar").unwrap();
-
-        let files = build_filemap(&rootfs);
-        let mut cache = HashMap::new();
-
-        // Test canonicalize_dir_path cases
-        let dir_cases = [
-            // No symlinks
-            ("/usr/lib/modules", "/usr/lib/modules"),
-            // Single symlink: /lib -> usr/lib
-            ("/lib", "/usr/lib"),
-            ("/lib/modules", "/usr/lib/modules"),
-            // Symlink chain: /foo -> bar -> usr/bar
-            ("/foo", "/usr/bar"),
-            // Nonexistent path returns as-is
-            ("/nonexistent/path", "/nonexistent/path"),
-        ];
-        for (input, expected) in dir_cases {
-            let result =
-                canonicalize_dir_path(&rootfs, &files, Utf8Path::new(input), &mut cache, 0);
-            assert_eq!(
-                result.unwrap(),
-                Utf8PathBuf::from(expected),
-                "canonicalize_dir_path({input})"
-            );
-        }
-
-        // Test canonicalize_parent_path (resolves parent symlinks, keeps filename)
-        let parent_cases = [
-            ("/lib/modules/vmlinuz", "/usr/lib/modules/vmlinuz"),
-            ("/foo/baz", "/usr/bar/baz"),
-        ];
-        for (input, expected) in parent_cases {
-            let result =
-                canonicalize_parent_path(&rootfs, &files, Utf8Path::new(input), &mut cache);
-            assert_eq!(
-                result.unwrap(),
-                Utf8PathBuf::from(expected),
-                "canonicalize_parent_path({input})"
-            );
-        }
     }
 }
