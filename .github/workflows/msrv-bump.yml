@@ -43,7 +43,7 @@ jobs:
 
       - name: Create pull request
         if: steps.current.outputs.msrv != steps.rhel9.outputs.version
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: msrv-bump
           title: "Cargo.toml: bump rust-version to ${{ steps.rhel9.outputs.version }}"
