@@ -62,7 +62,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Install tools
-        run: dnf install -y just buildah podman skopeo jq
+        run: dnf install -y just buildah podman skopeo jq diffutils
       - name: Build image
         run: just buildimg -- ${{ matrix.base && format('--build-arg=BASE={0}', matrix.base) || '' }}
       - name: Run tests
