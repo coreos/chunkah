@@ -21,6 +21,9 @@ with content-based layers.
   - [Limiting the number of layers](#limiting-the-number-of-layers)
   - [Building from a raw rootfs](#building-from-a-raw-rootfs)
   - [Customizing the OCI image config and annotations](#customizing-the-oci-image-config-and-annotations)
+  - [Pruning and filtering](#pruning-and-filtering)
+  - [Architecture](#architecture)
+  - [Parallelism](#parallelism)
   - [Compatibility with bootable (bootc) images](#compatibility-with-bootable-bootc-images)
   - [Debugging](#debugging)
 - [Relationship to `zstd:chunked`](#relationship-to-zstdchunked)
@@ -61,12 +64,16 @@ preprocess the rootfs to remove common sources of non-reproducibility (such as
 
 ## Installation
 
-While it's possible to install chunkah as a native CLI tool using `cargo
-install`, it's primarily intended to be used as a container image:
+chunkah is primarily intended to be used as a container image:
 
 ```shell
 podman run -ti --rm quay.io/jlebon/chunkah --help
 ```
+
+However, if you're currently building images using a multi-stage build, it
+may be more convenient to `cargo install` the binary into your builder image
+(whether at runtime or build time if you own the builder image). chunkah is also
+packaged in Fedora, making it easier to do this there.
 
 ## Usage
 
@@ -198,20 +205,22 @@ feature](https://coreos.github.io/rpm-ostree/build-chunked-oci/#assigning-files-
 
 ### Limiting the number of layers
 
-By default, the maximum number of layers emitted is 64. This can be increased
-(up to 448) or decreased using the `--max-layers` option. If the number of
-components exceeds the maximum, chunkah will pack multiple components together.
-There is thus a tradeoff in deciding this. Fewer layers means losing the
-efficiency gains of content-based layers. Too many layers may mean excessive
-processing and overhead when pushing/pulling the image.
+By default, the maximum number of layers emitted is 64. This can be increased or
+decreased using the `--max-layers` option. If the number of components exceeds
+the maximum, chunkah will pack multiple components together. There is thus a
+tradeoff in deciding this. Fewer layers means losing the efficiency gains of
+content-based layers. Too many layers may mean excessive processing and overhead
+when pushing/pulling the image. Note that containers-storage has a hard limit of
+500 layers.
 
 ### Building from a raw rootfs
 
 For completeness, note it's of course also possible to split any arbitrary
-rootfs, regardless of where it comes from.
+rootfs, regardless of where it comes from:
 
 ```shell
-podman run --rm -v root:/chunkah:z -e CHUNKAH_CONFIG_STR="$(cat config.json)" \
+podman run --rm -v /path/to/rootfs:/chunkah:z \
+  -e CHUNKAH_CONFIG_STR="$(cat config.json)" \
   quay.io/jlebon/chunkah build > out.ociarchive
 ```
 
@@ -219,6 +228,14 @@ podman run --rm -v root:/chunkah:z -e CHUNKAH_CONFIG_STR="$(cat config.json)" \
 > The `:z` option will relabel all files for access by the container, which may
 > be expensive for a large rootfs. You can use `--security-opt=label=disable` to
 > avoid this, but it disables SELinux separation with the chunkah container.
+
+When running chunkah directly in this way, the OCI archive is written to stdout
+by default. Use `-o`/`--output` to write to a file instead (whose directory
+would then have to be mounted in).
+
+By default, layers and the OCI archive are uncompressed. Use `--compressed`
+to enable gzip compression for both. The compression level can be tuned with
+`--compression-level` (0-9, default 6).
 
 ### Customizing the OCI image config and annotations
 
@@ -239,6 +256,32 @@ mostly for convenience when splitting an existing image, though it does also
 have the advantage of capturing annotations. Otherwise, it's also possible to
 set annotations directly using `--annotation`. Labels can also be added via
 `--label`.
+
+### Pruning and filtering
+
+The `--prune` option excludes paths from the rootfs. It can be specified
+multiple times. The trailing slash matters:
+
+- `--prune /path` excludes the directory and all its descendants entirely.
+- `--prune /path/` excludes only the contents but keeps the directory itself.
+
+By default, chunkah errors when encountering special file types (sockets,
+FIFOs, block/char devices). Use `--skip-special-files` to silently skip them
+instead.
+
+### Architecture
+
+The `--arch` option overrides the target architecture for the output image. This
+is useful when splitting an image whose architecture differs from the running
+host. If not provided, the architecture from the config is used (if available),
+or the current system architecture otherwise. Common aliases are supported (e.g.
+`x86_64` maps to `amd64`, `aarch64` to `arm64`).
+
+### Parallelism
+
+Layers are written in parallel. The number of threads can be controlled with
+`-T`/`--threads` (or `CHUNKAH_THREADS`). By default, the number of available
+CPUs is used.
 
 ### Compatibility with bootable (bootc) images
 
