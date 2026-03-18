@@ -121,12 +121,12 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
             skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:${TAG}
+              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:${TAG}
             skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:latest
+              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:latest
           else
             skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/jlebon/chunkah:dev
+              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:dev
           fi
       - name: Cleanup old images
         uses: actions/delete-package-versions@v5

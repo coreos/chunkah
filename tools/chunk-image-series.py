@@ -59,8 +59,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--chunkah-image",
-        default="quay.io/jlebon/chunkah",
-        help="Chunkah image to use (default: quay.io/jlebon/chunkah)",
+        default="quay.io/coreos/chunkah",
+        help="Chunkah image to use (default: quay.io/coreos/chunkah)",
     )
     parser.add_argument(
         "--dry-run",

@@ -1,7 +1,7 @@
 # This file is used to split existing images using `buildah build`. See
 # README.md for how to use it.
 
-ARG CHUNKAH=quay.io/jlebon/chunkah:latest
+ARG CHUNKAH=quay.io/coreos/chunkah:latest
 ARG CHUNKAH_ARGS=""
 ARG CHUNKAH_CONFIG_STR
 
