@@ -67,7 +67,7 @@ preprocess the rootfs to remove common sources of non-reproducibility (such as
 chunkah is primarily intended to be used as a container image:
 
 ```shell
-podman run -ti --rm quay.io/jlebon/chunkah --help
+podman run -ti --rm quay.io/coreos/chunkah --help
 ```
 
 However, if you're currently building images using a multi-stage build, it
@@ -113,7 +113,7 @@ IMG=quay.io/fedora/fedora-minimal:latest
 podman pull $IMG # image must be available locally
 export CHUNKAH_CONFIG_STR="$(podman inspect $IMG)"
 podman run --rm --mount=type=image,src=$IMG,dest=/chunkah \
-  -e CHUNKAH_CONFIG_STR quay.io/jlebon/chunkah build | podman load
+  -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build | podman load
 ```
 
 #### Using Docker/Moby
@@ -125,7 +125,7 @@ IMG=quay.io/fedora/fedora-minimal:latest
 docker pull $IMG # image must be available locally
 export CHUNKAH_CONFIG_STR="$(docker inspect $IMG)"
 docker run --rm --mount=type=image,src=$IMG,destination=/chunkah \
-  -e CHUNKAH_CONFIG_STR quay.io/jlebon/chunkah build > out.ociarchive
+  -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build > out.ociarchive
 docker run --rm -ti -v $(pwd):/srv:z -w /srv quay.io/skopeo/stable \
   copy oci-archive:out.ociarchive docker-archive:out.dockerarchive
 docker load -i out.dockerarchive
@@ -150,7 +150,7 @@ ARG CHUNKAH_CONFIG_STR
 FROM quay.io/fedora/fedora-minimal:latest AS builder
 RUN dnf install -y git-core && dnf clean all
 
-FROM quay.io/jlebon/chunkah AS chunkah
+FROM quay.io/coreos/chunkah AS chunkah
 ARG CHUNKAH_CONFIG_STR
 RUN --mount=from=builder,src=/,target=/chunkah,ro \
     --mount=type=bind,target=/run/src,rw \
@@ -221,7 +221,7 @@ rootfs, regardless of where it comes from:
 ```shell
 podman run --rm -v /path/to/rootfs:/chunkah:z \
   -e CHUNKAH_CONFIG_STR="$(cat config.json)" \
-  quay.io/jlebon/chunkah build > out.ociarchive
+  quay.io/coreos/chunkah build > out.ociarchive
 ```
 
 > [!NOTE]
@@ -310,7 +310,7 @@ FROM quay.io/fedora/fedora-bootc:latest AS builder
 RUN dnf install -y tmux && dnf clean all
 RUN bootc container lint
 
-FROM quay.io/jlebon/chunkah AS chunkah
+FROM quay.io/coreos/chunkah AS chunkah
 ARG CHUNKAH_CONFIG_STR
 RUN --mount=from=builder,src=/,target=/chunkah,ro \
     --mount=type=bind,target=/run/src,rw \
