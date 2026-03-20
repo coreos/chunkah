@@ -74,6 +74,9 @@ def bump_version(new_version: str, open_pr: bool = False):
                 f"download/v{old_version}/",
                 f"download/v{new_version}/")
 
+    step("Updating spec License tag...")
+    update_spec_license("packaging/chunkah.spec")
+
     step("Running version check...")
     run("just", "versioncheck")
 
@@ -115,6 +118,56 @@ def update_file(path: str, old: str, new: str):
     content = content.replace(old, new)
     Path(path).write_text(content)
     step(f"Updated {path}")
+
+
+def update_spec_license(path: str):
+    """Update the License tag and its comment block in the spec file."""
+    summary_lines, license_tag = compute_license_tag()
+    comment_block = "\n".join(summary_lines)
+    new_block = f"{comment_block}\nLicense:        {license_tag}"
+
+    content = Path(path).read_text()
+    # Match the comment block + License line between Summary and URL lines.
+    # The block is: one or more comment lines followed by the License: line.
+    pattern = r'(?:^#[^\n]*\n)+^License:\s+.*$'
+    match = re.search(pattern, content, re.MULTILINE)
+    if not match:
+        die(f"Could not find License block in {path}")
+    content = content[:match.start()] + new_block + content[match.end():]
+    Path(path).write_text(content)
+    step(f"Updated {path}")
+
+
+def compute_license_tag() -> tuple[list[str], str]:
+    """Compute the spec License tag from cargo dependency licenses.
+
+    Returns a tuple of (summary_lines, license_tag) where summary_lines
+    are the '# expr' comment lines and license_tag is the SPDX expression
+    for the License: field.
+    """
+    output = run_output(
+        "cargo", "tree",
+        "--edges=no-build,no-dev,no-proc-macro",
+        "--no-dedupe", "--target=all",
+        "--prefix=none", "--format={l}")
+
+    # Normalize: replace '/' with ' OR ' (informal shorthand used by some crates)
+    lines = set()
+    for line in output.strip().splitlines():
+        line = line.replace(" / ", "/").replace("/", " OR ")
+        lines.add(line)
+
+    # Build the summary comment lines (sorted, with '# ' prefix)
+    summary_lines = sorted(f"# {line}" for line in lines)
+
+    # Compute the License tag by ANDing all unique expressions.
+    # Expressions containing OR are wrapped in parens to preserve
+    # precedence. Standalone and AND-only expressions are kept as-is.
+    standalone = sorted(e for e in lines if " OR " not in e)
+    choices = sorted(f"({e})" for e in lines if " OR " in e)
+    license_tag = " AND ".join(standalone + choices)
+
+    return summary_lines, license_tag
 
 
 def cut_release(version: str, no_push: bool):
