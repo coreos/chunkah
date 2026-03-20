@@ -93,7 +93,7 @@ use the `Containerfile.splitter`, passing the target image as the `--from`:
 IMG=quay.io/fedora/fedora-minimal:latest
 buildah build --skip-unused-stages=false --from $IMG \
   --build-arg CHUNKAH_CONFIG_STR="$(podman inspect $IMG)" \
-  https://github.com/coreos/chunkah/releases/download/v0.3.0/Containerfile.splitter
+  https://github.com/coreos/chunkah/releases/download/v0.3.1/Containerfile.splitter
 ```
 
 Additional arguments can be passed to chunkah using the CHUNKAH_ARGS build
