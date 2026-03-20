@@ -226,7 +226,8 @@ def cut_release(version: str, no_push: bool):
             print()
             print("To complete the release, run:")
             print(f"  git push origin {tag}")
-            print(f"  gh release create {tag} --notes-from-tag --verify-tag "
+            print(f"  gh release create {tag} --title {tag} "
+                  f"--notes-from-tag --verify-tag "
                   f"{source_tarball} {vendor_tarball} Containerfile.splitter")
             print(f"  rm {source_tarball} {vendor_tarball}")
         else:
@@ -234,9 +235,9 @@ def cut_release(version: str, no_push: bool):
             run("git", "push", "origin", tag)
 
             step("Creating GitHub release...")
-            run("gh", "release", "create", tag, "--notes-from-tag",
-                "--verify-tag", source_tarball, vendor_tarball,
-                "Containerfile.splitter")
+            run("gh", "release", "create", tag, "--title", tag,
+                "--notes-from-tag", "--verify-tag",
+                source_tarball, vendor_tarball, "Containerfile.splitter")
 
             step("Cleaning up tarballs...")
             os.remove(source_tarball)
