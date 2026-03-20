@@ -1,11 +1,12 @@
 use std::{
     collections::HashMap,
+    io::Read,
     time::{SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
-use ocidir::cap_std::fs::Dir;
+use ocidir::cap_std::{self, fs::Dir};
 
 use crate::components::FileType;
 
@@ -254,8 +255,34 @@ fn normalize_path(path: &Utf8Path) -> Result<Utf8PathBuf> {
     Ok(result)
 }
 
+/// Reads a file into a [`String`] after checking its length does not exceed `max_size`
+pub fn read_file_contents_to_string_checked(
+    file: &mut cap_std::fs::File,
+    max_size: u64,
+) -> Result<String> {
+    // Make sure that the file is not too large to read it in memory.
+    let size = file
+        .metadata()
+        .context("obtain metadata of file to be read")?
+        .len();
+    if size > max_size {
+        anyhow::bail!("file is too large: size: {size}, maximum: {max_size}");
+    }
+
+    let mut content = String::with_capacity(
+        // SAFETY: We know that size is less than `max_size` and
+        // as such small enough to fit into an `usize` on every reasonable platform.
+        usize::try_from(size).expect("file size value too large for usize"),
+    );
+    file.read_to_string(&mut content)?;
+
+    Ok(content)
+}
+
 #[cfg(test)]
 mod tests {
+    use std::io::Write;
+
     use ocidir::cap_std::ambient_authority;
 
     use super::*;
@@ -359,5 +386,56 @@ mod tests {
                 "canonicalize_parent_path({input})"
             );
         }
+    }
+
+    #[test]
+    fn read_file_contents_to_string_checks_size() {
+        // Prepare test files
+        let tempdir = tempfile::TempDir::new().unwrap();
+        let dir = Dir::open_ambient_dir(tempdir.path(), ambient_authority()).unwrap();
+        let max_size = 16;
+
+        // First test: content is smaller than max_size
+        let mut file_contents = vec![b'a'; max_size - 1];
+        {
+            let mut smaller_file = dir.create("smaller").unwrap();
+            smaller_file.write_all(&file_contents).unwrap();
+        }
+
+        // Second test: content has exactly max_size
+        file_contents.push(b'a');
+        {
+            let mut max_size_file = dir.create("max_size").unwrap();
+            max_size_file.write_all(&file_contents).unwrap();
+        }
+
+        // Third test: content is larger than max_size
+        file_contents.push(b'a');
+        {
+            let mut larger_file = dir.create("larger").unwrap();
+            larger_file.write_all(&file_contents).unwrap();
+        }
+
+        // Smaller and same size should pass:
+        let mut smaller_file = dir.open("smaller").unwrap();
+        let read_smaller =
+            read_file_contents_to_string_checked(&mut smaller_file, max_size as u64).unwrap();
+        assert_eq!(read_smaller.len(), max_size - 1);
+
+        let mut max_size_file = dir.open("max_size").unwrap();
+        let read_max_size =
+            read_file_contents_to_string_checked(&mut max_size_file, max_size as u64).unwrap();
+        assert_eq!(read_max_size.len(), max_size);
+
+        // Larger file should fail:
+        let mut larger_file = dir.open("larger").unwrap();
+        let read_larger = read_file_contents_to_string_checked(&mut larger_file, max_size as u64);
+        assert!(
+            read_larger
+                .unwrap_err()
+                .to_string()
+                .contains("file is too large"),
+            "read_file_contents_to_string_checked must not read files larger than max_size"
+        );
     }
 }
