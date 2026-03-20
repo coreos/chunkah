@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Cut a release for chunkah."""
+"""Release tools for chunkah."""
 
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -13,16 +14,115 @@ NAME = "chunkah"
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Cut a release for chunkah")
-    parser.add_argument("version", help="Version to release (e.g., 0.1.0)")
-    parser.add_argument("--no-push", action="store_true",
-                        help="Prepare release without pushing to remote")
-    args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="Release tools for chunkah")
+    subparsers = parser.add_subparsers(required=True)
 
-    tag = f"v{args.version}"
-    source_tarball = f"{NAME}-{args.version}.tar.gz"
-    vendor_tarball = f"{NAME}-{args.version}-vendor.tar.gz"
-    notes_file = Path(f".release-notes-{args.version}.md")
+    bump_parser = subparsers.add_parser(
+        "bump", help="Bump version in all project files")
+    bump_parser.add_argument(
+        "version", help="New version (e.g., 0.3.0)")
+    bump_parser.add_argument(
+        "--pr", action="store_true",
+        help="Push branch and open a pull request via gh")
+    bump_parser.set_defaults(
+        func=lambda args: bump_version(args.version, args.pr))
+
+    cut_parser = subparsers.add_parser(
+        "cut", help="Cut a release")
+    cut_parser.add_argument(
+        "version", help="Version to release (e.g., 0.3.0)")
+    cut_parser.add_argument(
+        "--no-push", action="store_true",
+        help="Prepare release without pushing to remote")
+    cut_parser.set_defaults(
+        func=lambda args: cut_release(args.version, args.no_push))
+
+    args = parser.parse_args()
+    args.func(args)
+
+
+def bump_version(new_version: str, open_pr: bool = False):
+    """Bump version across all project files."""
+    if new_version.startswith("v"):
+        die(f"Version should not start with 'v' (got '{new_version}'), "
+            f"try: {new_version[1:]}")
+    if not re.fullmatch(r'\d+\.\d+\.\d+', new_version):
+        die(f"Invalid version format: '{new_version}' "
+            "(expected MAJOR.MINOR.PATCH, e.g. 0.3.0)")
+
+    if is_worktree_dirty():
+        die("Worktree is dirty, commit or stash changes first")
+
+    old_version = get_current_version()
+    if old_version == new_version:
+        die(f"Version is already {new_version}")
+
+    step(f"Bumping version: {old_version} -> {new_version}")
+
+    update_file("Cargo.toml",
+                f'version = "{old_version}"',
+                f'version = "{new_version}"')
+
+    step("Updating Cargo.lock...")
+    run("cargo", "update", "chunkah")
+
+    update_file("packaging/chunkah.spec",
+                f"Version:        {old_version}",
+                f"Version:        {new_version}")
+
+    update_file("README.md",
+                f"download/v{old_version}/",
+                f"download/v{new_version}/")
+
+    step("Running version check...")
+    run("just", "versioncheck")
+
+    step("Committing changes...")
+    run("git", "commit", "-am",
+        f"Cargo.toml: bump version to v{new_version}")
+
+    if open_pr:
+        branch = f"bump-v{new_version}"
+        current_branch = run_output(
+            "git", "branch", "--show-current").strip()
+        if current_branch != branch:
+            step(f"Creating branch {branch}...")
+            run("git", "checkout", "-b", branch)
+        remote_exists = run_output(
+            "git", "ls-remote", "--heads", "origin", branch).strip() != ""
+        step("Pushing branch...")
+        if remote_exists:
+            run("git", "push", "-u", "-f", "origin", branch)
+        else:
+            run("git", "push", "-u", "origin", branch)
+            step("Opening pull request...")
+            run("gh", "pr", "create",
+                "--title", f"Cargo.toml: bump version to v{new_version}",
+                "--body", "")
+
+    print()
+    print(f"Version bumped: {old_version} -> {new_version}")
+
+
+def update_file(path: str, old: str, new: str):
+    """Replace old with new in a file, ensuring exactly one match."""
+    content = Path(path).read_text()
+    count = content.count(old)
+    if count == 0:
+        die(f"Could not find '{old}' in {path}")
+    if count > 1:
+        die(f"Found {count} matches for '{old}' in {path} (expected 1)")
+    content = content.replace(old, new)
+    Path(path).write_text(content)
+    step(f"Updated {path}")
+
+
+def cut_release(version: str, no_push: bool):
+    """Cut a release for chunkah."""
+    tag = f"v{version}"
+    source_tarball = f"{NAME}-{version}.tar.gz"
+    vendor_tarball = f"{NAME}-{version}-vendor.tar.gz"
+    notes_file = Path(f".release-notes-{version}.md")
 
     try:
         if tag_exists(tag):
@@ -32,14 +132,14 @@ def main():
             die("Worktree is dirty, commit or stash changes first")
 
         # do this first to avoid building implicitly bumping the lockfile
-        step("Verifying Cargo.lock and README.md are in sync...")
+        step("Running version check...")
         run("just", "versioncheck")
 
         step("Running checks...")
         run("just", "checkall")
 
         step("Verifying version matches Cargo.toml...")
-        verify_version(args.version)
+        verify_version(version)
 
         # Check for saved notes from a previous failed run
         if notes_file.exists():
@@ -64,9 +164,9 @@ def main():
         generate_archives(source_tarball, vendor_tarball)
 
         step("Verifying offline build...")
-        verify_offline_build(args.version, source_tarball, vendor_tarball)
+        verify_offline_build(version, source_tarball, vendor_tarball)
 
-        if args.no_push:
+        if no_push:
             print()
             print(f"Release {tag} prepared successfully.")
             print(f"Tarballs: {source_tarball}, {vendor_tarball}")
@@ -106,6 +206,13 @@ def main():
         die(str(e))
 
 
+def get_current_version() -> str:
+    """Get the current version from Cargo.toml via cargo metadata."""
+    metadata = json.loads(run_output(
+        "cargo", "metadata", "--no-deps", "--format-version=1"))
+    return metadata["packages"][0]["version"]
+
+
 def step(msg: str):
     print(f"==> {msg}")
 
@@ -127,9 +234,7 @@ def run_output(*args: str) -> str:
 
 def verify_version(expected: str):
     """Verify Cargo.toml version matches expected."""
-    metadata = json.loads(run_output(
-        "cargo", "metadata", "--no-deps", "--format-version=1"))
-    actual = metadata["packages"][0]["version"]
+    actual = get_current_version()
     if actual != expected:
         die(f"Version mismatch: Cargo.toml has {actual}, but releasing {expected}")
 
