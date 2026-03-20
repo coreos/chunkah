@@ -22,7 +22,7 @@ shellcheck:
 markdownlint:
     markdownlint $(git ls-files '*.md')
 
-# Verify Cargo.lock and README version match Cargo.toml
+# Verify Cargo.lock, README, and spec file versions match Cargo.toml
 versioncheck:
     #!/bin/bash
     set -euo pipefail
@@ -33,6 +33,12 @@ versioncheck:
     readme_version=$(echo "${line}" | grep -oP 'download/v\K[0-9]+\.[0-9]+\.[0-9]+')
     if [[ "${cargo_version}" != "${readme_version}" ]]; then
         echo "Version mismatch: Cargo.toml has ${cargo_version}, README.md has ${readme_version}"
+        exit 1
+    fi
+    spec_version=$(grep -oP '^Version:\s+\K[0-9]+\.[0-9]+\.[0-9]+' packaging/chunkah.spec) \
+        || { echo "Could not find Version field in packaging/chunkah.spec"; exit 1; }
+    if [[ "${cargo_version}" != "${spec_version}" ]]; then
+        echo "Version mismatch: Cargo.toml has ${cargo_version}, packaging/chunkah.spec has ${spec_version}"
         exit 1
     fi
 
