@@ -40,10 +40,19 @@ buildah build --omit-history -f empty.Containerfile -t chunkah-empty
 podman inspect chunkah-empty | jq '.[0].Config' > empty.image-config.json
 podman rmi chunkah-empty
 
-echo ">>> REGENERATING rpmdb.sqlite" >&2
+echo ">>> REGENERATING: rpmdb.sqlite" >&2
 podman rm -f chunkah-test-fixture-tmp
 podman run --name chunkah-test-fixture-tmp --rm quay.io/hummingbird-ci/builder bash -c '
     dnf install --installroot /mnt -y --use-host-config --nodocs --setopt=install_weak_deps=False filesystem setup &>2
     sqlite3 /mnt/usr/lib/sysimage/rpm/rpmdb.sqlite "PRAGMA journal_mode = DELETE;" &>2
     cat /mnt/usr/lib/sysimage/rpm/rpmdb.sqlite
 ' > rpmdb.sqlite
+
+echo ">>> REGENERATING: Arch Linux local db" >&2
+podman run --rm quay.io/archlinux/archlinux:latest bash -c '
+    mkdir -p /mnt/var/lib/pacman
+    pacman -Sy -r /mnt > /dev/null
+    pacman -S --noconfirm -r /mnt base > /dev/null
+    cat /etc/pacman.conf | sed "s/#DBPath/DBPath/" > /mnt/etc/pacman.conf
+    tar -C /mnt -cf - var/lib/pacman/local etc/pacman.conf
+' | gzip -c > arch-pkgdb.tar.gz
