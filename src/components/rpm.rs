@@ -97,6 +97,7 @@ impl RpmRepo {
                     }
                     // for determinism, we want the min() of all stabilities if they differ.
                     *existing_stability = (*existing_stability).min(stability);
+                    tracing::trace!(component = %component_name, buildtime = %existing_bt, stability = %existing_stability, "multiple rpm components from same srpm");
                 }
                 indexmap::map::Entry::Vacant(e) => {
                     tracing::trace!(component = %component_name, id = component_id.0, "rpm component created");
