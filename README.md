@@ -360,5 +360,5 @@ well.
 [OCI image config]: https://github.com/opencontainers/image-spec/blob/26647a49f642c7d22a1cd3aa0a48e4650a542269/specs-go/v1/config.go#L24
 [buildah-rfe]: https://github.com/containers/buildah/issues/6621
 [buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652
-[zstd:chunked]: https://github.com/containers/container-libs/blob/main/storage/docs/containers-storage-zstd-chunked.5.md
+[zstd:chunked]: https://github.com/containers/container-libs/blob/main/storage/docs/containers-storage-zstd-chunked.md
 [container-libs]: https://github.com/containers/container-libs
