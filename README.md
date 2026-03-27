@@ -3,10 +3,6 @@
 An OCI building tool that takes a flat rootfs and outputs a layered OCI image
 with content-based layers.
 
-> [!NOTE]
-> chunkah is currently under heavy development and not yet ready for production.
-> Experimental usage and feedback is much appreciated!
-
 ## Table of Contents
 
 - [Motivation](#motivation)
