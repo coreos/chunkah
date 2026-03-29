@@ -23,7 +23,7 @@ profile image="quay.io/fedora/fedora-minimal:latest": _buildperfimg
     echo "Flamegraph written to flamegraph.svg"
 
 # Benchmark chunkah with hyperfine
-benchmark image="quay.io/fedora/fedora-minimal:latest": _buildperfimg
+benchmark image="quay.io/fedora/fedora-coreos:stable": _buildperfimg
     #!/bin/bash
     set -euo pipefail
     podman pull --policy=missing {{ image }}
@@ -31,4 +31,4 @@ benchmark image="quay.io/fedora/fedora-minimal:latest": _buildperfimg
     podman run -v "${PWD}/../..:/build:z" \
         --mount=type=image,src={{ image }},target=/chunkah \
         -v chunkah-perf-target-${cache_id}:/build/target {{ _perf_run_args }} \
-        sh -c 'cargo build --release && hyperfine --warmup 1 "target/release/chunkah build --prune /sysroot/ > /dev/null"'
+        sh -c 'cargo build --release && hyperfine --warmup 3 "target/release/chunkah build --prune /sysroot/ > target/out.ociarchive"'
