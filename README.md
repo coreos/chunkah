@@ -199,6 +199,20 @@ RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app
 This is compatible with rpm-ostree's support for [the same
 feature](https://coreos.github.io/rpm-ostree/build-chunked-oci/#assigning-files-to-specific-layers).
 
+In addition, the `user.update-interval` xattr is also supported. The value is
+the average number of days between updates, either as an integer or a named
+label (`daily`, `weekly`, `biweekly`, `monthly`, `quarterly`, `yearly`), e.g.:
+
+```Dockerfile
+RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app && \
+    setfattr -n user.update-interval -v "monthly" /usr/bin/my-app
+```
+
+It is strongly recommended to set this xattr. A rough approximation is fine.
+This helps the packing algorithm make better decisions about which components to
+group together. Components without this information are treated as less stable
+than any component with a known update interval.
+
 ### Limiting the number of layers
 
 By default, the maximum number of layers emitted is 64. This can be increased or
