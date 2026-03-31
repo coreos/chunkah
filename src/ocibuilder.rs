@@ -89,7 +89,7 @@ impl Builder {
     pub fn build<W: Write>(self, output: &mut W) -> Result<()> {
         self.build_oci_dir().context("building OCI directory")?;
 
-        let compressed = matches!(self.compression, Compression::Gzip(_));
+        let compressed = !matches!(self.compression, Compression::None);
         tracing::info!(compressed = compressed, "writing OCI archive");
 
         let compression = match self.compression {
@@ -165,6 +165,7 @@ impl Builder {
         tracing::info!(
             threads = num_workers,
             layers = components.len(),
+            compressed = !matches!(self.compression, Compression::None),
             "writing layers"
         );
 
