@@ -244,6 +244,13 @@ impl ComponentsRepos {
         // bigfiles, unclaimed). Use half the minimum non-zero stability so
         // they're considered less stable than any known component, but non-zero
         // so the packing algorithm can make meaningful TEV loss calculations.
+        //
+        // The reasoning here is that it's better to wrongly underestimate
+        // stability than it is to overestimate it. In the latter case, it
+        // could contaminate components that are _known_ stable or take up a
+        // precious layer slot that could be used by known stable components.
+        // In the former case, it could still be in its own layer if the size
+        // warrants it but otherwise goes in the catch-all.
         let min_stability = components
             .values()
             .map(|c| c.stability)
