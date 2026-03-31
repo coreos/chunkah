@@ -214,6 +214,8 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     let total_size: u64 = files.values().map(|f| f.size).sum();
     tracing::info!(files = files.len(), size = %utils::format_size(total_size), "scan complete");
 
+    warn_ostree_sysroot(&files);
+
     let repos =
         ComponentsRepos::load(&rootfs, &files, created_epoch).context("loading components")?;
     if repos.is_empty() {
@@ -278,6 +280,31 @@ pub fn run(args: &BuildArgs) -> Result<()> {
 
     tracing::info!("build complete");
     Ok(())
+}
+
+/// Check whether the file map contains an OSTree sysroot repo.
+/// The scanner always includes parent directories, so the exact path
+/// will be present if any children under it were scanned.
+fn filemap_has_ostree(files: &FileMap) -> bool {
+    files.contains_key(&Utf8PathBuf::from("/sysroot/ostree"))
+}
+
+/// Warn if the scanned files include an OSTree sysroot repo. This means the
+/// user didn't pass `--prune /sysroot/` and the object store will be chunked,
+/// which produces poor results. The warning sleeps briefly so it isn't lost
+/// in scrolling output.
+fn warn_ostree_sysroot(files: &FileMap) {
+    if !filemap_has_ostree(files) {
+        return;
+    }
+
+    tracing::warn!(
+        "rootfs contains sysroot/ostree which was not pruned; \
+         chunking an ostree object store produces poor results. \
+         Use --prune /sysroot/ to exclude it. \
+         See: https://github.com/coreos/chunkah?tab=readme-ov-file#compatibility-with-bootable-bootc-images"
+    );
+    std::thread::sleep(std::time::Duration::from_secs(7));
 }
 
 /// Serialize the component map into a JSON manifest.
@@ -520,6 +547,30 @@ mod tests {
     use super::*;
 
     const CONFIG_FIXTURE: &str = include_str!("../tests/fixtures/empty.image-config.json");
+
+    fn scan_tempdir(rootfs: &Dir) -> FileMap {
+        crate::scan::Scanner::new(rootfs).scan().unwrap()
+    }
+
+    #[test]
+    fn test_filemap_has_ostree() {
+        use cap_std_ext::cap_tempfile;
+
+        let td = cap_tempfile::tempdir(ambient_authority()).unwrap();
+        assert!(!filemap_has_ostree(&scan_tempdir(&td)));
+
+        // Non-ostree paths should not match
+        td.create_dir_all("usr/bin").unwrap();
+        td.write("usr/bin/ostree", "fake").unwrap();
+        td.create_dir_all("sysroot").unwrap();
+        td.write("sysroot/config", "fake").unwrap();
+        assert!(!filemap_has_ostree(&scan_tempdir(&td)));
+
+        // Adding sysroot/ostree should match
+        td.create_dir_all("sysroot/ostree/repo").unwrap();
+        td.write("sysroot/ostree/repo/config", "fake").unwrap();
+        assert!(filemap_has_ostree(&scan_tempdir(&td)));
+    }
 
     #[test]
     fn test_emptydir_roundtrip() {
