@@ -235,7 +235,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     }
 
     // pack components down to max layers
-    let components = pack_components(args, components).context("packing components")?;
+    let components = pack_components(args.max_layers, components).context("packing components")?;
     tracing::info!(layers = components.len(), "packing complete");
 
     // build the OCI image
@@ -475,11 +475,9 @@ fn parse_key_value_pairs(
 
 /// Packs components into layers according to max_layers constraint.
 fn pack_components(
-    args: &BuildArgs,
+    max_layers: usize,
     components: HashMap<String, Component>,
 ) -> Result<Vec<(String, Component)>> {
-    let max_layers = args.max_layers;
-
     let mut entries: Vec<Option<(String, Component)>> = components.into_iter().map(Some).collect();
     // sort by component name for deterministic inputs to the packing algorithm
     entries.sort_by(|a, b| a.as_ref().unwrap().0.cmp(&b.as_ref().unwrap().0));
@@ -810,5 +808,82 @@ mod tests {
         assert_eq!(labels.get("existing"), Some(&"from-config".to_string()));
         assert_eq!(labels.get("override-me"), Some(&"new-value".to_string()));
         assert_eq!(labels.get("new-label"), Some(&"second".to_string()));
+    }
+
+    #[test]
+    fn test_packing_with_xattrs() {
+        use camino::Utf8Path;
+        use cap_std_ext::dirext::CapStdExtDirExt;
+
+        const MB: usize = 1024 * 1024;
+        const XATTR_COMPONENT: &str = "user.component";
+        const XATTR_INTERVAL: &str = "user.update-interval";
+
+        // Helper to set up a rootfs with 3 files (3M, 2M, 1M), load components
+        // with the given update intervals, and pack into 2 layers.
+        let pack = |large_interval: &str, medium_interval: &str, small_interval: &str| {
+            let tmp = tempfile::tempdir().unwrap();
+            let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
+
+            let add_component = |name: &str, size_mb: usize, interval: &str| {
+                rootfs.write(name, &vec![0u8; size_mb * MB]).unwrap();
+                rootfs
+                    .setxattr(name, XATTR_COMPONENT, name.as_bytes())
+                    .unwrap();
+                rootfs
+                    .setxattr(name, XATTR_INTERVAL, interval.as_bytes())
+                    .unwrap();
+            };
+
+            add_component("large", 3, large_interval);
+            add_component("medium", 2, medium_interval);
+            add_component("small", 1, small_interval);
+
+            let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
+            let repos = ComponentsRepos::load(&rootfs, &files, 0).unwrap();
+            let components = repos.into_components(&rootfs, files).unwrap();
+            pack_components(2, components).unwrap()
+        };
+
+        // Helper to find which packed layer contains a given file.
+        let find_layer = |packed: &Vec<(String, Component)>, path: &str| -> usize {
+            packed
+                .iter()
+                .position(|(_, c)| c.files.contains_key(Utf8Path::new(path)))
+                .unwrap_or_else(|| panic!("{path} not found in any layer"))
+        };
+
+        // Scenario 1: 3M daily, 2M daily, 1M yearly
+        // The 1M yearly is stable, so it should get its own layer. The 3M+2M
+        // daily should merge (both unstable, lowest TEV loss).
+        let packed = pack("daily", "daily", "yearly");
+        assert_eq!(packed.len(), 2);
+        assert_eq!(
+            find_layer(&packed, "/large"),
+            find_layer(&packed, "/medium"),
+            "unstable large+medium should be in the same layer"
+        );
+        assert_ne!(
+            find_layer(&packed, "/large"),
+            find_layer(&packed, "/small"),
+            "stable small should be separate from unstable large"
+        );
+
+        // Scenario 2: 3M daily, 2M yearly, 1M yearly
+        // Now the 2M joins the stable camp. The two stable components merge
+        // (low TEV loss since combined stability barely drops), and the 3M
+        // daily gets its own layer.
+        let packed = pack("daily", "yearly", "yearly");
+        assert_eq!(packed.len(), 2);
+        assert_eq!(
+            find_layer(&packed, "/medium"),
+            find_layer(&packed, "/small"),
+            "stable medium+small should be in the same layer"
+        );
+        assert_ne!(
+            find_layer(&packed, "/large"),
+            find_layer(&packed, "/medium"),
+            "unstable large should be separate from stable medium"
+        );
     }
 }
