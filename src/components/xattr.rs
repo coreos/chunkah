@@ -118,12 +118,14 @@ impl XattrRepo {
         }
 
         // Convert raw intervals to stability probabilities
+        let mut n_defaulted = 0u32;
         let component_stability: Vec<f64> = update_intervals
             .iter()
             .enumerate()
             .map(|(idx, interval)| match interval {
                 Some(days) => interval_to_stability(*days),
                 None => {
+                    n_defaulted += 1;
                     tracing::debug!(
                         component = &components[idx],
                         "no {UPDATE_INTERVAL_XATTR_NAME} set, defaulting to {UPDATE_INTERVAL_DEFAULT} days"
@@ -132,6 +134,14 @@ impl XattrRepo {
                 }
             })
             .collect();
+
+        if n_defaulted > 10 {
+            tracing::warn!(
+                defaulted = n_defaulted,
+                "many xattr components without {UPDATE_INTERVAL_XATTR_NAME}, \
+                 consider setting it for better packing"
+            );
+        }
 
         tracing::debug!(
             components = components.len(),
