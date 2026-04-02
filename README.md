@@ -188,9 +188,8 @@ for other distros). There is also an xattr-based component repo (see the section
 
 ### Customizing the layers
 
-It is possible to modify how components are assigned to layers by setting the
-`user.component` xattr on files/directories. This can be done using `setfattr`,
-e.g.:
+It is possible to create custom components by setting the `user.component` xattr
+on files/directories. This can be done using `setfattr`, e.g.:
 
 ```Dockerfile
 RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app
@@ -198,6 +197,8 @@ RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app
 
 This is compatible with rpm-ostree's support for [the same
 feature](https://coreos.github.io/rpm-ostree/build-chunked-oci/#assigning-files-to-specific-layers).
+However, unlike rpm-ostree, this does not guarantee unique layers per xattr
+component.
 
 In addition, the `user.update-interval` xattr is also supported. The value is
 the average number of days between updates, either as an integer or a named
@@ -210,8 +211,7 @@ RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app && \
 
 It is strongly recommended to set this xattr. A rough approximation is fine.
 This helps the packing algorithm make better decisions about which components to
-group together. Components without this information are treated as less stable
-than any component with a known update interval.
+group together. When missing, defaults to `weekly`.
 
 ### Limiting the number of layers
 
