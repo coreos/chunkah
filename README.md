@@ -209,6 +209,9 @@ RUN setfattr -n user.component -v "custom-apps" /usr/bin/my-app && \
     setfattr -n user.update-interval -v "monthly" /usr/bin/my-app
 ```
 
+This only needs to be set on one of the files in the component. If multiple
+files have conflicting values, chunkah reports an error.
+
 It is strongly recommended to set this xattr. A rough approximation is fine.
 This helps the packing algorithm make better decisions about which components to
 group together. When missing, defaults to `weekly`.
