@@ -10,6 +10,7 @@ use super::{
 
 const XATTR_NAME: &str = "user.component";
 const UPDATE_INTERVAL_XATTR_NAME: &str = "user.update-interval";
+const UPDATE_INTERVAL_DEFAULT: u64 = 7; // i.e. weekly
 const REPO_NAME: &str = "xattr";
 
 /// Xattr-based components repo implementation.
@@ -123,11 +124,11 @@ impl XattrRepo {
             .map(|(idx, interval)| match interval {
                 Some(days) => interval_to_stability(*days),
                 None => {
-                    tracing::warn!(
+                    tracing::debug!(
                         component = &components[idx],
-                        "no {UPDATE_INTERVAL_XATTR_NAME} set, packing may be suboptimal"
+                        "no {UPDATE_INTERVAL_XATTR_NAME} set, defaulting to {UPDATE_INTERVAL_DEFAULT} days"
                     );
-                    0.0
+                    interval_to_stability(UPDATE_INTERVAL_DEFAULT)
                 }
             })
             .collect();
@@ -433,8 +434,11 @@ mod tests {
             interval_to_stability(365)
         );
 
-        // comp2 should have the default (0.0, filled in by fallback later)
+        // comp2 should have the default (weekly)
         let claims = repo.strong_claims_for_path(Utf8Path::new("/app2"), &fi(FileType::Directory));
-        assert_eq!(repo.component_info(claims[0]).stability, 0.0);
+        assert_eq!(
+            repo.component_info(claims[0]).stability,
+            interval_to_stability(7)
+        );
     }
 }
