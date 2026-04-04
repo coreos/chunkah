@@ -330,6 +330,7 @@ fn write_manifest(
                 let entry = ManifestComponent {
                     file_count: component.files.len(),
                     size: component.files.values().map(|f| f.size).sum(),
+                    stability: component.stability,
                     files: component.files.keys().map(|p| p.to_string()).collect(),
                 };
                 (name.clone(), entry)
@@ -399,6 +400,7 @@ struct Manifest {
 struct ManifestComponent {
     file_count: usize,
     size: u64,
+    stability: f64,
     files: Vec<String>,
 }
 
