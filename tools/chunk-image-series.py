@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pull images from a registry, run chunkah on each, store results.
 
-Example usage for FCOS:
+Example usage for FCOS from a remote registry:
 
     ./tools/chunk-image-series.py quay.io/fedora/fedora-coreos \\
         --tag-filter '*.*.3.*' --limit 5 --keep-originals \\
@@ -12,6 +12,16 @@ Example usage for FCOS:
 This pulls the 5 most recent stable FCOS images (matching *.*.3.*), runs
 chunkah on each, and stores the results as localhost/fedora-coreos-test:0-4.
 The originals are kept as localhost/fedora-coreos-test-orig:0-4 for comparison.
+
+Example usage from containers-storage:
+
+    ./tools/chunk-image-series.py containers-storage:localhost/myrepo \\
+        --tag-filter '4*' --limit 5 \\
+        --prefix myrepo-chunked \\
+        --chunkah-image localhost/chunkah
+
+This chunks the 5 most recent images matching '4*' already in local
+containers-storage, storing results as localhost/myrepo-chunked:0-4.
 """
 
 import argparse
@@ -35,7 +45,11 @@ def parse_args() -> argparse.Namespace:
         description="Pull images from a registry, run chunkah on each, store results",
         usage="%(prog)s [OPTIONS] REPO [-- CHUNKAH_ARGS...]",
     )
-    parser.add_argument("repo", help="OCI image repository (e.g., quay.io/fedora/fedora-coreos)")
+    parser.add_argument(
+        "repo",
+        help="OCI image repository (e.g., quay.io/fedora/fedora-coreos "
+             "or containers-storage:localhost/myrepo)",
+    )
     parser.add_argument(
         "--tag-filter",
         default="*",
@@ -88,6 +102,14 @@ def parse_args() -> argparse.Namespace:
         help="Additional arguments to pass to chunkah (after --)",
     )
     args = parser.parse_args()
+
+    # Detect containers-storage transport
+    cs_prefix = "containers-storage:"
+    if args.repo.startswith(cs_prefix):
+        args.repo = args.repo[len(cs_prefix):]
+        args.local = True
+    else:
+        args.local = False
 
     # Derive prefix from repo name if not specified
     if args.prefix is None:
@@ -160,8 +182,9 @@ def process_tag(args: argparse.Namespace, i: int, total: int, tag: str,
     orig_ref = f"localhost/{args.prefix}-orig:{i}" if args.keep_originals else None
 
     try:
-        print("  Pulling image...")
-        pull_image(args.repo, tag, source_ref, verbose=args.verbose)
+        print("  Pulling image..." if not args.local else "  Tagging image...")
+        pull_image(args.repo, tag, source_ref, local=args.local,
+                   verbose=args.verbose)
 
         # Keep original if requested (tag it before chunking)
         if orig_ref:
@@ -209,16 +232,17 @@ def print_summary(processed: list[tuple], failed: list[str], keep_originals: boo
 
 
 def get_sorted_tags(args: argparse.Namespace) -> list[str]:
-    """List, filter, sort, and limit tags from remote registry."""
+    """List, filter, sort, and limit tags from registry or containers-storage."""
     step(f"Listing tags from {args.repo} matching '{args.tag_filter}'...")
-    tags = _list_tags(args.repo, args.tag_filter)
+    tags = _list_tags(args.repo, args.tag_filter, local=args.local)
 
     if not tags:
         die(f"No tags found matching '{args.tag_filter}'")
 
     if args.sort_by == "date":
         step("Fetching image creation dates (this may take a while)...")
-        tags = _sort_tags_by_date(args.repo, tags, verbose=args.verbose)
+        tags = _sort_tags_by_date(args.repo, tags, local=args.local,
+                                  verbose=args.verbose)
     else:
         tags = _sort_tags(tags, args.sort_by)
 
@@ -234,11 +258,19 @@ def get_sorted_tags(args: argparse.Namespace) -> list[str]:
     return tags
 
 
-def _list_tags(repo: str, pattern: str) -> list[str]:
-    """List tags from remote registry matching glob pattern."""
-    output = run_output("skopeo", "list-tags", f"docker://{repo}")
-    data = json.loads(output)
-    all_tags = data.get("Tags", [])
+def _list_tags(repo: str, pattern: str, local: bool = False) -> list[str]:
+    """List tags matching glob pattern from registry or containers-storage."""
+    if local:
+        output = run_output(
+            "podman", "images", "--format", "{{.Tag}}",
+            "--noheading", "--filter", f"reference={repo}",
+        )
+        all_tags = [t.strip() for t in output.strip().split("\n")
+                    if t.strip() and t.strip() != "<none>"]
+    else:
+        output = run_output("skopeo", "list-tags", f"docker://{repo}")
+        data = json.loads(output)
+        all_tags = data.get("Tags", [])
     return [tag for tag in all_tags if _match_glob(tag, pattern)]
 
 
@@ -250,14 +282,15 @@ def _sort_tags(tags: list[str], sort_by: str) -> list[str]:
         return sorted(tags, key=_natural_sort_key)
 
 
-def _sort_tags_by_date(repo: str, tags: list[str], verbose: bool = False) -> list[str]:
+def _sort_tags_by_date(repo: str, tags: list[str], local: bool = False,
+                       verbose: bool = False) -> list[str]:
     """Sort tags by image creation date (oldest first)."""
     tag_dates = []
     for tag in tags:
         if verbose:
             print(f"  Inspecting {tag}...")
         try:
-            created = _get_image_created(repo, tag)
+            created = _get_image_created(repo, tag, local=local)
             tag_dates.append((tag, created))
         except Exception as e:
             print(f"  Warning: Could not get date for {tag}: {e}", file=sys.stderr)
@@ -269,13 +302,17 @@ def _sort_tags_by_date(repo: str, tags: list[str], verbose: bool = False) -> lis
     return [tag for tag, _ in tag_dates]
 
 
-def pull_image(repo: str, tag: str, target_ref: str, verbose: bool = False):
-    """Pull image to containers-storage."""
-    cmd = [
-        "skopeo", "copy",
-        f"docker://{repo}:{tag}",
-        f"containers-storage:{target_ref}",
-    ]
+def pull_image(repo: str, tag: str, target_ref: str, local: bool = False,
+               verbose: bool = False):
+    """Pull image to containers-storage (or tag if already local)."""
+    if local:
+        cmd = ["podman", "tag", f"{repo}:{tag}", target_ref]
+    else:
+        cmd = [
+            "skopeo", "copy",
+            f"docker://{repo}:{tag}",
+            f"containers-storage:{target_ref}",
+        ]
     if verbose:
         print(f"    Running: {' '.join(cmd)}")
     run(*cmd)
@@ -364,9 +401,13 @@ def _get_image_config(image_ref: str) -> str:
     return run_output("podman", "inspect", image_ref)
 
 
-def _get_image_created(repo: str, tag: str) -> str:
-    """Get image creation date from remote registry."""
-    output = run_output("skopeo", "inspect", f"docker://{repo}:{tag}")
+def _get_image_created(repo: str, tag: str, local: bool = False) -> str:
+    """Get image creation date from registry or containers-storage."""
+    if local:
+        ref = f"containers-storage:{repo}:{tag}"
+    else:
+        ref = f"docker://{repo}:{tag}"
+    output = run_output("skopeo", "inspect", ref)
     data = json.loads(output)
     return data.get("Created", "")
 
