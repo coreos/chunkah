@@ -20,7 +20,7 @@ from dataclasses import dataclass
 class LayerInfo:
     """Information about a single layer."""
     digest: str
-    size: int  # Compressed size (download size) from LayersData[].Size
+    size: int  # Uncompressed size from podman history, or compressed from skopeo
     component: str | None  # From LayersData[].Annotations["org.chunkah.component"]
 
 
@@ -117,7 +117,6 @@ def get_image_info(image_ref: str) -> ImageInfo:
     data = json.loads(output)
 
     layers = []
-    total_size = 0
 
     for layer_data in data.get("LayersData", []):
         digest = layer_data.get("Digest", "")
@@ -126,7 +125,14 @@ def get_image_info(image_ref: str) -> ImageInfo:
         component = annotations.get("org.chunkah.component")
 
         layers.append(LayerInfo(digest=digest, size=size, component=component))
-        total_size += size
+
+    # For containers-storage images, replace compressed sizes with uncompressed
+    # sizes from podman history for consistency
+    if image_ref.startswith("containers-storage:"):
+        bare_ref = image_ref[len("containers-storage:"):]
+        _backfill_uncompressed_sizes(layers, bare_ref)
+
+    total_size = sum(layer.size for layer in layers)
 
     # Get creation date (truncate to date only)
     created_raw = data.get("Created", "")
@@ -138,6 +144,28 @@ def get_image_info(image_ref: str) -> ImageInfo:
         layers=layers,
         total_size=total_size,
     )
+
+
+def _backfill_uncompressed_sizes(layers: list[LayerInfo], bare_ref: str):
+    """Replace layer sizes with uncompressed sizes from podman history.
+
+    skopeo inspect reports compressed blob sizes, while podman history reports
+    uncompressed layer sizes. This gives a more accurate picture of actual
+    content size.
+    """
+    output = run_output("podman", "history", "--format", "json", bare_ref)
+    history = json.loads(output)
+    # podman history is top-to-bottom; reverse to match skopeo's bottom-to-top
+    # order and filter out empty layers since LayersData only has content layers
+    sizes = [entry["size"] for entry in reversed(history)
+             if entry.get("size", 0) > 0]
+    if len(sizes) != len(layers):
+        print(f"Warning: podman history has {len(sizes)} non-empty layers but "
+              f"skopeo reports {len(layers)}, falling back to compressed sizes",
+              file=sys.stderr)
+        return
+    for layer, size in zip(layers, sizes):
+        layer.size = size
 
 
 def _backfill_components_from_history(images: list[ImageInfo]):

@@ -7,7 +7,7 @@ Example usage for FCOS:
         --tag-filter '*.*.3.*' --limit 5 --keep-originals \\
         --prefix fedora-coreos-test \\
         --chunkah-image localhost/chunkah \\
-        -- --compressed --label ostree.commit- --label ostree.final-diffid- --prune /sysroot/
+        -- --prune /sysroot/
 
 This pulls the 5 most recent stable FCOS images (matching *.*.3.*), runs
 chunkah on each, and stores the results as localhost/fedora-coreos-test:0-4.
