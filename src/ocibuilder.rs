@@ -33,6 +33,8 @@ pub struct Builder {
     threads: NonZeroUsize,
     /// Annotations to add to the image manifest.
     annotations: Option<HashMap<String, String>>,
+    /// Tag to set on the manifest descriptor in index.json.
+    tag: Option<String>,
     /// The image configuration.
     config: Option<oci_image::ImageConfiguration>,
 }
@@ -57,6 +59,7 @@ impl Builder {
             compression: Compression::default(),
             threads: NonZeroUsize::MIN,
             annotations: None,
+            tag: None,
             config: None,
         })
     }
@@ -76,6 +79,16 @@ impl Builder {
     /// Set annotations to add to the image manifest.
     pub fn annotations(mut self, annotations: HashMap<String, String>) -> Self {
         self.annotations = Some(annotations);
+        self
+    }
+
+    /// Set the tag for the manifest descriptor in index.json.
+    ///
+    /// This sets the `org.opencontainers.image.ref.name` annotation on the
+    /// manifest descriptor, which causes `podman load`/`docker load` to tag the
+    /// loaded image with this name.
+    pub fn tag(mut self, tag: String) -> Self {
+        self.tag = Some(tag);
         self
     }
 
@@ -135,7 +148,7 @@ impl Builder {
             .context("building platform")?;
 
         oci_dir
-            .insert_manifest_and_config(manifest, config, None, platform)
+            .insert_manifest_and_config(manifest, config, self.tag.as_deref(), platform)
             .context("inserting manifest and config")?;
 
         Ok(())
