@@ -105,6 +105,14 @@ pub struct BuildArgs {
     #[arg(long = "prune", value_name = "PATH")]
     prune: Vec<Utf8PathBuf>,
 
+    /// Tag to apply to the image in the OCI archive
+    ///
+    /// Sets the org.opencontainers.image.ref.name annotation on the manifest
+    /// descriptor in index.json, so that `podman load`/`docker load` tags the
+    /// image with this name instead of loading it as an unnamed image.
+    #[arg(short = 't', long, value_name = "NAME")]
+    tag: Option<String>,
+
     /// Number of threads for parallel layer writing (0 = auto-detect)
     #[arg(short = 'T', long, default_value_t = 0, env = "CHUNKAH_THREADS")]
     threads: usize,
@@ -255,12 +263,15 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         }
     });
 
-    let builder = Builder::new(&rootfs, components)
+    let mut builder = Builder::new(&rootfs, components)
         .context("creating builder")?
         .compression(compression)
         .threads(threads)
         .annotations(annotations)
         .config(image_config);
+    if let Some(tag) = &args.tag {
+        builder = builder.tag(tag.clone());
+    }
 
     if let Some(output_path) = &args.output {
         tracing::info!(output = %output_path, "writing to file");

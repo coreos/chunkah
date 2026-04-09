@@ -109,8 +109,13 @@ IMG=quay.io/fedora/fedora-minimal:latest
 podman pull $IMG # image must be available locally
 export CHUNKAH_CONFIG_STR="$(podman inspect $IMG)"
 podman run --rm --mount=type=image,src=$IMG,dest=/chunkah \
-  -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build | podman load
+  -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build \
+    -t localhost/fedora-minimal-chunked:latest | podman load
 ```
+
+The `-t`/`--tag` option sets the image name in the OCI archive so that `podman
+load` automatically tags the loaded image. Without it, the image is loaded as an
+unnamed image identified only by its digest.
 
 #### Using Docker/Moby
 
@@ -121,14 +126,23 @@ IMG=quay.io/fedora/fedora-minimal:latest
 docker pull $IMG # image must be available locally
 export CHUNKAH_CONFIG_STR="$(docker inspect $IMG)"
 docker run --rm --mount=type=image,src=$IMG,destination=/chunkah \
-  -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build > out.ociarchive
+  -e CHUNKAH_CONFIG_STR quay.io/coreos/chunkah build \
+    -t localhost/fedora-minimal-chunked:latest | docker load
+```
+
+Note `docker load` support for OCI archives requires the [containerd image
+store] (default on new installations starting from v29+). If using the legacy
+graph driver, instead of piping directly into `docker load` as above, you can
+redirect to a file to save the OCI archive, and then use skopeo to convert to
+the Docker archive format:
+
+```shell
 docker run --rm -ti -v $(pwd):/srv:z -w /srv quay.io/skopeo/stable \
-  copy oci-archive:out.ociarchive docker-archive:out.dockerarchive
+  copy oci-archive:out.ociarchive docker-archive:out.dockerarchive:chunked
 docker load -i out.dockerarchive
 ```
 
-Note the conversion step using `skopeo`; `chunkah` currently only outputs an OCI
-archive, which `docker load` does not natively support.
+[containerd image store]: https://docs.docker.com/engine/storage/containerd/
 
 ### Splitting an image at build time (buildah/podman only)
 
