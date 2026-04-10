@@ -503,6 +503,7 @@ fn pack_components(
             let size = comp.files.values().map(|f| f.size).sum();
             tracing::trace!(idx = idx, name = %name, size = size, stability = comp.stability, "packing item");
             PackItem {
+                name: name.clone(),
                 size,
                 stability: comp.stability,
             }
