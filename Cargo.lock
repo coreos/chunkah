@@ -196,6 +196,7 @@ dependencies = [
  "clap",
  "ctrlc",
  "flate2",
+ "fnv",
  "fs-set-times",
  "hex",
  "indexmap",
