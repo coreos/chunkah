@@ -195,11 +195,12 @@ def process_tag(args: argparse.Namespace, i: int, total: int, tag: str,
 
         print("  Running chunkah...")
         ociarchive = chunk_image(source_ref, args.chunkah_image, tag,
+                                 target_ref,
                                  chunkah_args=args.chunkah_args,
                                  verbose=args.verbose)
 
         print(f"  Loading as {target_ref}...")
-        load_chunked_image(ociarchive, target_ref)
+        load_chunked_image(ociarchive)
         os.unlink(ociarchive)
 
         print(f"  Done: {target_ref}")
@@ -319,6 +320,7 @@ def pull_image(repo: str, tag: str, target_ref: str, local: bool = False,
 
 
 def chunk_image(source_ref: str, chunkah_image: str, original_tag: str,
+                target_ref: str,
                 chunkah_args: list[str] | None = None,
                 verbose: bool = False) -> str:
     """Run chunkah on image, return path to OCI archive."""
@@ -336,12 +338,14 @@ def chunk_image(source_ref: str, chunkah_image: str, original_tag: str,
             "-e", f"CHUNKAH_CONFIG_STR={config_str}",
             chunkah_image,
             "build",
+            "-t", target_ref,
             "--label", f"org.chunkah.original-tag={original_tag}",
         ]
         if chunkah_args:
             cmd.extend(chunkah_args)
         if verbose:
-            extra_args = ["--label", f"org.chunkah.original-tag={original_tag}"]
+            extra_args = ["-t", target_ref,
+                          "--label", f"org.chunkah.original-tag={original_tag}"]
             if chunkah_args:
                 extra_args.extend(chunkah_args)
             print(f"    Running: podman run --rm --mount=... {chunkah_image} build {' '.join(extra_args)}")
@@ -355,17 +359,9 @@ def chunk_image(source_ref: str, chunkah_image: str, original_tag: str,
         raise
 
 
-def load_chunked_image(ociarchive: str, target_ref: str):
-    """Load OCI archive into containers-storage with target tag."""
-    # Load the image and capture the ID
-    output = run_output("podman", "load", "-i", ociarchive)
-    # Output is like "Loaded image: sha256:abc123..."
-    image_id = output.strip().split()[-1]
-    if image_id.startswith("sha256:"):
-        image_id = image_id[7:]
-
-    # Tag it with our target reference
-    run("podman", "tag", image_id, target_ref)
+def load_chunked_image(ociarchive: str):
+    """Load OCI archive into containers-storage."""
+    run("podman", "load", "-i", ociarchive)
 
 
 def cleanup_temp_images(refs: list[str]):
