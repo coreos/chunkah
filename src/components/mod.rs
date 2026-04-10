@@ -240,42 +240,6 @@ impl ComponentsRepos {
             );
         }
 
-        // Final pass: fill in stability for components with 0.0 (xattr,
-        // bigfiles, unclaimed). Use half the minimum non-zero stability so
-        // they're considered less stable than any known component, but non-zero
-        // so the packing algorithm can make meaningful TEV loss calculations.
-        //
-        // The reasoning here is that it's better to wrongly underestimate
-        // stability than it is to overestimate it. In the latter case, it
-        // could contaminate components that are _known_ stable or take up a
-        // precious layer slot that could be used by known stable components.
-        // In the former case, it could still be in its own layer if the size
-        // warrants it but otherwise goes in the catch-all.
-        let min_stability = components
-            .values()
-            .map(|c| c.stability)
-            .filter(|&s| s > 0.0)
-            // SAFETY: somehow getting NaN is a logic error somewhere
-            .min_by(|a, b| a.partial_cmp(b).unwrap());
-        let fallback_stability = match min_stability {
-            Some(min) => min / 2.0,
-            None => {
-                // All components have stability 0.0; no package manager data available
-                tracing::warn!("no stability data available, packing may be suboptimal");
-                0.5
-            }
-        };
-        tracing::debug!(
-            min_stability = min_stability,
-            fallback = fallback_stability,
-            "computed fallback stability"
-        );
-        for comp in components.values_mut() {
-            if comp.stability == 0.0 {
-                comp.stability = fallback_stability;
-            }
-        }
-
         Ok(components)
     }
 }
