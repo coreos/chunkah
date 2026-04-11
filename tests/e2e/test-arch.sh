@@ -11,6 +11,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 TARGET_IMAGE="quay.io/archlinux/archlinux:latest"
 CHUNKED_IMAGE="localhost/archlinux-chunked:test"
 
+output_dir="${OUTPUT_DIR:?}"
 cleanup() {
   cleanup_images "${CHUNKED_IMAGE}"
 }
@@ -22,7 +23,8 @@ config_str=$(podman inspect "${TARGET_IMAGE}")
 buildah_build \
   --from "${TARGET_IMAGE}" --build-arg CHUNKAH="${CHUNKAH_IMG:?}" \
   --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
-  --build-arg "CHUNKAH_ARGS=--max-layers 96" \
+  --build-arg "CHUNKAH_ARGS=--max-layers 96 --write-manifest-to /run/output/manifest.json" \
+  -v "${output_dir}:/run/output" \
   -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
 
 # sanity-check it
@@ -34,9 +36,8 @@ assert_has_components "${CHUNKED_IMAGE}" "alpm/linux-api-headers" "alpm/systemd"
 # verify we got exactly 96 layers
 assert_layer_count "${CHUNKED_IMAGE}" 96
 
-# verify layer containing unclaimed is under 10MiB (10485760 bytes)
-unclaimed_size=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" |
-  jq '.LayersData[] | select(.Annotations["org.chunkah.component"] | contains("chunkah/unclaimed")) | .Size')
+# verify unclaimed component is under 10MiB (10485760 bytes)
+unclaimed_size=$(jq '.components["chunkah/unclaimed"].size' "${output_dir}/manifest.json")
 [[ -n "${unclaimed_size}" ]]
 [[ ${unclaimed_size} -le 10485760 ]]
 
