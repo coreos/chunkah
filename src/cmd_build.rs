@@ -105,6 +105,26 @@ pub struct BuildArgs {
     #[arg(long = "prune", value_name = "PATH")]
     prune: Vec<Utf8PathBuf>,
 
+    /// Path-prefix component map JSON file
+    ///
+    /// A JSON file mapping path prefixes to component names, for use when no
+    /// package database (RPM, dpkg, etc.) is present in the rootfs. Each entry
+    /// is an object with `prefix` (string), `component` (string), and an
+    /// optional `interval` ("daily", "weekly", or "monthly"; default "monthly").
+    /// Rules are evaluated in order; the first matching prefix wins. Claims from
+    /// this repo are weak, so xattr and package-database repos take precedence.
+    ///
+    /// Example:
+    /// ```json
+    /// [
+    ///   {"prefix": "/usr/share/fonts",      "component": "fonts"},
+    ///   {"prefix": "/usr/lib/modules",       "component": "kernel-modules",  "interval": "monthly"},
+    ///   {"prefix": "/usr/share/gnome-shell", "component": "gnome-shell",     "interval": "weekly"}
+    /// ]
+    /// ```
+    #[arg(long, value_name = "PATH")]
+    component_map: Option<Utf8PathBuf>,
+
     /// Number of threads for parallel layer writing (0 = auto-detect)
     #[arg(short = 'T', long, default_value_t = 0, env = "CHUNKAH_THREADS")]
     threads: usize,
@@ -205,10 +225,18 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     let total_size: u64 = files.values().map(|f| f.size).sum();
     tracing::info!(files = files.len(), size = %utils::format_size(total_size), "scan complete");
 
-    let repos =
-        ComponentsRepos::load(&rootfs, &files, created_epoch).context("loading components")?;
+    let repos = ComponentsRepos::load(
+        &rootfs,
+        &files,
+        created_epoch,
+        args.component_map.as_deref(),
+    )
+    .context("loading components")?;
     if repos.is_empty() {
-        anyhow::bail!("no supported component repo found in rootfs");
+        anyhow::bail!(
+            "no supported component repo found in rootfs; \
+             consider passing --component-map to assign components by path prefix"
+        );
     }
 
     let components = repos

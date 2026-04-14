@@ -1,4 +1,5 @@
 mod bigfiles;
+pub mod pathmap;
 mod rpm;
 mod xattr;
 
@@ -112,7 +113,12 @@ impl ComponentsRepos {
     /// repo having to walk the rootfs again. The `default_mtime_clamp` will be
     /// used as the mtime clamp for components that don't have a reproducible
     /// clamp (e.g. xattr-claimed files, unclaimed files).
-    pub fn load(rootfs: &Dir, files: &FileMap, default_mtime_clamp: u64) -> Result<Self> {
+    pub fn load(
+        rootfs: &Dir,
+        files: &FileMap,
+        default_mtime_clamp: u64,
+        component_map: Option<&Utf8Path>,
+    ) -> Result<Self> {
         let mut repos: Vec<Box<dyn ComponentsRepo>> = Vec::new();
 
         if let Some(repo) =
@@ -126,6 +132,13 @@ impl ComponentsRepos {
             rpm::RpmRepo::load(rootfs, files, default_mtime_clamp).context("loading rpmdb")?
         {
             tracing::info!(repo = "rpm", "loaded repo");
+            repos.push(Box::new(repo));
+        }
+
+        if let Some(map_path) = component_map {
+            let repo = pathmap::PathmapRepo::load(map_path, files, default_mtime_clamp)
+                .context("loading component map")?;
+            tracing::info!(repo = "pathmap", path = %map_path, "loaded repo");
             repos.push(Box::new(repo));
         }
 
