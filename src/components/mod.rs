@@ -1,4 +1,5 @@
 mod bigfiles;
+pub mod filemap;
 mod rpm;
 mod xattr;
 
@@ -126,6 +127,14 @@ impl ComponentsRepos {
             rpm::RpmRepo::load(rootfs, files, default_mtime_clamp).context("loading rpmdb")?
         {
             tracing::info!(repo = "rpm", "loaded repo");
+            repos.push(Box::new(repo));
+        }
+
+        if let Some(repo) =
+            filemap::FilemapRepo::load(rootfs, files, default_mtime_clamp)
+                .context("loading filemap")?
+        {
+            tracing::info!(repo = "filemap", "loaded repo");
             repos.push(Box::new(repo));
         }
 
