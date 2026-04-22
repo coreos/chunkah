@@ -10,7 +10,7 @@ FROM ${CHUNKAH} AS chunkah
 ARG CHUNKAH_CONFIG_STR
 ARG CHUNKAH_ARGS
 RUN --mount=type=bind,target=/run/src,rw \
-    --mount=from=target,target=/chunkah \
-      chunkah build ${CHUNKAH_ARGS} > /run/src/out.ociarchive
+    --mount=from=target,target=/chunkah,ro \
+      chunkah build ${CHUNKAH_ARGS} --output oci:/run/src/out
 
-FROM oci-archive:out.ociarchive
+FROM oci:out
