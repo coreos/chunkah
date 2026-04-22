@@ -51,6 +51,6 @@ RUN for db in /rootfs/var/lib/rpm/rpmdb.sqlite \
 RUN --mount=type=bind,target=/run/src,rw \
     chunkah build --rootfs /rootfs \
         --config-str '{"Config": {"Entrypoint": ["/usr/bin/chunkah"], "Env": ["CHUNKAH_ROOTFS=/chunkah"], "WorkingDir": "/srv"}}' \
-        > /run/src/out.ociarchive
+        --output oci:/run/src/out
 
-FROM oci-archive:out.ociarchive
+FROM oci:out

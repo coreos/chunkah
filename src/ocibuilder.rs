@@ -4,7 +4,9 @@ use std::num::NonZeroUsize;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use anyhow::{Context, Result};
+use camino::Utf8Path;
 use cap_std_ext::cap_std::fs::Dir;
+use cap_std_ext::cap_tempfile;
 use ocidir::oci_spec::image as oci_image;
 
 use crate::components::Component;
@@ -23,8 +25,6 @@ pub enum Compression {
 pub struct Builder {
     /// The rootfs to build from.
     rootfs: Dir,
-    /// The OCI directory to build into.
-    oci_dir: cap_std_ext::cap_tempfile::TempDir,
     /// The components to include in the image, ordered by stability descending.
     components: Vec<(String, Component)>,
     /// Compression settings for layers and archive.
@@ -49,12 +49,8 @@ struct ComponentLayer {
 impl Builder {
     /// Create a new Builder with required parameters.
     pub fn new(rootfs: &Dir, components: Vec<(String, Component)>) -> Result<Self> {
-        let oci_dir = cap_std_ext::cap_tempfile::tempdir(cap_std_ext::cap_std::ambient_authority())
-            .context("creating temp directory")?;
-
         Ok(Self {
             rootfs: rootfs.try_clone().context("cloning rootfs")?,
-            oci_dir,
             components,
             compression: Compression::default(),
             threads: NonZeroUsize::MIN,
@@ -98,9 +94,12 @@ impl Builder {
         self
     }
 
-    /// Build the OCI image and write it to the given output.
-    pub fn build<W: Write>(self, output: &mut W) -> Result<()> {
-        self.build_oci_dir().context("building OCI directory")?;
+    /// Build the OCI image and write it as an OCI archive to the given output.
+    pub fn build_to_oci_archive<W: Write>(self, output: &mut W) -> Result<()> {
+        let oci_dir = cap_tempfile::tempdir(cap_std_ext::cap_std::ambient_authority())
+            .context("creating temp directory")?;
+        self.build_oci_dir(&oci_dir)
+            .context("building OCI directory")?;
 
         let compressed = !matches!(self.compression, Compression::None);
         tracing::info!(compressed = compressed, "writing OCI archive");
@@ -112,16 +111,43 @@ impl Builder {
             }
         };
 
-        crate::tar::write_oci_archive(&self.oci_dir, &mut *output, compression)
+        crate::tar::write_oci_archive(&oci_dir, &mut *output, compression)
             .context("writing OCI archive")?;
 
         output.flush().context("flushing output")
     }
 
-    fn build_oci_dir(&self) -> Result<()> {
+    /// Build the OCI image and write it as an OCI directory layout.
+    pub fn build_to_oci_dir(self, output: &Utf8Path) -> Result<()> {
+        // Allocate the tempdir in the same dir as the target for rename().
+        let parent = output
+            .parent()
+            .filter(|p| !p.as_str().is_empty())
+            .unwrap_or(Utf8Path::new("."));
+        // Notice here we use `tempfile::TempDir` rather than `cap_tempfile::TempDir` because we
+        // need an actually addressable path for rename(). `cap_tempfile` intentionally doesn't
+        // expose paths.
+        let mut temp_dir = tempfile::TempDir::with_prefix_in("chunkah-", parent.as_std_path())
+            .context("creating temp directory")?;
         let oci_dir =
-            ocidir::OciDir::ensure(self.oci_dir.try_clone().context("cloning temp directory")?)
-                .context("creating OCI directory")?;
+            Dir::open_ambient_dir(temp_dir.path(), cap_std_ext::cap_std::ambient_authority())
+                .context("opening temp directory")?;
+        self.build_oci_dir(&oci_dir)
+            .context("building OCI directory")?;
+
+        tracing::info!(output = %output, "writing OCI directory");
+        std::fs::rename(temp_dir.path(), output.as_std_path())
+            .with_context(|| format!("renaming temp directory to {output}"))?;
+        // Disarm cleanup now that the rename succeeded. TempDir needs a .persist()...
+        temp_dir.disable_cleanup(true);
+        Ok(())
+    }
+
+    /// The underlying function called by build_to_oci_archive() and build_to_oci_dir() that does
+    /// all the heavy-lifting to actually build the image.
+    fn build_oci_dir(&self, dir: &Dir) -> Result<()> {
+        let oci_dir = ocidir::OciDir::ensure(dir.try_clone().context("cloning temp directory")?)
+            .context("creating OCI directory")?;
 
         // first, let's create an empty manifest
         let mut manifest = oci_dir
@@ -133,7 +159,7 @@ impl Builder {
         let mut config = self.config.clone().unwrap_or_default();
 
         // this is the important bit: we add all the layers
-        self.add_components(&mut manifest, &mut config)
+        self.add_components(dir, &mut manifest, &mut config)
             .context("adding layers to OCI directory")?;
 
         if let Some(annotations) = &self.annotations {
@@ -157,6 +183,7 @@ impl Builder {
     /// Write layers to the OCI directory in parallel and update the manifest and config.
     fn add_components(
         &self,
+        oci_dir: &Dir,
         manifest: &mut oci_image::ImageManifest,
         config: &mut oci_image::ImageConfiguration,
     ) -> Result<()> {
@@ -197,7 +224,7 @@ impl Builder {
                             }
                             let (name, component) = components[i];
                             let result = self
-                                .write_component_layer(name, component)
+                                .write_component_layer(oci_dir, name, component)
                                 .with_context(|| format!("adding component {name}"));
                             results.push((i, result));
                         }
@@ -216,7 +243,7 @@ impl Builder {
         // sort back based on index for reproducible builds
         results.sort_by_key(|(idx, _)| *idx);
 
-        let oci_dir = ocidir::OciDir::open(self.oci_dir.try_clone().context("cloning oci_dir")?)
+        let oci_dir = ocidir::OciDir::open(oci_dir.try_clone().context("cloning oci_dir")?)
             .context("opening OCI directory")?;
 
         for (_, result) in results {
@@ -235,8 +262,13 @@ impl Builder {
 
     /// Write a single component as a tar layer. Returns the layer metadata for
     /// later assembly into the manifest and config.
-    fn write_component_layer(&self, name: &str, component: &Component) -> Result<ComponentLayer> {
-        let oci_dir = ocidir::OciDir::open(self.oci_dir.try_clone().context("cloning oci_dir")?)
+    fn write_component_layer(
+        &self,
+        oci_dir: &Dir,
+        name: &str,
+        component: &Component,
+    ) -> Result<ComponentLayer> {
+        let oci_dir = ocidir::OciDir::open(oci_dir.try_clone().context("cloning oci_dir")?)
             .context("opening OCI directory")?;
         tracing::debug!(component = name, "creating tar layer");
         let mut tar_builder =
@@ -397,7 +429,7 @@ mod tests {
             .compression(Compression::None)
             .config(config);
         let mut output = Vec::new();
-        builder.build(&mut output).unwrap();
+        builder.build_to_oci_archive(&mut output).unwrap();
 
         // Extract to tempdir
         let oci_tempdir = tempfile::tempdir().unwrap();

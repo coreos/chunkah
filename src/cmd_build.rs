@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, HashMap};
 use std::num::NonZeroUsize;
 
 use anyhow::{Context, Result};
-use camino::Utf8PathBuf;
+use camino::{Utf8Path, Utf8PathBuf};
 use cap_std_ext::cap_std::ambient_authority;
 use cap_std_ext::cap_std::fs::Dir;
 use clap::Parser;
@@ -14,14 +14,28 @@ use crate::ocibuilder::{Builder, Compression};
 use crate::packing::{PackItem, calculate_packing};
 use crate::utils;
 
+/// Parsed output target for the built OCI image.
+enum OutputTarget {
+    /// OCI archive to stdout.
+    Stdout,
+    /// OCI archive to a file.
+    OciArchive(Utf8PathBuf),
+    /// OCI directory layout.
+    OciDir(Utf8PathBuf),
+}
+
 #[derive(Parser, Default)]
 pub struct BuildArgs {
     /// Path to the rootfs to build from
     #[arg(long, env = "CHUNKAH_ROOTFS", hide_env_values = true)]
     rootfs: Utf8PathBuf,
 
-    /// Output file path (defaults to stdout)
-    #[arg(short, long, value_name = "PATH")]
+    /// Output path with optional transport prefix
+    ///
+    /// Supports `oci:PATH` for OCI directory layout and `oci-archive:PATH` for
+    /// OCI archive. If no prefix is given, defaults to `oci-archive`. If not
+    /// specified at all, the OCI archive is written to stdout.
+    #[arg(short, long, value_name = "[oci:|oci-archive:]PATH")]
     output: Option<Utf8PathBuf>,
 
     /// Maximum number of layers to output
@@ -69,10 +83,11 @@ pub struct BuildArgs {
     )]
     source_date_epoch: Option<u64>,
 
-    /// Compress layers and the OCI archive with gzip
+    /// Compress layers (and the OCI archive, if applicable) with gzip
     ///
-    /// By default, layers and the OCI archive are uncompressed. This flag
-    /// enables gzip compression for both.
+    /// By default, layers are uncompressed. This flag enables gzip compression
+    /// for layers. For `oci-archive` format, the archive itself is also
+    /// compressed.
     #[arg(long)]
     compressed: bool,
 
@@ -105,7 +120,7 @@ pub struct BuildArgs {
     #[arg(long = "prune", value_name = "PATH")]
     prune: Vec<Utf8PathBuf>,
 
-    /// Tag to apply to the image in the OCI archive
+    /// Tag to apply to the image
     ///
     /// Sets the org.opencontainers.image.ref.name annotation on the manifest
     /// descriptor in index.json, so that `podman load`/`docker load` tags the
@@ -166,6 +181,8 @@ impl BuildArgs {
 }
 
 pub fn run(args: &BuildArgs) -> Result<()> {
+    let output_target = parse_output_target(args.output.as_deref())?;
+
     tracing::info!(rootfs = %args.rootfs, "starting build");
 
     const CONTAINERS_STORAGE_LAYER_LIMIT: usize = 500;
@@ -273,14 +290,21 @@ pub fn run(args: &BuildArgs) -> Result<()> {
         builder = builder.tag(tag.clone());
     }
 
-    if let Some(output_path) = &args.output {
-        tracing::info!(output = %output_path, "writing to file");
-        let mut file = std::fs::File::create(output_path)
-            .with_context(|| format!("creating output file {}", output_path))?;
-        builder.build(&mut file)?;
-    } else {
-        tracing::info!("writing to stdout");
-        builder.build(&mut std::io::stdout().lock())?;
+    match output_target {
+        OutputTarget::OciDir(ref path) => {
+            // no logging needed here; build_to_oci_dir already logs
+            builder.build_to_oci_dir(path)?;
+        }
+        OutputTarget::OciArchive(ref path) => {
+            tracing::info!(output = %path, "writing to file");
+            let mut file = std::fs::File::create(path)
+                .with_context(|| format!("creating output file {}", path))?;
+            builder.build_to_oci_archive(&mut file)?;
+        }
+        OutputTarget::Stdout => {
+            tracing::info!("writing to stdout");
+            builder.build_to_oci_archive(&mut std::io::stdout().lock())?;
+        }
     }
 
     if let Some(path) = &args.write_peak_mem_to {
@@ -291,6 +315,31 @@ pub fn run(args: &BuildArgs) -> Result<()> {
 
     tracing::info!("build complete");
     Ok(())
+}
+
+/// Parse the `--output` value into an [`OutputTarget`].
+fn parse_output_target(output: Option<&Utf8Path>) -> Result<OutputTarget> {
+    match output.map(|o| o.as_str()) {
+        None => Ok(OutputTarget::Stdout),
+        Some(s) => match s.split_once(':') {
+            Some(("oci-archive", path)) => {
+                anyhow::ensure!(!path.is_empty(), "output path cannot be empty");
+                Ok(OutputTarget::OciArchive(Utf8PathBuf::from(path)))
+            }
+            Some(("oci", path)) => {
+                anyhow::ensure!(!path.is_empty(), "output path cannot be empty");
+                let path = Utf8PathBuf::from(path);
+                anyhow::ensure!(!path.exists(), "output path already exists: {path}");
+                Ok(OutputTarget::OciDir(path))
+            }
+            Some((transport, _)) => {
+                // technically breaks paths with literal ':'... let's see if anyone complains; they
+                // can always just redirect from stdout instead
+                anyhow::bail!("unknown transport: {transport}");
+            }
+            None => Ok(OutputTarget::OciArchive(Utf8PathBuf::from(s))),
+        },
+    }
 }
 
 /// Check whether the file map contains an OSTree sysroot repo.
@@ -621,7 +670,7 @@ mod tests {
             .annotations(parsed.annotations)
             .config(image_config);
         let mut output = Vec::new();
-        builder.build(&mut output).unwrap();
+        builder.build_to_oci_archive(&mut output).unwrap();
 
         // now extract it back out and open it as an ocidir
         let oci_tempdir = tempfile::tempdir().unwrap();

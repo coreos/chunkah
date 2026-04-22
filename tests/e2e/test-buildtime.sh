@@ -28,7 +28,9 @@ RUN dnf install -y jq acl attr && dnf clean all
 EOF
 buildah build -t "${ROOTFS_IMAGE}" -f Containerfile.rootfs .
 
-# build chunked image using FROM oci-archive: trick
+# build chunked image using FROM oci-archive: trick (note the use of oci-archive
+# instead of oci is intended here to make sure we have coverage for this now
+# that the Containerfile.splitter approach has moved to oci)
 cat > Containerfile <<EOF
 FROM ${ROOTFS_IMAGE} AS builder
 # create a test binary with various xattr types
