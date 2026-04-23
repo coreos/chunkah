@@ -24,8 +24,11 @@ def main():
     bump_parser.add_argument(
         "--pr", action="store_true",
         help="Push branch and open a pull request via gh")
+    bump_parser.add_argument(
+        "--remote", default="origin",
+        help="Git remote to push to (default: origin)")
     bump_parser.set_defaults(
-        func=lambda args: bump_version(args.version, args.pr))
+        func=lambda args: bump_version(args.version, args.pr, args.remote))
 
     notes_parser = subparsers.add_parser(
         "generate-notes", help="Generate release notes from GitHub")
@@ -45,17 +48,22 @@ def main():
         "--commit", default=None,
         help="Target commit to tag and archive (default: HEAD)")
     cut_parser.add_argument(
+        "--remote", default="upstream",
+        help="Git remote to push to (default: upstream)")
+    cut_parser.add_argument(
         "--no-push", action="store_true",
         help="Prepare release without pushing to remote")
     cut_parser.set_defaults(
         func=lambda args: cut_release(args.version, args.no_push,
-                                      args.notes_file, args.commit))
+                                      args.notes_file, args.commit,
+                                      args.remote))
 
     args = parser.parse_args()
     args.func(args)
 
 
-def bump_version(new_version: str, open_pr: bool = False):
+def bump_version(new_version: str, open_pr: bool = False,
+                 remote: str = "origin"):
     """Bump version across all project files."""
     if new_version.startswith("v"):
         die(f"Version should not start with 'v' (got '{new_version}'), "
@@ -106,12 +114,12 @@ def bump_version(new_version: str, open_pr: bool = False):
             step(f"Creating branch {branch}...")
             run("git", "checkout", "-b", branch)
         remote_exists = run_output(
-            "git", "ls-remote", "--heads", "origin", branch).strip() != ""
+            "git", "ls-remote", "--heads", remote, branch).strip() != ""
         step("Pushing branch...")
         if remote_exists:
-            run("git", "push", "-u", "-f", "origin", branch)
+            run("git", "push", "-u", "-f", remote, branch)
         else:
-            run("git", "push", "-u", "origin", branch)
+            run("git", "push", "-u", remote, branch)
             step("Opening pull request...")
             run("gh", "pr", "create", "--repo", "coreos/chunkah",
                 "--title", f"Cargo.toml: bump version to v{new_version}",
@@ -192,7 +200,7 @@ def generate_notes(version: str):
 
 
 def cut_release(version: str, no_push: bool, notes_file: str | None,
-                commit: str | None):
+                commit: str | None, remote: str = "upstream"):
     """Cut a release for chunkah."""
     tag = f"v{version}"
     source_tarball = f"{NAME}-{version}.tar.gz"
@@ -224,6 +232,7 @@ def cut_release(version: str, no_push: bool, notes_file: str | None,
             edited_notes = notes_path.read_text()
             if not edited_notes.strip():
                 die("Release notes are empty, aborting")
+            release_notes_file = notes_path
         else:
             # Check for saved notes from a previous failed run
             if saved_notes_file.exists():
@@ -241,6 +250,7 @@ def cut_release(version: str, no_push: bool, notes_file: str | None,
 
             # Save notes immediately after editing
             saved_notes_file.write_text(edited_notes)
+            release_notes_file = saved_notes_file
 
         step(f"Creating signed tag {tag}...")
         create_signed_tag(tag, edited_notes, commit)
@@ -255,33 +265,34 @@ def cut_release(version: str, no_push: bool, notes_file: str | None,
             print()
             print(f"Release {tag} prepared successfully.")
             print(f"Tarballs: {source_tarball}, {vendor_tarball}")
+            print(f"Release notes: {release_notes_file}")
             print()
             print("To complete the release, run:")
-            print(f"  git push origin {tag}")
+            print(f"  git push {remote} {tag}")
             print(f"  gh release create {tag} --repo coreos/chunkah "
-                  f"--title {tag} --notes-from-tag --verify-tag "
+                  f"--title {tag} "
+                  f"--notes-file {release_notes_file} --verify-tag "
                   f"{source_tarball} {vendor_tarball} Containerfile.splitter")
-            print(f"  rm {source_tarball} {vendor_tarball}")
+            print(f"  rm {source_tarball} {vendor_tarball}"
+                  f" {release_notes_file}")
         else:
             step("Pushing tag...")
-            run("git", "push", "origin", tag)
+            run("git", "push", remote, tag)
 
             step("Creating GitHub release...")
             run("gh", "release", "create", tag,
                 "--repo", "coreos/chunkah", "--title", tag,
-                "--notes-from-tag", "--verify-tag",
+                "--notes-file", str(release_notes_file), "--verify-tag",
                 source_tarball, vendor_tarball, "Containerfile.splitter")
 
-            step("Cleaning up tarballs...")
+            step("Cleaning up...")
             os.remove(source_tarball)
             os.remove(vendor_tarball)
+            if saved_notes_file.exists():
+                saved_notes_file.unlink()
 
             print()
             print(f"Release {tag} published successfully!")
-
-        # Clean up saved notes file on success
-        if saved_notes_file.exists():
-            saved_notes_file.unlink()
 
     except subprocess.CalledProcessError as e:
         if saved_notes_file.exists():
