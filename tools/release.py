@@ -42,11 +42,14 @@ def main():
         "--notes-file", default=None,
         help="Path to release notes file (skips fetching and editing)")
     cut_parser.add_argument(
+        "--commit", default=None,
+        help="Target commit to tag and archive (default: HEAD)")
+    cut_parser.add_argument(
         "--no-push", action="store_true",
         help="Prepare release without pushing to remote")
     cut_parser.set_defaults(
         func=lambda args: cut_release(args.version, args.no_push,
-                                      args.notes_file))
+                                      args.notes_file, args.commit))
 
     args = parser.parse_args()
     args.func(args)
@@ -188,7 +191,8 @@ def generate_notes(version: str):
     sys.stdout.write(notes)
 
 
-def cut_release(version: str, no_push: bool, notes_file: str | None):
+def cut_release(version: str, no_push: bool, notes_file: str | None,
+                commit: str | None):
     """Cut a release for chunkah."""
     tag = f"v{version}"
     source_tarball = f"{NAME}-{version}.tar.gz"
@@ -239,10 +243,10 @@ def cut_release(version: str, no_push: bool, notes_file: str | None):
             saved_notes_file.write_text(edited_notes)
 
         step(f"Creating signed tag {tag}...")
-        create_signed_tag(tag, edited_notes)
+        create_signed_tag(tag, edited_notes, commit)
 
         step("Generating source and vendor tarballs...")
-        generate_archives(source_tarball, vendor_tarball)
+        generate_archives(source_tarball, vendor_tarball, commit)
 
         step("Verifying offline build...")
         verify_offline_build(version, source_tarball, vendor_tarball)
@@ -356,19 +360,26 @@ def edit_notes(initial: str) -> str:
         os.unlink(tmp_path)
 
 
-def create_signed_tag(tag: str, message: str):
+def create_signed_tag(tag: str, message: str, commit: str | None = None):
     """Create a signed annotated git tag."""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".md") as f:
         f.write(message)
         f.flush()
         # Use a non-# commentchar so that markdown headers are preserved
-        run("git", "-c", "core.commentchar=;", "tag", "-s", "-a", tag,
-            "-F", f.name)
+        cmd = ["git", "-c", "core.commentchar=;", "tag", "-s", "-a", tag,
+               "-F", f.name]
+        if commit:
+            cmd.append(commit)
+        run(*cmd)
 
 
-def generate_archives(source_tarball: str, vendor_tarball: str):
+def generate_archives(source_tarball: str, vendor_tarball: str,
+                      commit: str | None = None):
     """Generate source and vendor tarballs using create-archives.sh."""
-    run("tools/create-archives.sh", source_tarball, vendor_tarball)
+    args = ["tools/create-archives.sh", source_tarball, vendor_tarball]
+    if commit:
+        args.append(commit)
+    run(*args)
 
 
 def verify_offline_build(version: str, source: str, vendor: str):
