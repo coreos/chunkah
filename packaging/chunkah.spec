@@ -1,7 +1,7 @@
 %global crate chunkah
 
 Name:           chunkah
-Version:        0.3.2
+Version:        0.4.0
 Release:        %autorelease
 Summary:        OCI building tool for content-based container image layers
 
