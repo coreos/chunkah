@@ -27,15 +27,26 @@ def main():
     bump_parser.set_defaults(
         func=lambda args: bump_version(args.version, args.pr))
 
+    notes_parser = subparsers.add_parser(
+        "generate-notes", help="Generate release notes from GitHub")
+    notes_parser.add_argument(
+        "version", help="Version to generate notes for (e.g., 0.3.0)")
+    notes_parser.set_defaults(
+        func=lambda args: generate_notes(args.version))
+
     cut_parser = subparsers.add_parser(
         "cut", help="Cut a release")
     cut_parser.add_argument(
         "version", help="Version to release (e.g., 0.3.0)")
     cut_parser.add_argument(
+        "--notes-file", default=None,
+        help="Path to release notes file (skips fetching and editing)")
+    cut_parser.add_argument(
         "--no-push", action="store_true",
         help="Prepare release without pushing to remote")
     cut_parser.set_defaults(
-        func=lambda args: cut_release(args.version, args.no_push))
+        func=lambda args: cut_release(args.version, args.no_push,
+                                      args.notes_file))
 
     args = parser.parse_args()
     args.func(args)
@@ -170,12 +181,19 @@ def compute_license_tag() -> tuple[list[str], str]:
     return summary_lines, license_tag
 
 
-def cut_release(version: str, no_push: bool):
+def generate_notes(version: str):
+    """Fetch auto-generated release notes from GitHub and print to stdout."""
+    tag = f"v{version}"
+    notes = draft_release_notes(tag)
+    sys.stdout.write(notes)
+
+
+def cut_release(version: str, no_push: bool, notes_file: str | None):
     """Cut a release for chunkah."""
     tag = f"v{version}"
     source_tarball = f"{NAME}-{version}.tar.gz"
     vendor_tarball = f"{NAME}-{version}-vendor.tar.gz"
-    notes_file = Path(f".release-notes-{version}.md")
+    saved_notes_file = Path(f".release-notes-{version}.md")
 
     try:
         if tag_exists(tag):
@@ -194,21 +212,31 @@ def cut_release(version: str, no_push: bool):
         step("Verifying version matches Cargo.toml...")
         verify_version(version)
 
-        # Check for saved notes from a previous failed run
-        if notes_file.exists():
-            print(f"Found saved release notes from previous run: {notes_file}")
-            notes = notes_file.read_text()
+        if notes_file:
+            step(f"Reading release notes from {notes_file}...")
+            notes_path = Path(notes_file)
+            if not notes_path.exists():
+                die(f"Notes file not found: {notes_file}")
+            edited_notes = notes_path.read_text()
+            if not edited_notes.strip():
+                die("Release notes are empty, aborting")
         else:
-            step("Fetching release notes from GitHub...")
-            notes = fetch_release_notes(tag)
+            # Check for saved notes from a previous failed run
+            if saved_notes_file.exists():
+                print(f"Found saved release notes from previous run: "
+                      f"{saved_notes_file}")
+                notes = saved_notes_file.read_text()
+            else:
+                step("Fetching release notes from GitHub...")
+                notes = draft_release_notes(tag)
 
-        step("Opening editor for release notes...")
-        edited_notes = edit_notes(notes)
-        if not edited_notes.strip():
-            die("Release notes are empty, aborting")
+            step("Opening editor for release notes...")
+            edited_notes = edit_notes(notes)
+            if not edited_notes.strip():
+                die("Release notes are empty, aborting")
 
-        # Save notes immediately after editing
-        notes_file.write_text(edited_notes)
+            # Save notes immediately after editing
+            saved_notes_file.write_text(edited_notes)
 
         step(f"Creating signed tag {tag}...")
         create_signed_tag(tag, edited_notes)
@@ -247,17 +275,19 @@ def cut_release(version: str, no_push: bool):
             print()
             print(f"Release {tag} published successfully!")
 
-        # Clean up notes file on success
-        if notes_file.exists():
-            notes_file.unlink()
+        # Clean up saved notes file on success
+        if saved_notes_file.exists():
+            saved_notes_file.unlink()
 
     except subprocess.CalledProcessError as e:
-        if notes_file.exists():
-            print(f"Release notes saved to: {notes_file}", file=sys.stderr)
+        if saved_notes_file.exists():
+            print(f"Release notes saved to: {saved_notes_file}",
+                  file=sys.stderr)
         die(f"Command failed: {e.cmd}")
     except Exception as e:
-        if notes_file.exists():
-            print(f"Release notes saved to: {notes_file}", file=sys.stderr)
+        if saved_notes_file.exists():
+            print(f"Release notes saved to: {saved_notes_file}",
+                  file=sys.stderr)
         die(str(e))
 
 
@@ -304,11 +334,12 @@ def is_worktree_dirty() -> bool:
     return run_output("git", "status", "--porcelain").strip() != ""
 
 
-def fetch_release_notes(tag: str) -> str:
-    """Fetch auto-generated release notes from GitHub."""
-    return run_output("gh", "api", "--method", "POST",
+def draft_release_notes(tag: str) -> str:
+    """Fetch release notes from GitHub and prepend the tag as a header."""
+    body = run_output("gh", "api", "--method", "POST",
                       "repos/coreos/chunkah/releases/generate-notes",
                       "-f", f"tag_name={tag}", "--jq", ".body")
+    return f"{tag}\n\n{body}"
 
 
 def edit_notes(initial: str) -> str:
