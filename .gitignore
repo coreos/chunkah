@@ -2,3 +2,4 @@
 /target
 /tests/e2e/results
 __pycache__/
+/.release-notes-*.md
