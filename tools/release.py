@@ -99,7 +99,7 @@ def bump_version(new_version: str, open_pr: bool = False):
         else:
             run("git", "push", "-u", "origin", branch)
             step("Opening pull request...")
-            run("gh", "pr", "create",
+            run("gh", "pr", "create", "--repo", "coreos/chunkah",
                 "--title", f"Cargo.toml: bump version to v{new_version}",
                 "--body", "")
 
