@@ -11,27 +11,20 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 CHUNKED_IMAGE="localhost/chunkah-chunked:test"
 
+output_dir="${OUTPUT_DIR:?}"
 cleanup() {
     cleanup_images "${CHUNKED_IMAGE}"
 }
 trap cleanup EXIT
 
-# Check if the image is already chunked by looking for chunkah authorship in the
-# image history entries.
-is_chunked=$(skopeo inspect --config "containers-storage:${CHUNKAH_IMG:?}" | \
-    jq '[.history[]? | select(.author == "chunkah")] | length > 0')
-
-if [[ "${is_chunked}" == "true" ]]; then
-    podman tag "${CHUNKAH_IMG}" "${CHUNKED_IMAGE}"
-else
-    # chunk it using Containerfile.splitter
-    config_str=$(podman inspect "${CHUNKAH_IMG}")
-    buildah_build \
-        --from "${CHUNKAH_IMG}" --build-arg CHUNKAH="${CHUNKAH_IMG}" \
-        --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
-        --build-arg CHUNKAH_ARGS="-v" \
-        -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
-fi
+# chunk it using Containerfile.splitter
+config_str=$(podman inspect "${CHUNKAH_IMG:?}")
+buildah_build \
+    --from "${CHUNKAH_IMG}" --build-arg CHUNKAH="${CHUNKAH_IMG}" \
+    --build-arg CHUNKAH_CONFIG_STR="${config_str}" \
+    --build-arg "CHUNKAH_ARGS=-v --write-manifest-to /run/output/manifest.json" \
+    -v "${output_dir}:/run/output" \
+    -t "${CHUNKED_IMAGE}" "${REPO_ROOT}/Containerfile.splitter"
 
 # verify minimum layer count
 layer_count=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" | jq '.LayersData | length')
@@ -55,8 +48,7 @@ while IFS= read -r component; do
     esac
 done <<< "${bigfiles}"
 
-# verify the unclaimed layer is small (< 1 MiB)
-unclaimed_size=$(skopeo inspect "containers-storage:${CHUNKED_IMAGE}" | \
-    jq '.LayersData[] | select(.Annotations["org.chunkah.component"] | contains("chunkah/unclaimed")) | .Size')
+# verify unclaimed component is under 1 MiB (1048576 bytes)
+unclaimed_size=$(jq '.components["chunkah/unclaimed"].size' "${output_dir}/manifest.json")
 [[ -n "${unclaimed_size}" ]]
 [[ ${unclaimed_size} -le 1048576 ]]
