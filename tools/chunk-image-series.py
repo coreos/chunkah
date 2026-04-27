@@ -149,17 +149,18 @@ def run_chunking(args: argparse.Namespace):
         failed = []
         temp_refs = []
 
-        for i, tag in enumerate(tags):
-            result = process_tag(args, i, len(tags), tag, temp_refs)
-            if result is not None:
-                processed.append(result)
-            else:
-                failed.append(tag)
-
-        # Cleanup temp images
-        if temp_refs:
-            step("Cleaning up temporary images...")
-            cleanup_temp_images(temp_refs)
+        try:
+            for i, tag in enumerate(tags):
+                result = process_tag(args, i, len(tags), tag, temp_refs)
+                if result is not None:
+                    processed.append(result)
+                else:
+                    failed.append(tag)
+        finally:
+            # Always clean up temp images, even on failure/interrupt
+            if temp_refs:
+                step("Cleaning up temporary images...")
+                cleanup_temp_images(temp_refs)
 
         print_summary(processed, failed, args.keep_originals)
 
@@ -367,14 +368,19 @@ def load_chunked_image(ociarchive: str):
 def cleanup_temp_images(refs: list[str]):
     """Remove temporary source images from containers-storage."""
     for ref in refs:
-        try:
-            subprocess.run(
-                ["podman", "rmi", "-f", ref],
-                capture_output=True,
-                check=False,
-            )
-        except Exception:
-            pass  # Ignore cleanup errors
+        _rmi_quiet(ref)
+
+
+def _rmi_quiet(ref: str):
+    """Remove a container image, ignoring errors."""
+    try:
+        subprocess.run(
+            ["podman", "rmi", "-f", ref],
+            capture_output=True,
+            check=False,
+        )
+    except Exception:
+        pass
 
 
 def _match_glob(tag: str, pattern: str) -> bool:
