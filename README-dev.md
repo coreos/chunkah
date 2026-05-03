@@ -17,6 +17,7 @@ with content-based layers.
 - [Motivation](#motivation)
 - [Highlights](#highlights)
 - [Installation](#installation)
+  - [Verifying image signatures](#verifying-image-signatures)
 - [Usage](#usage)
   - [Splitting an existing image](#splitting-an-existing-image)
   - [Splitting an image at build time](#splitting-an-image-at-build-time-buildahpodman-only)
@@ -79,6 +80,18 @@ However, if you're currently building images using a multi-stage build, it
 may be more convenient to `cargo install` the binary into your builder image
 (whether at runtime or build time if you own the builder image). chunkah is also
 packaged in Fedora, making it easier to do this there.
+
+### Verifying image signatures
+
+Container images are signed using [cosign] keyless signing. You can verify
+the signature of an image using cosign v3+:
+
+```shell
+cosign verify \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-github-workflow-repository coreos/chunkah \
+  quay.io/coreos/chunkah:latest
+```
 
 ## Usage
 
@@ -393,6 +406,7 @@ well.
 [add-determinism]: https://github.com/keszybz/add-determinism
 [bootable container images]: https://containers.github.io/bootable/
 [build-chunked-oci]: https://coreos.github.io/rpm-ostree/build-chunked-oci/
+[cosign]: https://github.com/sigstore/cosign
 [OCI image config]: https://github.com/opencontainers/image-spec/blob/26647a49f642c7d22a1cd3aa0a48e4650a542269/specs-go/v1/config.go#L24
 [buildah-rfe]: https://github.com/containers/buildah/issues/6621
 [buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652

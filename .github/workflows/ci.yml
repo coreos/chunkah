@@ -86,15 +86,21 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       packages: write
+      id-token: write
     steps:
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.1.1
       - name: Create and push manifest
+        id: push-manifest
         run: |
           set -euo pipefail
           podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
           podman manifest create ghcr.io/${{ github.repository }}:${{ github.sha }} \
             ghcr.io/${{ github.repository }}:${{ github.sha }}-amd64 \
             ghcr.io/${{ github.repository }}:${{ github.sha }}-arm64
-          podman manifest push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          podman manifest push --digestfile=/tmp/manifest-digest \
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          echo "digest=$(cat /tmp/manifest-digest)" >> "${GITHUB_OUTPUT}"
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
             podman tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:${TAG}
@@ -103,6 +109,11 @@ jobs:
             podman tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:latest
             podman manifest push ghcr.io/${{ github.repository }}:latest
           fi
+      - name: Sign ghcr.io image
+        run: |
+          cosign login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          cosign sign --yes --recursive \
+            ghcr.io/${{ github.repository }}@${{ steps.push-manifest.outputs.digest }}
 
   release:
     needs: manifest
@@ -110,24 +121,35 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       packages: write
+      id-token: write
     steps:
       - name: Install skopeo
         run: sudo apt-get update && sudo apt-get install -y skopeo
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.1.1
       - name: Push to quay.io
+        id: push-quay
         run: |
           set -euo pipefail
           mkdir -p ~/.docker
           echo '${{ secrets.QUAY_AUTH }}' > ~/.docker/config.json
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
-            skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            skopeo copy --all --digestfile=/tmp/quay-digest \
+              --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
               docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:${TAG}
             skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
               docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:latest
           else
-            skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            skopeo copy --all --digestfile=/tmp/quay-digest \
+              --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
               docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:dev
           fi
+          echo "digest=$(cat /tmp/quay-digest)" >> "${GITHUB_OUTPUT}"
+      - name: Sign quay.io image
+        run: |
+          cosign sign --yes --recursive \
+            quay.io/coreos/chunkah@${{ steps.push-quay.outputs.digest }}
       - name: Cleanup old images
         uses: actions/delete-package-versions@v5
         with:
