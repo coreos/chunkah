@@ -164,8 +164,6 @@ docker run --rm -ti -v $(pwd):/srv:z -w /srv quay.io/skopeo/stable \
 docker load -i out.dockerarchive
 ```
 
-[containerd image store]: https://docs.docker.com/engine/storage/containerd/
-
 ### Splitting an image at build time (buildah/podman only)
 
 This uses a method called the "`FROM oci-archive:` trick", for lack of a better
@@ -405,10 +403,11 @@ well.
 
 [add-determinism]: https://github.com/keszybz/add-determinism
 [bootable container images]: https://containers.github.io/bootable/
+[buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652
+[buildah-rfe]: https://github.com/containers/buildah/issues/6621
 [build-chunked-oci]: https://coreos.github.io/rpm-ostree/build-chunked-oci/
+[containerd image store]: https://docs.docker.com/engine/storage/containerd/
+[container-libs]: https://github.com/containers/container-libs
 [cosign]: https://github.com/sigstore/cosign
 [OCI image config]: https://github.com/opencontainers/image-spec/blob/26647a49f642c7d22a1cd3aa0a48e4650a542269/specs-go/v1/config.go#L24
-[buildah-rfe]: https://github.com/containers/buildah/issues/6621
-[buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652
 [zstd:chunked]: https://github.com/containers/container-libs/blob/main/storage/docs/containers-storage-zstd-chunked.md
-[container-libs]: https://github.com/containers/container-libs
