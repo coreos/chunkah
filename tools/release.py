@@ -92,9 +92,12 @@ def bump_version(new_version: str, open_pr: bool = False,
                 f"Version:        {old_version}",
                 f"Version:        {new_version}")
 
-    update_file("README.md",
+    update_file("README-dev.md",
                 f"download/v{old_version}/",
                 f"download/v{new_version}/")
+
+    step("Generating README.md from README-dev.md...")
+    generate_readme()
 
     step("Updating spec License tag...")
     update_spec_license("packaging/chunkah.spec")
@@ -140,6 +143,18 @@ def update_file(path: str, old: str, new: str):
     content = content.replace(old, new)
     Path(path).write_text(content)
     step(f"Updated {path}")
+
+
+def generate_readme():
+    """Generate README.md from README-dev.md by stripping the dev header."""
+    content = Path("README-dev.md").read_text()
+    content, count = re.subn(
+        r'\n<!-- BEGIN DEV HEADER -->.*?<!-- END DEV HEADER -->\n',
+        '', content, flags=re.DOTALL)
+    if count != 1:
+        die(f"Expected exactly one DEV HEADER block in README-dev.md, found {count}")
+    Path("README.md").write_text(content)
+    step("Generated README.md")
 
 
 def update_spec_license(path: str):
