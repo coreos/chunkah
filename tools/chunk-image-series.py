@@ -362,7 +362,7 @@ def chunk_image(source_ref: str, chunkah_image: str, original_tag: str,
 
 def load_chunked_image(ociarchive: str):
     """Load OCI archive into containers-storage."""
-    run("podman", "load", "-i", ociarchive)
+    run("podman", "load", "--quiet", "-i", ociarchive)
 
 
 def cleanup_temp_images(refs: list[str]):
