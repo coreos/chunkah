@@ -263,12 +263,25 @@ def get_sorted_tags(args: argparse.Namespace) -> list[str]:
 def _list_tags(repo: str, pattern: str, local: bool = False) -> list[str]:
     """List tags matching glob pattern from registry or containers-storage."""
     if local:
+        # Podman images --filter reference={repo} can output entries
+        # that are unrelated to {repo} so we need to also print {{.Repository}}
+        # and do some filtering of our own here. Apparently this is intended
+        # behavior so we'll have to keep this "workaround" for now:
+        # https://github.com/containers/podman/issues/28643
         output = run_output(
-            "podman", "images", "--format", "{{.Tag}}",
+            "podman", "images", "--format", "{{.Repository}} {{.Tag}}",
             "--noheading", "--filter", f"reference={repo}",
         )
-        all_tags = [t.strip() for t in output.strip().split("\n")
-                    if t.strip() and t.strip() != "<none>"]
+        all_tags = []
+        for line in output.splitlines():
+            parts = line.strip().split(" ", 1)
+            if len(parts) == 2:
+                img_repo, tag = parts
+                # podman's reference filter can match images that share the
+                # same image ID but have a different repository name; filter
+                # those out
+                if tag != "<none>" and img_repo == repo:
+                    all_tags.append(tag)
     else:
         output = run_output("skopeo", "list-tags", f"docker://{repo}")
         data = json.loads(output)
