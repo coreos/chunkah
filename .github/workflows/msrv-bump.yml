@@ -6,21 +6,24 @@ on:
     - cron: '0 9 * * 1'
   workflow_dispatch: {}
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   check-msrv:
     runs-on: ubuntu-latest
     container: registry.access.redhat.com/ubi9/ubi:latest
+    permissions:
+      contents: write # Required to create branch for PR
+      pull-requests: write # Required to create PR
     steps:
       - name: Install tools
         run: dnf install -y git
       - name: Configure git
         run: git config --global --add safe.directory '*'
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Get current MSRV
         id: current
@@ -38,12 +41,14 @@ jobs:
 
       - name: Update Cargo.toml
         if: steps.current.outputs.msrv != steps.rhel9.outputs.version
+        env:
+          RHEL9_RUST_VERSION: ${{ steps.rhel9.outputs.version }}
         run: |
-          sed -i 's/^rust-version = ".*"/rust-version = "${{ steps.rhel9.outputs.version }}"/' Cargo.toml
+          sed --sandbox -i -e "s/^rust-version = \".*\"/rust-version = \"${RHEL9_RUST_VERSION}\"/" Cargo.toml
 
       - name: Create pull request
         if: steps.current.outputs.msrv != steps.rhel9.outputs.version
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           branch: msrv-bump
           title: "Cargo.toml: bump rust-version to ${{ steps.rhel9.outputs.version }}"

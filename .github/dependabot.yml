@@ -17,6 +17,8 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
+    cooldown:
+      default-days: 7
 
   # GitHub Actions
   - package-ecosystem: github-actions
@@ -30,3 +32,5 @@ updates:
           - "*"
     commit-message:
       prefix: "ci"
+    cooldown:
+      default-days: 7
