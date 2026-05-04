@@ -8,6 +8,7 @@ with content-based layers.
 - [Motivation](#motivation)
 - [Highlights](#highlights)
 - [Installation](#installation)
+  - [Verifying image signatures](#verifying-image-signatures)
 - [Usage](#usage)
   - [Splitting an existing image](#splitting-an-existing-image)
   - [Splitting an image at build time](#splitting-an-image-at-build-time-buildahpodman-only)
@@ -71,6 +72,18 @@ may be more convenient to `cargo install` the binary into your builder image
 (whether at runtime or build time if you own the builder image). chunkah is also
 packaged in Fedora, making it easier to do this there.
 
+### Verifying image signatures
+
+Container images are signed using [cosign] keyless signing. You can verify
+the signature of an image using cosign v3+:
+
+```shell
+cosign verify \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  --certificate-identity-regexp '^https://github\.com/coreos/chunkah/' \
+  quay.io/coreos/chunkah:latest
+```
+
 ## Usage
 
 There are two main ways to use chunkah:
@@ -89,7 +102,7 @@ use the `Containerfile.splitter`, passing the target image as the `--from`:
 IMG=quay.io/fedora/fedora-minimal:latest
 buildah build --skip-unused-stages=false --from $IMG \
   --build-arg CHUNKAH_CONFIG_STR="$(podman inspect $IMG)" \
-  https://github.com/coreos/chunkah/releases/download/v0.4.0/Containerfile.splitter
+  https://github.com/coreos/chunkah/releases/download/v0.5.0/Containerfile.splitter
 ```
 
 Additional arguments can be passed to chunkah using the CHUNKAH_ARGS build
@@ -141,8 +154,6 @@ docker run --rm -ti -v $(pwd):/srv:z -w /srv quay.io/skopeo/stable \
   copy oci-archive:out.ociarchive docker-archive:out.dockerarchive:chunked
 docker load -i out.dockerarchive
 ```
-
-[containerd image store]: https://docs.docker.com/engine/storage/containerd/
 
 ### Splitting an image at build time (buildah/podman only)
 
@@ -383,9 +394,11 @@ well.
 
 [add-determinism]: https://github.com/keszybz/add-determinism
 [bootable container images]: https://containers.github.io/bootable/
-[build-chunked-oci]: https://coreos.github.io/rpm-ostree/build-chunked-oci/
-[OCI image config]: https://github.com/opencontainers/image-spec/blob/26647a49f642c7d22a1cd3aa0a48e4650a542269/specs-go/v1/config.go#L24
-[buildah-rfe]: https://github.com/containers/buildah/issues/6621
 [buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652
-[zstd:chunked]: https://github.com/containers/container-libs/blob/main/storage/docs/containers-storage-zstd-chunked.md
+[buildah-rfe]: https://github.com/containers/buildah/issues/6621
+[build-chunked-oci]: https://coreos.github.io/rpm-ostree/build-chunked-oci/
+[containerd image store]: https://docs.docker.com/engine/storage/containerd/
 [container-libs]: https://github.com/containers/container-libs
+[cosign]: https://github.com/sigstore/cosign
+[OCI image config]: https://github.com/opencontainers/image-spec/blob/26647a49f642c7d22a1cd3aa0a48e4650a542269/specs-go/v1/config.go#L24
+[zstd:chunked]: https://github.com/containers/container-libs/blob/main/storage/docs/containers-storage-zstd-chunked.md
