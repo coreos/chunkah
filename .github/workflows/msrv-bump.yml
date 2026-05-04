@@ -41,8 +41,10 @@ jobs:
 
       - name: Update Cargo.toml
         if: steps.current.outputs.msrv != steps.rhel9.outputs.version
+        env:
+          RHEL9_RUST_VERSION: ${{ steps.rhel9.outputs.version }}
         run: |
-          sed -i 's/^rust-version = ".*"/rust-version = "${{ steps.rhel9.outputs.version }}"/' Cargo.toml
+          sed --sandbox -i -e "s/^rust-version = \".*\"/rust-version = \"${RHEL9_RUST_VERSION}\"/" Cargo.toml
 
       - name: Create pull request
         if: steps.current.outputs.msrv != steps.rhel9.outputs.version
