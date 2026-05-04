@@ -13,6 +13,7 @@ import argparse
 import json
 import subprocess
 import sys
+import textwrap
 from dataclasses import dataclass
 
 
@@ -273,14 +274,22 @@ def format_human_output(images: list[ImageInfo], analyses: list[UpdateAnalysis],
             if show_changed_components and analysis.added_layers:
                 changed = _components_by_size(analysis.added_layers)
                 if changed:
-                    rest = f", ... and {len(changed) - 5} more" if len(changed) > 5 else ""
-                    lines.append(f"      Changed:   {', '.join(changed[:5])}{rest}")
+                    lines.append(textwrap.fill(
+                        ", ".join(changed),
+                        width=80,
+                        initial_indent="      Changed:   ",
+                        subsequent_indent=" " * 17,
+                    ))
 
             if show_unchanged_components and analysis.shared_layers:
                 unchanged = _components_by_size(analysis.shared_layers)
                 if unchanged:
-                    rest = f", ... and {len(unchanged) - 5} more" if len(unchanged) > 5 else ""
-                    lines.append(f"      Unchanged: {', '.join(unchanged[:5])}{rest}")
+                    lines.append(textwrap.fill(
+                        ", ".join(unchanged),
+                        width=80,
+                        initial_indent="      Unchanged: ",
+                        subsequent_indent=" " * 17,
+                    ))
 
             lines.append("")
 
