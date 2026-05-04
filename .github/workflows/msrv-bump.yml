@@ -6,14 +6,15 @@ on:
     - cron: '0 9 * * 1'
   workflow_dispatch: {}
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   check-msrv:
     runs-on: ubuntu-latest
     container: registry.access.redhat.com/ubi9/ubi:latest
+    permissions:
+      contents: write # Required to create branch for PR
+      pull-requests: write # Required to create PR
     steps:
       - name: Install tools
         run: dnf install -y git

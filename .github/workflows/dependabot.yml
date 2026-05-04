@@ -2,13 +2,14 @@ name: Dependabot
 
 on: pull_request
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   automerge:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to merge PR
+      pull-requests: write # Required to enable auto-merge for PR
     if: github.actor == 'dependabot[bot]'
     steps:
       - name: Fetch Dependabot metadata
