@@ -7,10 +7,14 @@ on:
   pull_request:
     branches: [main]
 
+permissions: {}
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
     container: quay.io/fedora/fedora:latest
+    permissions:
+      contents: read
     steps:
       - name: Install tools
         run: dnf install -y cargo clippy rustfmt just ShellCheck nodejs-npm openssl-devel git jq
@@ -54,7 +58,7 @@ jobs:
     name: ${{ matrix.name }}
     permissions:
       contents: read
-      packages: write
+      packages: write # Required to push image to ghcr.io
     container:
       image: quay.io/fedora/fedora:latest
       options: --privileged --cgroupns=host -v /var/lib/containers -v /var/tmp -v /tmp
@@ -85,8 +89,8 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     permissions:
-      packages: write
-      id-token: write
+      packages: write # Required to push image to ghcr.io
+      id-token: write # Required to get ID token to sign image using Cosign
     steps:
       - name: Install cosign
         uses: sigstore/cosign-installer@v4.1.1
@@ -120,8 +124,8 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     permissions:
-      packages: write
-      id-token: write
+      packages: write # Required to clean up old images from ghcr.io
+      id-token: write # Required to get ID token to sign image using Cosign
     steps:
       - name: Install skopeo
         run: sudo apt-get update && sudo apt-get install -y skopeo
