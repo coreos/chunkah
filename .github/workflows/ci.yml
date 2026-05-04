@@ -9,6 +9,10 @@ on:
 
 permissions: {}
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -72,9 +76,19 @@ jobs:
       - name: Install tools
         run: dnf install -y just buildah podman skopeo jq diffutils
       - name: Build image
-        run: just buildimg -- ${{ matrix.base && format('--build-arg=BASE={0}', matrix.base) || '' }}
+        env:
+          BASE_IMAGE: ${{ matrix.base || '' }}
+        run: |
+          if [ -n "${BASE_IMAGE}" ]; then
+            just buildimg -- --build-arg=BASE="${BASE_IMAGE}"
+          else
+            just buildimg
+          fi
       - name: Run tests
-        run: just test ${{ matrix.tests }}
+        env:
+          TESTS: ${{ matrix.tests }}
+        run: |
+          just test ${TESTS}
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -83,10 +97,13 @@ jobs:
           path: tests/e2e/results/
       - name: Push to ghcr.io
         if: github.event_name == 'push' && matrix.push
+        env:
+          ARCH: ${{ matrix.arch }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          podman push chunkah ghcr.io/${{ github.repository }}:${{ github.sha }}-${{ matrix.arch }}
+          podman login -u "${GITHUB_ACTOR}" -p "${GH_TOKEN}" ghcr.io
+          podman push chunkah "ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}-${ARCH}"
 
   manifest:
     needs: e2e-tests
@@ -100,28 +117,33 @@ jobs:
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
       - name: Create and push manifest
         id: push-manifest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          podman login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          podman manifest create ghcr.io/${{ github.repository }}:${{ github.sha }} \
-            ghcr.io/${{ github.repository }}:${{ github.sha }}-amd64 \
-            ghcr.io/${{ github.repository }}:${{ github.sha }}-arm64
+          podman login -u "${GITHUB_ACTOR}" -p "${GH_TOKEN}" ghcr.io
+          podman manifest create "ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}" \
+            "ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}-amd64" \
+            "ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}-arm64"
           podman manifest push --digestfile=/tmp/manifest-digest \
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            "ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}"
           echo "digest=$(cat /tmp/manifest-digest)" >> "${GITHUB_OUTPUT}"
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
-            podman tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:${TAG}
-            podman manifest push ghcr.io/${{ github.repository }}:${TAG}
           else
-            podman tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:latest
-            podman manifest push ghcr.io/${{ github.repository }}:latest
+            TAG='latest'
           fi
+          podman tag "ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}" \
+            "ghcr.io/${GITHUB_REPOSITORY}:${TAG}"
+          podman manifest push "ghcr.io/${GITHUB_REPOSITORY}:${TAG}"
       - name: Sign ghcr.io image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MANIFEST_DIGEST: ${{ steps.push-manifest.outputs.digest }}
         run: |
-          cosign login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          cosign login ghcr.io -u "${GITHUB_ACTOR}" -p "${GH_TOKEN}"
           cosign sign --yes --recursive \
-            ghcr.io/${{ github.repository }}@${{ steps.push-manifest.outputs.digest }}
+            "ghcr.io/${GITHUB_REPOSITORY}@${MANIFEST_DIGEST}"
 
   release:
     needs: manifest
@@ -132,32 +154,45 @@ jobs:
       id-token: write # Required to get ID token to sign image using Cosign
     steps:
       - name: Install skopeo
-        run: sudo apt-get update && sudo apt-get install -y skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
       - name: Install cosign
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+
       - name: Push to quay.io
         id: push-quay
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          QUAY_AUTH: ${{ secrets.QUAY_AUTH }}
         run: |
           set -euo pipefail
           mkdir -p ~/.docker
-          echo '${{ secrets.QUAY_AUTH }}' > ~/.docker/config.json
+          echo "${QUAY_AUTH}" > ~/.docker/config.json
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
             skopeo copy --all --digestfile=/tmp/quay-digest \
-              --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:${TAG}
-            skopeo copy --all --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:latest
+              --src-creds="${GITHUB_ACTOR}:${GH_TOKEN}" \
+              "docker://ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}" \
+              "docker://quay.io/coreos/chunkah:${TAG}"
+            skopeo copy --all --src-creds="${GITHUB_ACTOR}:${GH_TOKEN}" \
+              "docker://ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}" \
+              'docker://quay.io/coreos/chunkah:latest'
           else
             skopeo copy --all --digestfile=/tmp/quay-digest \
-              --src-creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-              docker://ghcr.io/${{ github.repository }}:${{ github.sha }} docker://quay.io/coreos/chunkah:dev
+              --src-creds="${GITHUB_ACTOR}:${GH_TOKEN}" \
+              "docker://ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}" \
+              'docker://quay.io/coreos/chunkah:dev'
           fi
           echo "digest=$(cat /tmp/quay-digest)" >> "${GITHUB_OUTPUT}"
+
       - name: Sign quay.io image
+        env:
+          QUAY_DIGEST: ${{ steps.push-quay.outputs.digest }}
         run: |
-          cosign sign --yes --recursive \
-            quay.io/coreos/chunkah@${{ steps.push-quay.outputs.digest }}
+          cosign sign --yes --recursive "quay.io/coreos/chunkah@${QUAY_DIGEST}"
+
       - name: Cleanup old images
         uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
         with:
