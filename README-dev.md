@@ -89,7 +89,7 @@ the signature of an image using cosign v3+:
 ```shell
 cosign verify \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-  --certificate-github-workflow-repository coreos/chunkah \
+  --certificate-identity-regexp 'https://github\.com/coreos/chunkah/' \
   quay.io/coreos/chunkah:latest
 ```
 
