@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: write # Required to merge PR
       pull-requests: write # Required to enable auto-merge for PR
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
