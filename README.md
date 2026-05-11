@@ -359,6 +359,12 @@ RUN --mount=from=builder,src=/,target=/chunkah,ro \
 FROM oci-archive:out.ociarchive
 ```
 
+> [!NOTE]
+> A minimum version of `bootc` is required for using chunkah
+> chunked images. Those are [v1.1.3](https://github.com/bootc-dev/bootc/commit/c49ccec5050a2905f8967852b8ca48502a6d4c13)
+> for chunkah with <= 128 layers and [v1.9.0](https://github.com/bootc-dev/bootc/commit/207b7f0abfc2cc683dd69a054e625d03abfaf8fd)
+> for chunkah with > 128 layers.
+
 ### Debugging
 
 Use `-v` for verbose output or the `RUST_LOG` environment variable for
