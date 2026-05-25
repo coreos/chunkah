@@ -7,7 +7,7 @@ repository = "https://github.com/coreos/chunkah"
 license = "MIT OR Apache-2.0"
 edition = "2024"
 # Automatically bumped to match RHEL 9; see .github/workflows/msrv-bump.yml
-rust-version = "1.88.0"
+rust-version = "1.92.0"
 publish = false
 
 [dependencies]
