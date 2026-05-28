@@ -1,6 +1,6 @@
 ARG DNF_FLAGS="-y --setopt=install_weak_deps=False"
 
-FROM quay.io/fedora/fedora-minimal:43
+FROM quay.io/fedora/fedora-minimal:44
 ARG DNF_FLAGS
 RUN --mount=type=cache,rw,id=dnf,target=/var/cache/libdnf5 \
     dnf install ${DNF_FLAGS} ostree diffoscope diffutils attr

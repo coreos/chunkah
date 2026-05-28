@@ -2,7 +2,7 @@
 #
 #   buildah build --skip-unused-stages=false -t chunkah .
 
-ARG BASE=quay.io/fedora/fedora-minimal:43
+ARG BASE=quay.io/fedora/fedora-minimal:44
 ARG DNF_FLAGS="-y --setopt=install_weak_deps=False"
 ARG CACHE_ID=chunkah-target
 
