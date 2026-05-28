@@ -21,6 +21,7 @@ RUN --mount=type=cache,rw,id=cargo,target=/root/.cargo \
 # XXX: Temporary hack until Fedora learns to read PQC sigs from el10 images.
 FROM quay.io/centos/centos:stream10 AS c10s
 RUN dnf download -y --repo baseos rpm-sequoia --destdir=/rpms
+RUN cp /etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial-SHA256 /rpms/
 
 FROM ${BASE} AS rootfs
 ARG DNF_FLAGS
@@ -28,7 +29,9 @@ RUN --mount=type=cache,id=dnf,target=/mnt \
     cp -a /mnt /var/cache/libdnf5 && \
     dnf install ${DNF_FLAGS} openssl zlib && rm -rf /var/cache/*
 COPY --from=c10s /rpms/ /tmp/rpms/
-RUN rpm -Uvh --oldpackage /tmp/rpms/rpm-sequoia-*.rpm && rm -rf /tmp/rpms
+RUN rpm --import /tmp/rpms/RPM-GPG-KEY-centosofficial-SHA256 && \
+    rpm --checksig /tmp/rpms/rpm-sequoia-*.rpm && \
+    rpm -Uvh --oldpackage /tmp/rpms/rpm-sequoia-*.rpm && rm -rf /tmp/rpms
 COPY --from=builder /usr/bin/chunkah /usr/bin/chunkah
 # Repeat inline config below for the `--no-chunk` flow. See related XXX below.
 ENTRYPOINT ["/usr/bin/chunkah"]
