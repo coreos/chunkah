@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
 use ocidir::cap_std::{self, fs::Dir};
 
-use crate::components::FileType;
+use crate::components::{FileType, SECS_PER_DAY, STABILITY_LOOKBACK_DAYS, STABILITY_PERIOD_DAYS};
 
 pub fn get_current_epoch() -> Result<u64> {
     SystemTime::now()
@@ -87,30 +87,46 @@ pub fn get_goarch(arch: Option<&str>) -> &str {
 ///
 /// The lookback period is limited to STABILITY_LOOKBACK_DAYS (1 year).
 /// If there are no changelog entries, the build time is used as a fallback.
+///
+/// Changelog timestamps are assumed to be sorted (ascending or descending order
+/// is irrelevant); if this is not the case, out-of-order entries might not be
+/// deduplicated, potentially overestimating update frequency.
 pub fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) -> f64 {
-    use crate::components::{SECS_PER_DAY, STABILITY_LOOKBACK_DAYS, STABILITY_PERIOD_DAYS};
-
     let lookback_start = now.saturating_sub(STABILITY_LOOKBACK_DAYS * SECS_PER_DAY);
 
-    // If there are no changelog entries, use the buildtime as a single data point
-    let mut relevant_times: Vec<u64> = if changelog_times.is_empty() {
-        vec![buildtime]
+    let num_relevant_changes = if changelog_times.is_empty() {
+        // If there are no changelog entries, use the buildtime as a single data point
+        if buildtime >= lookback_start { 1 } else { 0 }
     } else {
-        changelog_times.to_vec()
+        // Count only entries within the lookback window, and bin by days. The
+        // reason for binning by days is that multiple package releases within a
+        // single day more likely indicate a temporary packaging issue rather
+        // than reflecting greater update frequency.
+        let mut count = 0;
+        let mut prev_day = None;
+        for t in changelog_times.iter().filter(|&&t| t >= lookback_start) {
+            let day = t / SECS_PER_DAY;
+            if Some(day) != prev_day {
+                count += 1;
+                prev_day = Some(day);
+            }
+        }
+        count
     };
 
-    // Filter to entries within the lookback window
-    relevant_times.retain(|&t| t >= lookback_start);
-
-    if relevant_times.is_empty() {
+    if num_relevant_changes == 0 {
         // All changelog entries are older than lookback period.
         // No changes in the past year = very stable.
         return 0.99;
     }
 
     // Find the oldest timestamp in the window
-    // SAFETY: We have checked that `relevant_times` is not empty above, so it must have a minimum value
-    let oldest = relevant_times.iter().min().copied().unwrap();
+    let oldest = changelog_times
+        .iter()
+        .copied()
+        .filter(|&t| t >= lookback_start)
+        .min()
+        .unwrap_or(buildtime);
 
     let span_days = (now.saturating_sub(oldest)) as f64 / SECS_PER_DAY as f64;
 
@@ -119,10 +135,8 @@ pub fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) ->
         return 0.0;
     }
 
-    let num_changes = relevant_times.len() as f64;
-
     // lambda in our case is changes per day
-    let lambda = num_changes / span_days;
+    let lambda = num_relevant_changes as f64 / span_days;
 
     (-lambda * STABILITY_PERIOD_DAYS).exp()
 }
