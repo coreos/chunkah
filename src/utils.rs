@@ -120,15 +120,18 @@ pub fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) ->
         return 0.99;
     }
 
-    // Find the oldest timestamp in the window
-    let oldest = changelog_times
-        .iter()
-        .copied()
-        .filter(|&t| t >= lookback_start)
-        .min()
-        .unwrap_or(buildtime);
+    // Find the oldest timestamp for the package
+    let oldest = changelog_times.iter().copied().min().unwrap_or(buildtime);
 
-    let span_days = (now.saturating_sub(oldest)) as f64 / SECS_PER_DAY as f64;
+    let span_days = if oldest >= lookback_start {
+        // If the package's changelog entries are all within the lookback period, we assume the
+        // earliest changelog entry indicates the age of the package.
+        (now.saturating_sub(oldest)) as f64 / SECS_PER_DAY as f64
+    } else {
+        // If the package has timestamps older than the start of the lookback period, then we're
+        // counting updates over the full lookback period.
+        STABILITY_LOOKBACK_DAYS as f64
+    };
 
     if span_days < 1.0 {
         // Very recent package, assume unstable
