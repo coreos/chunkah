@@ -16,6 +16,7 @@ with content-based layers.
   - [Understanding components](#understanding-components)
   - [Customizing the layers](#customizing-the-layers)
   - [Limiting the number of layers](#limiting-the-number-of-layers)
+  - [Output options](#output-options)
   - [Building from a raw rootfs](#building-from-a-raw-rootfs)
   - [Customizing the OCI image config and annotations](#customizing-the-oci-image-config-and-annotations)
   - [Pruning and filtering](#pruning-and-filtering)
@@ -102,7 +103,7 @@ use the `Containerfile.splitter`, passing the target image as the `--from`:
 IMG=quay.io/fedora/fedora-minimal:latest
 buildah build --skip-unused-stages=false --from $IMG \
   --build-arg CHUNKAH_CONFIG_STR="$(podman inspect $IMG)" \
-  https://github.com/coreos/chunkah/releases/download/v0.5.0/Containerfile.splitter
+  https://github.com/coreos/chunkah/releases/download/v0.6.0/Containerfile.splitter
 ```
 
 Additional arguments can be passed to chunkah using the CHUNKAH_ARGS build
@@ -113,7 +114,8 @@ argument.
 > RFE][buildah-rfe]).
 >
 > For Buildah versions before v1.44, this also requires `-v $(pwd):/run/src
-> --security-opt=label=disable`.
+> --security-opt=label=disable`. Note that this will leave behind an `out/`
+> directory in the current directory.
 
 Another option is using the chunkah image directly and image mounts:
 
@@ -129,6 +131,11 @@ podman run --rm --mount=type=image,src=$IMG,dest=/chunkah \
 The `-t`/`--tag` option sets the image name in the OCI archive so that `podman
 load` automatically tags the loaded image. Without it, the image is loaded as an
 unnamed image identified only by its digest.
+
+For large images, this approach is less efficient than using
+`Containerfile.splitter`, which avoids the overhead of tarring and untarring
+the OCI archive (though the same efficiency can be gained by using
+[`--output oci:PATH`](#output-options) and importing it using `skopeo copy`.)
 
 #### Using Docker/Moby
 
@@ -157,9 +164,9 @@ docker load -i out.dockerarchive
 
 ### Splitting an image at build time (buildah/podman only)
 
-This uses a method called the "`FROM oci-archive:` trick", for lack of a better
-term. It has the massive advantage of being compatible with a regular `buildah
-build` flow and also makes it more natural to apply configs to the image, but is
+This uses a method called the "`FROM oci:` trick", for lack of a better term.
+It has the massive advantage of being compatible with a regular `buildah build`
+flow and also makes it more natural to apply configs to the image, but is
 specific to the Podman ecosystem. This *will not* work with Docker.
 
 ```Dockerfile
@@ -173,11 +180,11 @@ RUN dnf install -y git-core && dnf clean all
 
 FROM quay.io/coreos/chunkah AS chunkah
 ARG CHUNKAH_CONFIG_STR
-RUN --mount=from=builder,src=/,target=/chunkah,ro \
-    --mount=type=bind,target=/run/src,rw \
-        chunkah build > /run/src/out.ociarchive
+RUN --mount=type=bind,target=/run/src,rw \
+    --mount=from=builder,target=/chunkah,ro \
+      chunkah build --output oci:/run/src/out
 
-FROM oci-archive:out.ociarchive
+FROM oci:out
 ENTRYPOINT ["git"]
 ```
 
@@ -187,7 +194,8 @@ ENTRYPOINT ["git"]
 > `--jobs` option.
 >
 > For Buildah versions before v1.44, this also requires `-v $(pwd):/run/src
-> --security-opt=label=disable`.
+> --security-opt=label=disable`. Note that this will leave behind an `out/`
+> directory in the current directory.
 
 <!-- markdownlint-disable-next-line MD028 -->
 > [!NOTE]
@@ -251,6 +259,25 @@ content-based layers. Too many layers may mean excessive processing and overhead
 when pushing/pulling the image. Note that containers-storage has a hard limit of
 500 layers.
 
+### Output options
+
+By default, chunkah writes an OCI archive to stdout. The `-o`/`--output` flag
+controls where and in what format the image is written. It supports an optional
+transport prefix:
+
+- `--output PATH` or `--output oci-archive:PATH` — write an OCI archive to a
+  file instead of stdout.
+- `--output oci:PATH` — write the OCI directory layout directly to disk. This
+  avoids the overhead of tarring and untarring the archive, which is
+  particularly useful in the buildah `FROM oci:` flow (see [Splitting an image
+  at build time](#splitting-an-image-at-build-time-buildahpodman-only)).
+
+By default, layers are uncompressed (since in the common case the OCI
+archive/directory is immediately imported into a container storage backend,
+which would immediately uncompress it). Use `--compressed` to enable gzip
+compression for layers (and the OCI archive itself, if applicable). The
+compression level can be tuned with `--compression-level` (0-9, default 6).
+
 ### Building from a raw rootfs
 
 For completeness, note it's of course also possible to split any arbitrary
@@ -267,13 +294,8 @@ podman run --rm -v /path/to/rootfs:/chunkah:z \
 > be expensive for a large rootfs. You can use `--security-opt=label=disable` to
 > avoid this, but it disables SELinux separation with the chunkah container.
 
-When running chunkah directly in this way, the OCI archive is written to stdout
-by default. Use `-o`/`--output` to write to a file instead (whose directory
-would then have to be mounted in).
-
-By default, layers and the OCI archive are uncompressed. Use `--compressed`
-to enable gzip compression for both. The compression level can be tuned with
-`--compression-level` (0-9, default 6).
+See [Output options](#output-options) for controlling the output format and
+compression.
 
 ### Customizing the OCI image config and annotations
 
@@ -354,16 +376,10 @@ RUN --mount=from=builder,src=/,target=/chunkah,ro \
     --mount=type=bind,target=/run/src,rw \
         chunkah build --prune /sysroot/ --max-layers 128 \
           --label ostree.commit- --label ostree.final-diffid- \
-          > /run/src/out.ociarchive
+          --output oci:/run/src/out
 
-FROM oci-archive:out.ociarchive
+FROM oci:out
 ```
-
-> [!NOTE]
-> A minimum version of `bootc` is required for using chunkah
-> chunked images. Those are [v1.1.3](https://github.com/bootc-dev/bootc/commit/c49ccec5050a2905f8967852b8ca48502a6d4c13)
-> for chunkah with <= 128 layers and [v1.9.0](https://github.com/bootc-dev/bootc/commit/207b7f0abfc2cc683dd69a054e625d03abfaf8fd)
-> for chunkah with > 128 layers.
 
 ### Debugging
 
