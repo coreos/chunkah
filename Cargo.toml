@@ -22,7 +22,7 @@ fnv = "1.0.7"
 hex = "0.4"
 indexmap = "2"
 libc = "0.2"
-ocidir = "0.7"
+ocidir = "0.8"
 openssl = "0.10"
 rpm-qa = "0.3"
 serde = { version = "1", features = ["derive"] }

@@ -714,9 +714,9 @@ checksum = "ef25abbcd74fb2609453eb695bd2f860d389e457f67dc17cafc8b8cbc89d0c33"
 
 [[package]]
 name = "oci-spec"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8445a2631507cec628a15fdd6154b54a3ab3f20ed4fe9d73a3b8b7a4e1ba03a"
+checksum = "3df6f876ad774d6a676f7e968f5c3edacc32f90e65fe680a8b686235396556fb"
 dependencies = [
  "const_format",
  "derive_builder",
@@ -731,9 +731,9 @@ dependencies = [
 
 [[package]]
 name = "ocidir"
-version = "0.7.2"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdb92f511503ca78a6b3c2a5415c49aa9bb03169d2715f67b1c0dc1654ed9636"
+checksum = "a778b15397a580c0b7343969fd4b2a26abc5de08cdfd713d36f65b94803c9226"
 dependencies = [
  "camino",
  "canon-json",
