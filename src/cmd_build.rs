@@ -607,6 +607,8 @@ fn pack_components(
 mod tests {
     use super::*;
 
+    use ocidir::OciRead;
+
     const CONFIG_FIXTURE: &str = include_str!("../tests/fixtures/empty.image-config.json");
 
     fn scan_tempdir(rootfs: &Dir) -> FileMap {

@@ -330,6 +330,7 @@ mod tests {
     use cap_std_ext::cap_std::fs::PermissionsExt;
     use cap_std_ext::dirext::CapStdExtDirExt;
     use maplit::btreeset;
+    use ocidir::OciRead;
     use std::collections::BTreeSet;
 
     use crate::components::FileMap;
