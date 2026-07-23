@@ -101,13 +101,13 @@ impl AlpmComponentsRepo {
             let basename = local_db_entry.desc.base().with_context(|| {
                 format!(
                     "parsing base from desc file of alpm db entry {}",
-                    &local_db_entry.source
+                    local_db_entry.source
                 )
             })?;
             let builddate = local_db_entry.desc.builddate().with_context(|| {
                 format!(
                     "parsing builddate from desc file of alpm db entry {}",
-                    &local_db_entry.source
+                    local_db_entry.source
                 )
             })?;
             let stability = calculate_stability(&[], builddate, now);
@@ -142,7 +142,7 @@ impl AlpmComponentsRepo {
             .with_context(|| {
                 format!(
                     "adding package {} to map from paths to alpm components",
-                    &local_db_entry.source
+                    local_db_entry.source
                 )
             })?;
             package_count += 1;
@@ -403,7 +403,7 @@ impl LocalAlpmDbIterator {
             let local_db_entry_file_type = local_db_entry.file_type().with_context(|| {
                 format!(
                     "determining file type of database entry {}",
-                    &local_db_entry_name
+                    local_db_entry_name
                 )
             })?;
 
@@ -416,7 +416,7 @@ impl LocalAlpmDbIterator {
                     .with_context(|| {
                         format!(
                             "getting metadata for database entry {}",
-                            &local_db_entry_name
+                            local_db_entry_name
                         )
                     })?
                     .is_dir()
@@ -430,7 +430,7 @@ impl LocalAlpmDbIterator {
             let package_dir = local_db_entry.open_dir().with_context(|| {
                 format!(
                     "opening dir for alpm database entry {}",
-                    &local_db_entry_name
+                    local_db_entry_name
                 )
             })?;
             return Self::package_info_from_dir(&package_dir, local_db_entry_name)
