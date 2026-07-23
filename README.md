@@ -48,8 +48,8 @@ perform this content-based layer splitting.
 
 ## Highlights
 
-- **Content agnostic** — Compatible with RPM-based images, but not only. Other
-  package ecosystems can be supported, as well as fully custom content.
+- **Content agnostic** — Compatible with RPM and pacman (ALPM) based images.
+  Other package ecosystems can be supported, as well as fully custom content.
 - **Container-native** — Best used as a container image, either as part of a
   multi-staged build, or standalone.
 - **Zero diff** — Apart from modification time, content is never modified.
@@ -215,9 +215,9 @@ all files from an RPM belong to the same component. Layers are created based on
 found components.
 
 A component repo is a source of data from which components can be created. For
-example, the rpmdb is a component repo (one can imagine similar component repos
-for other distros). There is also an xattr-based component repo (see the section
-"Customizing the layers" below). Multiple component repos can be active at once.
+example, the rpmdb and the ALPM local database are component repos. There is
+also an xattr-based component repo (see the section "Customizing the layers"
+below). Multiple component repos can be active at once.
 
 ### Customizing the layers
 
