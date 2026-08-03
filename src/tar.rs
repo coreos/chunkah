@@ -86,6 +86,16 @@ pub fn write_files_to_tar<W: Write>(
     files: &FileMap,
     mtime_clamp: u64,
 ) -> Result<()> {
+    // Clamp directory and symlink modification times to the older of the input
+    // `mtime_clamp` and the most recent regular file modification time. This
+    // ensures, for example, that reproducibility of bigfiles and xattr layers
+    // isn't obstructed by directory timestamps.
+    let mtime_clamp = files
+        .values()
+        .filter_map(|file| matches!(file.file_type, FileType::File).then_some(file.mtime))
+        .max()
+        .unwrap_or(0)
+        .min(mtime_clamp);
     // Stack of written directory paths - leverages sorted iteration order
     let mut dir_stack: Vec<&Utf8Path> = Vec::new();
     // Track inode -> first path written for hardlink detection.
