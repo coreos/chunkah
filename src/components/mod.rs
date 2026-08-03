@@ -116,9 +116,7 @@ impl ComponentsRepos {
     pub fn load(rootfs: &Dir, files: &FileMap, default_mtime_clamp: u64) -> Result<Self> {
         let mut repos: Vec<Box<dyn ComponentsRepo>> = Vec::new();
 
-        if let Some(repo) =
-            xattr::XattrRepo::load(files, default_mtime_clamp).context("loading xattrs")?
-        {
+        if let Some(repo) = xattr::XattrRepo::load(files).context("loading xattrs")? {
             tracing::info!(repo = "xattr", "loaded repo");
             repos.push(Box::new(repo));
         }
@@ -137,7 +135,7 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
-        if let Some(repo) = bigfiles::BigfilesRepo::load(files, default_mtime_clamp) {
+        if let Some(repo) = bigfiles::BigfilesRepo::load(files) {
             tracing::info!(repo = "bigfiles", "loaded repo");
             repos.push(Box::new(repo));
         }
@@ -412,7 +410,7 @@ mod tests {
 
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let xattr_repo = xattr::XattrRepo::load(&files, 0).unwrap().unwrap();
+        let xattr_repo = xattr::XattrRepo::load(&files).unwrap().unwrap();
         let packages = rpm_qa::load_from_str(RPM_FIXTURE).unwrap();
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -480,7 +478,7 @@ mod tests {
 
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let xattr_repo = xattr::XattrRepo::load(&files, 0).unwrap().unwrap();
+        let xattr_repo = xattr::XattrRepo::load(&files).unwrap().unwrap();
         let repos: Vec<Box<dyn ComponentsRepo>> = vec![Box::new(xattr_repo)];
         let loaded = ComponentsRepos {
             repos,

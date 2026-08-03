@@ -48,6 +48,39 @@ assert_layer_count() {
     fi
 }
 
+# Get digest of layer with specific component name in image
+get_image_component_digest() {
+    local component="$1"
+    local image="$2"
+    local digest
+    digest="$(skopeo inspect -n "containers-storage:${image}" \
+        | jq -r --arg component "${component}" '
+            .LayersData[]
+            | select(.Annotations."org.chunkah.component" == $component)
+            | .Digest
+        ')"
+    if [[ -z "${digest}" ]]; then
+        echo "ERROR: Layer with component '${component}' not found in image ${image}" >&2
+        exit 1
+    fi
+    printf '%s' "${digest}"
+}
+
+# Assert layer with given component name is unmodified between images
+assert_layer_unmodified() {
+    local component="$1"
+    local image1="$2"
+    local image2="$3"
+    local digest1 digest2
+    digest1=$(get_image_component_digest "${component}" "${image1}") || exit 1
+    digest2=$(get_image_component_digest "${component}" "${image2}") || exit 1
+    if [[ "${digest1}" != "${digest2}" ]]; then
+        echo "ERROR: Digests of layer with component '${component}' differ between ${image1} and ${image2}:" >&2
+        printf '%s != %s\n' "${digest1}" "${digest2}" >&2
+        exit 1
+    fi
+}
+
 # Assert that a path exists in an image.
 assert_path_exists() {
     local image="${1}"; shift

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use camino::{Utf8Path, Utf8PathBuf};
 use cap_std_ext::cap_std::fs::Dir;
-use indexmap::IndexSet;
+use indexmap::IndexMap;
 
 use super::{ComponentId, ComponentInfo, ComponentsRepo, FileMap, FileType};
 
@@ -25,12 +25,10 @@ const REPO_NAME: &str = "bigfiles";
 /// Some special handling for hardlinked files (same inode); we still want
 /// unclaimed files that are hardlinked to end up in the same component.
 pub struct BigfilesRepo {
-    /// Component names, indexed by ComponentId.
-    components: IndexSet<String>,
+    /// Map from component names to modification times, indexed by ComponentId.
+    components: IndexMap<String, u64>,
     /// Mapping from path to ComponentId.
     path_to_component: HashMap<Utf8PathBuf, ComponentId>,
-    /// Default mtime clamp for components.
-    default_mtime_clamp: u64,
 }
 
 impl BigfilesRepo {
@@ -41,8 +39,8 @@ impl BigfilesRepo {
     // TODO: the upfront scan logic here (inode table, path_to_component map)
     // could be deferred to weak_claims_for_path time since it receives
     // &FileInfo with size/inode/nlink.
-    pub fn load(files: &FileMap, default_mtime_clamp: u64) -> Option<Self> {
-        let mut components: IndexSet<String> = IndexSet::new();
+    pub fn load(files: &FileMap) -> Option<Self> {
+        let mut components: IndexMap<String, u64> = IndexMap::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
 
         // build inode table for hardlink handling
@@ -72,7 +70,7 @@ impl BigfilesRepo {
                 .expect("filename has no basename");
 
             // derive component name from filename
-            let component_name = if components.contains(&filename) {
+            let component_name = if components.contains_key(&filename) {
                 // filename already used, use full path without leading '/'
                 path.strip_prefix("/")
                     .expect("non-absolute file path in FileMap")
@@ -83,7 +81,7 @@ impl BigfilesRepo {
             };
 
             // create a component for this path
-            let (idx, _) = components.insert_full(component_name);
+            let (idx, _) = components.insert_full(component_name, file_info.mtime);
             tracing::trace!(path = %path, component = %components[idx], id = idx, "bigfiles component created");
             let component_id = ComponentId(idx);
             path_to_component.insert(path.clone(), component_id);
@@ -109,7 +107,6 @@ impl BigfilesRepo {
         Some(Self {
             components,
             path_to_component,
-            default_mtime_clamp,
         })
     }
 }
@@ -137,14 +134,15 @@ impl ComponentsRepo for BigfilesRepo {
     }
 
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_> {
+        let (name, &mtime_clamp) = self
+            .components
+            .get_index(id.0)
+            // SAFETY: the ids we're given come from the IndexMap itself
+            // when we inserted the element, so it must be valid.
+            .expect("invalid ComponentId");
         ComponentInfo {
-            name: self
-                .components
-                .get_index(id.0)
-                // SAFETY: the ids we're given come from the IndexSet itself
-                // when we inserted the element, so it must be valid.
-                .expect("invalid ComponentId"),
-            mtime_clamp: self.default_mtime_clamp,
+            name,
+            mtime_clamp,
             stability: 0.0,
         }
     }
@@ -223,7 +221,7 @@ mod tests {
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let repo = BigfilesRepo::load(&files, 12345).unwrap();
+        let repo = BigfilesRepo::load(&files).unwrap();
 
         // small file should not be claimed
         let claims = repo
@@ -271,7 +269,7 @@ mod tests {
             create_sparse_file(rootfs, "b/foobar", 4 * 1024 * 1024);
         });
 
-        let repo = BigfilesRepo::load(&files, 0).unwrap();
+        let repo = BigfilesRepo::load(&files).unwrap();
 
         // First one uses filename, second uses full path
         assert_component(&repo, &rootfs, "/a/foobar", "foobar");

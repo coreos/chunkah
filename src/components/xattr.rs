@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
-use indexmap::IndexSet;
+use indexmap::IndexMap;
 
 use super::{
     ComponentId, ComponentInfo, ComponentsRepo, FileInfo, FileMap, FileType, STABILITY_PERIOD_DAYS,
@@ -19,24 +19,20 @@ const REPO_NAME: &str = "xattr";
 /// Directories with this xattr apply to all files underneath unless overridden.
 /// Directory inheritance is pre-computed during load.
 pub struct XattrRepo {
-    /// Component names, indexed by ComponentId.
-    components: IndexSet<String>,
+    /// Map from component names to modification times, indexed by ComponentId.
+    components: IndexMap<String, u64>,
     /// Mapping from path to ComponentId (pre-computed with inheritance).
     path_to_component: HashMap<Utf8PathBuf, ComponentId>,
     /// Per-component stability, indexed by ComponentId.
     component_stability: Vec<f64>,
-    /// Currently, the on-disk mtime is canonical and we clamp it, but it would
-    /// make sense in the future to support another user xattr to specify a
-    /// canonical mtime for easier layer reproducibility.
-    default_mtime_clamp: u64,
 }
 
 impl XattrRepo {
     /// Load xattr repo by scanning rootfs for user.component xattrs.
     /// Pre-computes directory inheritance for all paths in `files`.
     /// Uses cached xattrs from FileInfo rather than reading from disk.
-    pub fn load(files: &FileMap, default_mtime_clamp: u64) -> Result<Option<Self>> {
-        let mut components: IndexSet<String> = IndexSet::new();
+    pub fn load(files: &FileMap) -> Result<Option<Self>> {
+        let mut components: IndexMap<String, u64> = IndexMap::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
         // Track raw intervals during scanning to detect conflicts
         let mut update_intervals: Vec<Option<u64>> = Vec::new();
@@ -63,7 +59,7 @@ impl XattrRepo {
                 // https://github.com/indexmap-rs/indexmap/issues/355 or
                 // https://github.com/indexmap-rs/indexmap/issues/388
                 let idx = components.get_index_of(name).unwrap_or_else(|| {
-                    let idx = components.insert_full(name.clone()).0;
+                    let idx = components.insert_full(name.clone(), file_info.mtime).0;
                     update_intervals.push(None);
                     tracing::trace!(path = %path, name = %name, id = idx, "xattr component created");
                     idx
@@ -84,6 +80,12 @@ impl XattrRepo {
             if let Some(id) = effective_id {
                 tracing::trace!(path = %path, component_id = id.0, "xattr assignment");
                 path_to_component.insert(path.clone(), id);
+                let (_, component_mtime) = components
+                    .get_index_mut(id.0)
+                    .expect("xattr component should have already been created");
+                // This ultimately makes the component mtime equal to the most
+                // recent modification time of a file in the component.
+                *component_mtime = file_info.mtime.max(*component_mtime);
 
                 // Check for user.update-interval xattr (not inherited from directories)
                 if let Some(interval) = get_update_interval_xattr(file_info)
@@ -153,7 +155,6 @@ impl XattrRepo {
             components,
             path_to_component,
             component_stability,
-            default_mtime_clamp,
         }))
     }
 }
@@ -233,14 +234,15 @@ impl ComponentsRepo for XattrRepo {
     }
 
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_> {
+        let (name, &mtime_clamp) = self
+            .components
+            .get_index(id.0)
+            // SAFETY: the ids we're given come from the IndexMap itself
+            // when we inserted the element, so it must be valid.
+            .expect("invalid ComponentId");
         ComponentInfo {
-            name: self
-                .components
-                .get_index(id.0)
-                // SAFETY: the ids we're given come from the IndexSet itself
-                // when we inserted the element, so it must be valid.
-                .expect("invalid ComponentId"),
-            mtime_clamp: self.default_mtime_clamp,
+            name,
+            mtime_clamp,
             stability: self.component_stability[id.0],
         }
     }
@@ -313,7 +315,7 @@ mod tests {
             // File without xattr outside of directory - should not be claimed
             rootfs.write("noattr", "content").unwrap();
         });
-        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
+        let repo = XattrRepo::load(&files).unwrap().unwrap();
 
         // /mydir and /mydir/normal should be dircomponent
         assert_component(&repo, "/mydir", FileType::Directory, "dircomponent");
@@ -343,7 +345,7 @@ mod tests {
             set_component(rootfs, "a/b/c/d", "compD");
             set_component(rootfs, "x", "compX");
         });
-        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
+        let repo = XattrRepo::load(&files).unwrap().unwrap();
 
         assert_component(&repo, "/a", FileType::Directory, "compA");
         assert_component(&repo, "/a/other", FileType::File, "compA"); // inherits from /a
@@ -364,7 +366,7 @@ mod tests {
             // Create a symlink inside the directory - it should inherit from parent
             rootfs.symlink("../somewhere", "mydir/link").unwrap();
         });
-        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
+        let repo = XattrRepo::load(&files).unwrap().unwrap();
 
         // Both should be claimed by mycomp
         assert_component(&repo, "/mydir", FileType::Directory, "mycomp");
@@ -400,7 +402,7 @@ mod tests {
             rootfs.write("mydir/file", "content").unwrap();
             set_update_interval(rootfs, "mydir/file", "60");
         });
-        let result = XattrRepo::load(&files, 0);
+        let result = XattrRepo::load(&files);
         assert!(result.is_err());
         let msg = format!("{:#}", result.err().unwrap());
         assert!(msg.contains("conflicting"), "unexpected error: {msg}");
@@ -415,7 +417,7 @@ mod tests {
             rootfs.write("mydir/file", "content").unwrap();
             set_update_interval(rootfs, "mydir/file", "30");
         });
-        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
+        let repo = XattrRepo::load(&files).unwrap().unwrap();
 
         let claims = repo.strong_claims_for_path(Utf8Path::new("/mydir"), &fi(FileType::Directory));
         let expected = interval_to_stability(30);
@@ -435,7 +437,7 @@ mod tests {
             set_component(rootfs, "app2", "comp2");
             rootfs.write("app2/file", "content").unwrap();
         });
-        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
+        let repo = XattrRepo::load(&files).unwrap().unwrap();
 
         // comp1 should have yearly stability
         let claims = repo.strong_claims_for_path(Utf8Path::new("/app1"), &fi(FileType::Directory));

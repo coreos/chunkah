@@ -11,6 +11,7 @@ BASE_IMAGE="quay.io/fedora/fedora-minimal:latest"
 ROOTFS_IMAGE="localhost/test-buildtime-rootfs:latest"
 CHUNKED_IMAGE="localhost/fedora-minimal-chunked:test"
 CHUNKED_IMAGE2="localhost/fedora-minimal-chunked:test2"
+CHUNKED_IMAGE3="localhost/fedora-minimal-chunked:test3"
 
 cleanup() {
     cleanup_images "${CHUNKED_IMAGE}" "${CHUNKED_IMAGE2}" "${ROOTFS_IMAGE}"
@@ -22,9 +23,14 @@ podman pull "${BASE_IMAGE}"
 # Build rootfs as a separate image so that the reproducibility check below
 # operates on the same rootfs both times. Without this, each buildah_build
 # would re-run dnf install, producing different file timestamps.
+#
+# Also create a large random file used to test reproducibility of bigfiles
+# components.
 cat > Containerfile.rootfs <<EOF
 FROM ${BASE_IMAGE}
-RUN dnf install -y jq acl attr && dnf clean all
+RUN dnf install -y jq acl attr && \
+    dnf clean all && \
+    dd if=/dev/urandom of=/usr/bin/chungus bs=1M count=20
 EOF
 buildah build -t "${ROOTFS_IMAGE}" -f Containerfile.rootfs .
 
@@ -38,7 +44,8 @@ RUN cp /usr/bin/true /usr/bin/test-xattrs && \
     setcap cap_net_raw+ep /usr/bin/test-xattrs && \
     setfacl -m u:nobody:r /usr/bin/test-xattrs && \
     setfattr -n user.testkey1 -v testvalue1 /usr/bin/test-xattrs && \
-    setfattr -n user.testkey2 -v testvalue2 /usr/bin/test-xattrs
+    setfattr -n user.testkey2 -v testvalue2 /usr/bin/test-xattrs && \
+    touch -d @0 /usr/bin/chungus
 
 FROM ${CHUNKAH_IMG:?} AS chunkah
 RUN --mount=from=builder,src=/,target=/chunkah,ro \\
@@ -55,7 +62,7 @@ buildah_build -t "${CHUNKED_IMAGE}" -f Containerfile .
 podman run --rm "${CHUNKED_IMAGE}" jq --version
 
 # check for expected components
-assert_has_components "${CHUNKED_IMAGE}" "rpm/filesystem" "rpm/setup" "rpm/glibc" "rpm/jq"
+assert_has_components "${CHUNKED_IMAGE}" "rpm/filesystem" "rpm/setup" "rpm/glibc" "rpm/jq" "bigfiles/chungus"
 
 # verify we got exactly 64 layers (the default)
 assert_layer_count "${CHUNKED_IMAGE}" 64
@@ -89,3 +96,9 @@ if [[ "${id1}" != "${id2}" ]]; then
     assert_no_diff "${CHUNKED_IMAGE}" "${CHUNKED_IMAGE2}"
     exit 1 # but just in case
 fi
+
+# Verify that bigfiles component with reproducible modification time is
+# reproducible even if SOURCE_DATE_EPOCH changes
+sed -i -e 's/\<SOURCE_DATE_EPOCH=17/SOURCE_DATE_EPOCH=16/' Containerfile
+buildah_build --no-cache -t "${CHUNKED_IMAGE3}" -f Containerfile .
+assert_layer_unmodified "bigfiles/chungus" "${CHUNKED_IMAGE}" "${CHUNKED_IMAGE3}"
