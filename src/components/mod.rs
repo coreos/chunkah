@@ -24,6 +24,11 @@ pub const STABILITY_PERIOD_DAYS: f64 = 7.0;
 /// Maximum lookback period in days for changelog analysis.
 pub const STABILITY_LOOKBACK_DAYS: u64 = 365;
 
+/// Convert a stability interval in days to a probability using the Poisson model.
+pub fn interval_to_stability(interval_days: u64) -> f64 {
+    (-STABILITY_PERIOD_DAYS / interval_days as f64).exp()
+}
+
 /// Loaded component repos along with the default mtime to use.
 pub struct ComponentsRepos {
     repos: Vec<Box<dyn ComponentsRepo>>,
