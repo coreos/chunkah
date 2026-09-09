@@ -1,5 +1,6 @@
 mod alpm;
 mod bigfiles;
+mod pip;
 mod rpm;
 mod xattr;
 
@@ -23,6 +24,11 @@ pub const STABILITY_PERIOD_DAYS: f64 = 7.0;
 
 /// Maximum lookback period in days for changelog analysis.
 pub const STABILITY_LOOKBACK_DAYS: u64 = 365;
+
+/// Convert a stability interval in days to a probability using the Poisson model.
+pub fn interval_to_stability(interval_days: u64) -> f64 {
+    (-STABILITY_PERIOD_DAYS / interval_days as f64).exp()
+}
 
 /// Loaded component repos along with the default mtime to use.
 pub struct ComponentsRepos {
@@ -137,12 +143,19 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
+        if let Some(repo) = pip::PipRepo::load(rootfs, files, default_mtime_clamp)
+            .context("loading pip dist-info")?
+        {
+            tracing::info!(repo = "pip", "loaded repo");
+            repos.push(Box::new(repo));
+        }
+
         if let Some(repo) = bigfiles::BigfilesRepo::load(files, default_mtime_clamp) {
             tracing::info!(repo = "bigfiles", "loaded repo");
             repos.push(Box::new(repo));
         }
 
-        // Other backends (e.g. deb, apk, pip, etc.) would go here...
+        // Other backends (e.g. deb, apk, etc.) would go here...
 
         Ok(Self {
             repos,
