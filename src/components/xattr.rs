@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::{Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
-use indexmap::IndexSet;
+use indexmap::IndexMap;
 
 use super::{
     ComponentId, ComponentInfo, ComponentsRepo, FileInfo, FileMap, FileType, STABILITY_PERIOD_DAYS,
@@ -19,8 +19,8 @@ const REPO_NAME: &str = "xattr";
 /// Directories with this xattr apply to all files underneath unless overridden.
 /// Directory inheritance is pre-computed during load.
 pub struct XattrRepo {
-    /// Component names, indexed by ComponentId.
-    components: IndexSet<String>,
+    /// Map from component names to modification times, indexed by ComponentId.
+    components: IndexMap<String, u64>,
     /// Mapping from path to ComponentId (pre-computed with inheritance).
     path_to_component: HashMap<Utf8PathBuf, ComponentId>,
     /// Per-component stability, indexed by ComponentId.
@@ -36,7 +36,7 @@ impl XattrRepo {
     /// Pre-computes directory inheritance for all paths in `files`.
     /// Uses cached xattrs from FileInfo rather than reading from disk.
     pub fn load(files: &FileMap, default_mtime_clamp: u64) -> Result<Option<Self>> {
-        let mut components: IndexSet<String> = IndexSet::new();
+        let mut components: IndexMap<String, u64> = IndexMap::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
         // Track raw intervals during scanning to detect conflicts
         let mut update_intervals: Vec<Option<u64>> = Vec::new();
@@ -63,7 +63,7 @@ impl XattrRepo {
                 // https://github.com/indexmap-rs/indexmap/issues/355 or
                 // https://github.com/indexmap-rs/indexmap/issues/388
                 let idx = components.get_index_of(name).unwrap_or_else(|| {
-                    let idx = components.insert_full(name.clone()).0;
+                    let idx = components.insert_full(name.clone(), file_info.mtime).0;
                     update_intervals.push(None);
                     tracing::trace!(path = %path, name = %name, id = idx, "xattr component created");
                     idx
@@ -84,6 +84,10 @@ impl XattrRepo {
             if let Some(id) = effective_id {
                 tracing::trace!(path = %path, component_id = id.0, "xattr assignment");
                 path_to_component.insert(path.clone(), id);
+                let (_, component_mtime) = components
+                    .get_index_mut(id.0)
+                    .expect("xattr component should have already been created");
+                *component_mtime = file_info.mtime.max(*component_mtime);
 
                 // Check for user.update-interval xattr (not inherited from directories)
                 if let Some(interval) = get_update_interval_xattr(file_info)
@@ -233,14 +237,15 @@ impl ComponentsRepo for XattrRepo {
     }
 
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_> {
+        let (name, &mtime) = self
+            .components
+            .get_index(id.0)
+            // SAFETY: the ids we're given come from the IndexMap itself
+            // when we inserted the element, so it must be valid.
+            .expect("invalid ComponentId");
         ComponentInfo {
-            name: self
-                .components
-                .get_index(id.0)
-                // SAFETY: the ids we're given come from the IndexSet itself
-                // when we inserted the element, so it must be valid.
-                .expect("invalid ComponentId"),
-            mtime_clamp: self.default_mtime_clamp,
+            name,
+            mtime_clamp: mtime.min(self.default_mtime_clamp),
             stability: self.component_stability[id.0],
         }
     }
