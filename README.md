@@ -219,6 +219,16 @@ example, the rpmdb and the ALPM local database are component repos. There is
 also an xattr-based component repo (see the section "Customizing the layers"
 below). Multiple component repos can be active at once.
 
+The following component repos are supported:
+
+- `rpm`: files owned by RPM packages, grouped by source RPM.
+- `alpm`: files owned by pacman packages, grouped by package base.
+- `pip`: Python distributions installed by pip, uv, or any other installer
+  following [PEP 376][pep376].
+- `xattr`: files explicitly assigned via the `user.component` xattr.
+- `bigfiles`: large files not claimed by any other repo, each as their own
+  component.
+
 ### Customizing the layers
 
 It is possible to create custom components by setting the `user.component` xattr
@@ -416,6 +426,7 @@ well.
 
 [add-determinism]: https://github.com/keszybz/add-determinism
 [bootable container images]: https://containers.github.io/bootable/
+[pep376]: https://packaging.python.org/en/latest/specifications/recording-installed-packages/
 [buildah-annotations-bug]: https://github.com/containers/buildah/issues/6652
 [buildah-rfe]: https://github.com/containers/buildah/issues/6621
 [build-chunked-oci]: https://coreos.github.io/rpm-ostree/build-chunked-oci/
