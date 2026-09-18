@@ -1,5 +1,6 @@
 mod alpm;
 mod bigfiles;
+mod pip;
 mod rpm;
 mod xattr;
 
@@ -142,12 +143,19 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
+        if let Some(repo) = pip::PipRepo::load(rootfs, files, default_mtime_clamp)
+            .context("loading pip dist-info")?
+        {
+            tracing::info!(repo = "pip", "loaded repo");
+            repos.push(Box::new(repo));
+        }
+
         if let Some(repo) = bigfiles::BigfilesRepo::load(files, default_mtime_clamp) {
             tracing::info!(repo = "bigfiles", "loaded repo");
             repos.push(Box::new(repo));
         }
 
-        // Other backends (e.g. deb, apk, pip, etc.) would go here...
+        // Other backends (e.g. deb, apk, etc.) would go here...
 
         Ok(Self {
             repos,
