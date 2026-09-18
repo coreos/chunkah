@@ -5,7 +5,7 @@ use camino::{Utf8Path, Utf8PathBuf};
 use indexmap::IndexSet;
 
 use super::{
-    ComponentId, ComponentInfo, ComponentsRepo, FileInfo, FileMap, FileType, STABILITY_PERIOD_DAYS,
+    ComponentId, ComponentInfo, ComponentsRepo, FileInfo, FileMap, FileType, interval_to_stability,
 };
 
 const XATTR_NAME: &str = "user.component";
@@ -205,11 +205,6 @@ fn parse_update_interval_xattr(value: &str) -> Result<u64> {
         "invalid {UPDATE_INTERVAL_XATTR_NAME} value: must be a positive integer, got {value:?}"
     );
     Ok(interval)
-}
-
-/// Convert a stability interval in days to a probability using the Poisson model.
-fn interval_to_stability(interval_days: u64) -> f64 {
-    (-STABILITY_PERIOD_DAYS / interval_days as f64).exp()
 }
 
 impl ComponentsRepo for XattrRepo {
