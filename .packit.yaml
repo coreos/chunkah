@@ -37,8 +37,7 @@ jobs:
   - job: copr_build
     trigger: pull_request
     targets:
-      - fedora-latest-stable
-      - fedora-rawhide
+      - fedora-all
 
   # Propose updates to Fedora on release
   - job: propose_downstream
