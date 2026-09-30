@@ -35,6 +35,12 @@ pub struct ComponentsRepos {
 pub struct Component {
     /// The maximum mtime for files in this component during the build phase.
     /// File mtimes will be clamped to this value.
+    ///
+    /// The clamp is what makes layers reproducible: package repos use a
+    /// canonical mtime (e.g. the RPM build time), which anchors the whole
+    /// layer regardless of when it was written. Repos without a canonical
+    /// mtime (bigfiles, xattr) fall back to the most recent file mtime,
+    /// capped by the default clamp.
     pub mtime_clamp: u64,
     /// Probability that the component doesn't change over STABILITY_PERIOD_DAYS.
     /// Used by the packing algorithm.
@@ -112,11 +118,15 @@ impl ComponentsRepos {
     /// The `files` map is the set of paths in the rootfs. This avoids the xattr
     /// repo having to walk the rootfs again. The `default_mtime_clamp` will be
     /// used as the mtime clamp for components that don't have a reproducible
-    /// clamp (e.g. xattr-claimed files, unclaimed files).
+    /// clamp (e.g. unclaimed files), as the stability anchor for package
+    /// repos, and to cap the mtime clamps of repos without canonical mtimes
+    /// (e.g. big files, xattr-claimed files).
     pub fn load(rootfs: &Dir, files: &FileMap, default_mtime_clamp: u64) -> Result<Self> {
         let mut repos: Vec<Box<dyn ComponentsRepo>> = Vec::new();
 
-        if let Some(repo) = xattr::XattrRepo::load(files).context("loading xattrs")? {
+        if let Some(repo) =
+            xattr::XattrRepo::load(files, default_mtime_clamp).context("loading xattrs")?
+        {
             tracing::info!(repo = "xattr", "loaded repo");
             repos.push(Box::new(repo));
         }
@@ -135,7 +145,7 @@ impl ComponentsRepos {
             repos.push(Box::new(repo));
         }
 
-        if let Some(repo) = bigfiles::BigfilesRepo::load(files) {
+        if let Some(repo) = bigfiles::BigfilesRepo::load(files, default_mtime_clamp) {
             tracing::info!(repo = "bigfiles", "loaded repo");
             repos.push(Box::new(repo));
         }
@@ -410,7 +420,7 @@ mod tests {
 
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let xattr_repo = xattr::XattrRepo::load(&files).unwrap().unwrap();
+        let xattr_repo = xattr::XattrRepo::load(&files, 0).unwrap().unwrap();
         let packages = rpm_qa::load_from_str(RPM_FIXTURE).unwrap();
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -478,7 +488,7 @@ mod tests {
 
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let xattr_repo = xattr::XattrRepo::load(&files).unwrap().unwrap();
+        let xattr_repo = xattr::XattrRepo::load(&files, 0).unwrap().unwrap();
         let repos: Vec<Box<dyn ComponentsRepo>> = vec![Box::new(xattr_repo)];
         let loaded = ComponentsRepos {
             repos,
