@@ -39,7 +39,7 @@ impl BigfilesRepo {
     // TODO: the upfront scan logic here (inode table, path_to_component map)
     // could be deferred to weak_claims_for_path time since it receives
     // &FileInfo with size/inode/nlink.
-    pub fn load(files: &FileMap) -> Option<Self> {
+    pub fn load(files: &FileMap, default_mtime_clamp: u64) -> Option<Self> {
         let mut components: IndexMap<String, u64> = IndexMap::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
 
@@ -80,8 +80,13 @@ impl BigfilesRepo {
                 filename
             };
 
-            // create a component for this path
-            let (idx, _) = components.insert_full(component_name, file_info.mtime);
+            // create a component for this path; clamp mtime to SOURCE_DATE_EPOCH if set
+            let mtime = if default_mtime_clamp > 0 {
+                file_info.mtime.min(default_mtime_clamp)
+            } else {
+                file_info.mtime
+            };
+            let (idx, _) = components.insert_full(component_name, mtime);
             tracing::trace!(path = %path, component = %components[idx], id = idx, "bigfiles component created");
             let component_id = ComponentId(idx);
             path_to_component.insert(path.clone(), component_id);
@@ -221,7 +226,7 @@ mod tests {
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let repo = BigfilesRepo::load(&files).unwrap();
+        let repo = BigfilesRepo::load(&files, 0).unwrap();
 
         // small file should not be claimed
         let claims = repo
@@ -269,7 +274,7 @@ mod tests {
             create_sparse_file(rootfs, "b/foobar", 4 * 1024 * 1024);
         });
 
-        let repo = BigfilesRepo::load(&files).unwrap();
+        let repo = BigfilesRepo::load(&files, 0).unwrap();
 
         // First one uses filename, second uses full path
         assert_component(&repo, &rootfs, "/a/foobar", "foobar");

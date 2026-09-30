@@ -31,7 +31,7 @@ impl XattrRepo {
     /// Load xattr repo by scanning rootfs for user.component xattrs.
     /// Pre-computes directory inheritance for all paths in `files`.
     /// Uses cached xattrs from FileInfo rather than reading from disk.
-    pub fn load(files: &FileMap) -> Result<Option<Self>> {
+    pub fn load(files: &FileMap, default_mtime_clamp: u64) -> Result<Option<Self>> {
         let mut components: IndexMap<String, u64> = IndexMap::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
         // Track raw intervals during scanning to detect conflicts
@@ -84,8 +84,14 @@ impl XattrRepo {
                     .get_index_mut(id.0)
                     .expect("xattr component should have already been created");
                 // This ultimately makes the component mtime equal to the most
-                // recent modification time of a file in the component.
-                *component_mtime = file_info.mtime.max(*component_mtime);
+                // recent modification time of a file in the component,
+                // clamped to SOURCE_DATE_EPOCH if set.
+                let raw = file_info.mtime.max(*component_mtime);
+                *component_mtime = if default_mtime_clamp > 0 {
+                    raw.min(default_mtime_clamp)
+                } else {
+                    raw
+                };
 
                 // Check for user.update-interval xattr (not inherited from directories)
                 if let Some(interval) = get_update_interval_xattr(file_info)
@@ -315,7 +321,7 @@ mod tests {
             // File without xattr outside of directory - should not be claimed
             rootfs.write("noattr", "content").unwrap();
         });
-        let repo = XattrRepo::load(&files).unwrap().unwrap();
+        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
 
         // /mydir and /mydir/normal should be dircomponent
         assert_component(&repo, "/mydir", FileType::Directory, "dircomponent");
@@ -345,7 +351,7 @@ mod tests {
             set_component(rootfs, "a/b/c/d", "compD");
             set_component(rootfs, "x", "compX");
         });
-        let repo = XattrRepo::load(&files).unwrap().unwrap();
+        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
 
         assert_component(&repo, "/a", FileType::Directory, "compA");
         assert_component(&repo, "/a/other", FileType::File, "compA"); // inherits from /a
@@ -366,7 +372,7 @@ mod tests {
             // Create a symlink inside the directory - it should inherit from parent
             rootfs.symlink("../somewhere", "mydir/link").unwrap();
         });
-        let repo = XattrRepo::load(&files).unwrap().unwrap();
+        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
 
         // Both should be claimed by mycomp
         assert_component(&repo, "/mydir", FileType::Directory, "mycomp");
@@ -402,7 +408,7 @@ mod tests {
             rootfs.write("mydir/file", "content").unwrap();
             set_update_interval(rootfs, "mydir/file", "60");
         });
-        let result = XattrRepo::load(&files);
+        let result = XattrRepo::load(&files, 0);
         assert!(result.is_err());
         let msg = format!("{:#}", result.err().unwrap());
         assert!(msg.contains("conflicting"), "unexpected error: {msg}");
@@ -417,7 +423,7 @@ mod tests {
             rootfs.write("mydir/file", "content").unwrap();
             set_update_interval(rootfs, "mydir/file", "30");
         });
-        let repo = XattrRepo::load(&files).unwrap().unwrap();
+        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
 
         let claims = repo.strong_claims_for_path(Utf8Path::new("/mydir"), &fi(FileType::Directory));
         let expected = interval_to_stability(30);
@@ -437,7 +443,7 @@ mod tests {
             set_component(rootfs, "app2", "comp2");
             rootfs.write("app2/file", "content").unwrap();
         });
-        let repo = XattrRepo::load(&files).unwrap().unwrap();
+        let repo = XattrRepo::load(&files, 0).unwrap().unwrap();
 
         // comp1 should have yearly stability
         let claims = repo.strong_claims_for_path(Utf8Path::new("/app1"), &fi(FileType::Directory));
