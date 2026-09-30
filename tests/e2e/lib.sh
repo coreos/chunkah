@@ -91,6 +91,19 @@ assert_path_exists() {
     fi
 }
 
+# Assert that a path in an image has the given mtime (epoch seconds).
+assert_path_mtime() {
+    local image="${1}"; shift
+    local path="${1}"; shift
+    local expected="${1}"; shift
+    local actual
+    actual=$(podman run --rm "${image}" stat -c '%Y' "${path}")
+    if [[ "${actual}" != "${expected}" ]]; then
+        echo "ERROR: mtime of ${path} in ${image} is ${actual}, expected ${expected}" >&2
+        return 1
+    fi
+}
+
 # Assert that a path does not exist in an image.
 assert_path_not_exists() {
     local image="${1}"; shift

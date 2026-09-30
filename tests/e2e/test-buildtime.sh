@@ -29,14 +29,16 @@ podman pull "${BASE_IMAGE}"
 cat > Containerfile.rootfs <<EOF
 FROM ${BASE_IMAGE}
 RUN dnf install -y jq acl attr && \
-    dnf clean all && \
-    dd if=/dev/urandom of=/usr/bin/chungus bs=1M count=20
+    dnf clean all
 EOF
 buildah build -t "${ROOTFS_IMAGE}" -f Containerfile.rootfs .
 
 # build chunked image using FROM oci-archive: trick (note the use of oci-archive
 # instead of oci is intended here to make sure we have coverage for this now
 # that the Containerfile.splitter approach has moved to oci)
+# `chungus` gets a canonical mtime earlier than SOURCE_DATE_EPOCH (its mtime
+# should win); `chungus2` gets a wall-clock mtime later than SOURCE_DATE_EPOCH
+# (its mtime should be clamped down)
 cat > Containerfile <<EOF
 FROM ${ROOTFS_IMAGE} AS builder
 # create a test binary with various xattr types
@@ -45,6 +47,8 @@ RUN cp /usr/bin/true /usr/bin/test-xattrs && \
     setfacl -m u:nobody:r /usr/bin/test-xattrs && \
     setfattr -n user.testkey1 -v testvalue1 /usr/bin/test-xattrs && \
     setfattr -n user.testkey2 -v testvalue2 /usr/bin/test-xattrs && \
+    truncate -s 20M /usr/bin/chungus && \
+    cp /usr/bin/chungus /usr/bin/chungus2 && \
     touch -d @0 /usr/bin/chungus
 
 FROM ${CHUNKAH_IMG:?} AS chunkah
@@ -62,10 +66,16 @@ buildah_build -t "${CHUNKED_IMAGE}" -f Containerfile .
 podman run --rm "${CHUNKED_IMAGE}" jq --version
 
 # check for expected components
-assert_has_components "${CHUNKED_IMAGE}" "rpm/filesystem" "rpm/setup" "rpm/glibc" "rpm/jq" "bigfiles/chungus"
+assert_has_components "${CHUNKED_IMAGE}" "rpm/filesystem" "rpm/setup" "rpm/glibc" "rpm/jq" "bigfiles/chungus" "bigfiles/chungus2"
 
 # verify we got exactly 64 layers (the default)
 assert_layer_count "${CHUNKED_IMAGE}" 64
+
+# verify mtime clamping: `chungus` keeps its canonical mtime (0) since it's
+# below SOURCE_DATE_EPOCH, while `chungus2` (wall-clock mtime) is clamped to
+# SOURCE_DATE_EPOCH
+assert_path_mtime "${CHUNKED_IMAGE}" /usr/bin/chungus 0
+assert_path_mtime "${CHUNKED_IMAGE}" /usr/bin/chungus2 1700000000
 
 # verify that security.capability xattrs are preserved
 caps=$(podman run --rm "${CHUNKED_IMAGE}" getcap /usr/bin/test-xattrs)

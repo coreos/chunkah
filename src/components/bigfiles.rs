@@ -29,17 +29,21 @@ pub struct BigfilesRepo {
     components: IndexMap<String, u64>,
     /// Mapping from path to ComponentId.
     path_to_component: HashMap<Utf8PathBuf, ComponentId>,
+    /// Cap for component mtime clamps.
+    mtime_clamp: u64,
 }
 
 impl BigfilesRepo {
     /// Load bigfiles repo by scanning for files >= MIN_SIZE.
     ///
     /// Returns None if no qualifying files are found. Hardlinked files (same
-    /// inode, nlink > 1) are grouped into the same component.
+    /// inode, nlink > 1) are grouped into the same component. Component mtime
+    /// clamps are set to the file's mtime so that ancestor dirs are clamped to
+    /// a reproducible value, capped at `mtime_clamp`.
     // TODO: the upfront scan logic here (inode table, path_to_component map)
     // could be deferred to weak_claims_for_path time since it receives
     // &FileInfo with size/inode/nlink.
-    pub fn load(files: &FileMap) -> Option<Self> {
+    pub fn load(files: &FileMap, mtime_clamp: u64) -> Option<Self> {
         let mut components: IndexMap<String, u64> = IndexMap::new();
         let mut path_to_component: HashMap<Utf8PathBuf, ComponentId> = HashMap::new();
 
@@ -107,6 +111,7 @@ impl BigfilesRepo {
         Some(Self {
             components,
             path_to_component,
+            mtime_clamp,
         })
     }
 }
@@ -134,12 +139,22 @@ impl ComponentsRepo for BigfilesRepo {
     }
 
     fn component_info(&self, id: ComponentId) -> ComponentInfo<'_> {
-        let (name, &mtime_clamp) = self
+        let (name, &mtime) = self
             .components
             .get_index(id.0)
             // SAFETY: the ids we're given come from the IndexMap itself
             // when we inserted the element, so it must be valid.
             .expect("invalid ComponentId");
+        // There's no canonical mtime for bigfiles (unlike e.g. the RPM build time): the file's
+        // mtime is the only signal, but it may be entirely arbitrary, as there's no way to know if
+        // the user set it explicitly for reproducibility. So we always take the min() with the
+        // default clamp (which comes from SOURCE_DATE_EPOCH or defaults to $now):
+        // - with an explicit epoch, arbitrary file mtimes (e.g. "state" files like the rpmdb) get
+        // clamped down, restoring reproducibility;
+        // - without one, the clamp defaults to $now; file mtimes are necessarily at or before $now
+        // (the rootfs predates chunking), so explicitly-set mtimes win, and arbitrary ones float
+        // but were never reproducible to begin with.
+        let mtime_clamp = mtime.min(self.mtime_clamp);
         ComponentInfo {
             name,
             mtime_clamp,
@@ -221,7 +236,7 @@ mod tests {
         let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
         let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
 
-        let repo = BigfilesRepo::load(&files).unwrap();
+        let repo = BigfilesRepo::load(&files, 0).unwrap();
 
         // small file should not be claimed
         let claims = repo
@@ -269,7 +284,7 @@ mod tests {
             create_sparse_file(rootfs, "b/foobar", 4 * 1024 * 1024);
         });
 
-        let repo = BigfilesRepo::load(&files).unwrap();
+        let repo = BigfilesRepo::load(&files, 0).unwrap();
 
         // First one uses filename, second uses full path
         assert_component(&repo, &rootfs, "/a/foobar", "foobar");
