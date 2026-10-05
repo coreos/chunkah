@@ -148,7 +148,7 @@ fn isolate_size_outliers(items: &[PackItem], budget: usize) -> (Vec<PackGroup>, 
         raw_mad
     };
 
-    let high_size_limit = median + SIZE_OUTLIER_THRESHOLD * mad;
+    let high_size_limit = SIZE_OUTLIER_THRESHOLD.mul_add(mad, median);
 
     tracing::debug!(median, mad, high_size_limit, "phase 1: size thresholds");
 
@@ -171,7 +171,7 @@ fn isolate_size_outliers(items: &[PackItem], budget: usize) -> (Vec<PackGroup>, 
 
     // Cap high-size singletons at a fraction of the budget.
     // Excess are pushed into the remaining pool.
-    let reserved_bins = if remaining_indices.is_empty() { 0 } else { 1 };
+    let reserved_bins = usize::from(!remaining_indices.is_empty());
     let hs_bins_limit =
         ((budget.saturating_sub(reserved_bins) as f64) * HIGH_SIZE_CAP).floor() as usize;
     let hs_bins = high_size_indices.len().min(hs_bins_limit);
@@ -398,7 +398,7 @@ fn compute_median(values: &[f64]) -> f64 {
     sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
     let mid = sorted.len() / 2;
     if sorted.len().is_multiple_of(2) {
-        (sorted[mid - 1] + sorted[mid]) / 2.0
+        f64::midpoint(sorted[mid - 1], sorted[mid])
     } else {
         sorted[mid]
     }
@@ -453,7 +453,7 @@ mod tests {
         // check all indices present exactly once (no loss, no duplication)
         let mut output_indices: Vec<usize> =
             result.iter().flat_map(|g| &g.indices).copied().collect();
-        output_indices.sort();
+        output_indices.sort_unstable();
         let expected_indices: Vec<usize> = (0..input.len()).collect();
         assert_eq!(output_indices, expected_indices, "indices mismatch");
 
@@ -525,7 +525,7 @@ mod tests {
     fn test_large_components_get_singletons() {
         // One very large component and several small ones
         let items = vec![
-            make_item("huge", 100000, 0.9),
+            make_item("huge", 100_000, 0.9),
             make_item("small1", 10, 0.9),
             make_item("small2", 10, 0.9),
             make_item("small3", 10, 0.9),
@@ -576,7 +576,7 @@ mod tests {
         // for 9 items whose stabilities span 3 tiers. Previously this dropped
         // items from tiers that got 0 bins.
         let items = vec![
-            make_item("huge", 100000, 0.5),
+            make_item("huge", 100_000, 0.5),
             make_item("a", 100, 0.99),
             make_item("b", 100, 0.98),
             make_item("c", 100, 0.97),

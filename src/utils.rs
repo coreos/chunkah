@@ -96,7 +96,7 @@ pub fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) ->
 
     let num_relevant_changes = if changelog_times.is_empty() {
         // If there are no changelog entries, use the buildtime as a single data point
-        if buildtime >= lookback_start { 1 } else { 0 }
+        i32::from(buildtime >= lookback_start)
     } else {
         // Count only entries within the lookback window, and bin by days. The
         // reason for binning by days is that multiple package releases within a
@@ -136,7 +136,7 @@ pub fn calculate_stability(changelog_times: &[u64], buildtime: u64, now: u64) ->
     }
 
     // lambda in our case is changes per day
-    let lambda = num_relevant_changes as f64 / span_days;
+    let lambda = f64::from(num_relevant_changes) / span_days;
 
     (-lambda * STABILITY_PERIOD_DAYS).exp()
 }
@@ -214,11 +214,10 @@ fn canonicalize_dir_path(
 
     let is_symlink = files
         .get(&current_path)
-        .map(|fi| fi.file_type == FileType::Symlink)
         // Technically if we fallback here it means it doesn't even exist in the
         // rootfs so it won't even be claimed. But it feels overkill to try to
         // e.g. return an Option and handle that everywhere.
-        .unwrap_or(false);
+        .is_some_and(|fi| fi.file_type == FileType::Symlink);
 
     let canonical = if is_symlink {
         let rel_path = current_path
@@ -305,7 +304,7 @@ mod tests {
     fn test_parse_rfc3339_epoch() {
         assert_eq!(
             parse_rfc3339_epoch("2023-11-14T22:13:20Z").unwrap(),
-            1700000000
+            1_700_000_000
         );
         assert_eq!(parse_rfc3339_epoch("1970-01-01T00:00:00Z").unwrap(), 0);
         assert!(parse_rfc3339_epoch("not-a-date").is_err());
@@ -319,9 +318,9 @@ mod tests {
         assert_eq!(format_size(1023), "1023 B");
         assert_eq!(format_size(1024), "1.0 KiB");
         assert_eq!(format_size(1536), "1.5 KiB");
-        assert_eq!(format_size(1048576), "1.0 MiB");
-        assert_eq!(format_size(1073741824), "1.0 GiB");
-        assert_eq!(format_size(1610612736), "1.5 GiB");
+        assert_eq!(format_size(1_048_576), "1.0 MiB");
+        assert_eq!(format_size(1_073_741_824), "1.0 GiB");
+        assert_eq!(format_size(1_610_612_736), "1.5 GiB");
     }
 
     #[test]
