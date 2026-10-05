@@ -357,7 +357,7 @@ impl ComponentsRepo for AlpmComponentsRepo {
     ) -> Vec<ComponentId> {
         self.path_to_components
             .get(path)
-            .map(|components| components.to_vec())
+            .cloned()
             .unwrap_or_default()
     }
 
@@ -572,7 +572,7 @@ impl LocalAlpmDbFile {
             .get(section)
             .ok_or_else(|| anyhow!("section not found: {section}"))?
             .iter()
-            .map(|line| line.as_str());
+            .map(String::as_str);
         let first = lines
             .next()
             .ok_or_else(|| anyhow!("no value found for section {section}"))?;
@@ -590,7 +590,7 @@ impl LocalAlpmDbFile {
     /// Note that the spec is different for `alpm-db-desc` and `alpm-db-files` (see [`Self::get_single_line_value`]).
     /// If you are parsing a `alpm-db-files` file, you might need to filter additional newlines by yourself.
     fn get_multi_line_value(&self, section: &str) -> Option<&[String]> {
-        self.0.get(section).map(|value| value.as_slice())
+        self.0.get(section).map(Vec::as_slice)
     }
 
     /// Checks that the given line is a well-formed header line and returns the section name if it is
@@ -782,8 +782,8 @@ mod tests {
 
         // Multiple packages in base have gcc as their basename, so in terms of component names, they will be seen multiple times
         let mut expected_components = IMPORTANT_ARCH_LINUX_PACKAGES_IN_BASE
-            .into_iter()
-            .map(|pkg| *pkg)
+            .iter()
+            .copied()
             .collect::<BTreeSet<_>>();
         let component_info = claims.iter().map(|claim| alpm.component_info(*claim));
         for component in component_info {
@@ -848,7 +848,7 @@ mod tests {
 
     #[test]
     fn test_parse_desc() {
-        const DESC_CONTENTS: &str = r#"%NAME%
+        const DESC_CONTENTS: &str = r"%NAME%
 filesystem
 
 %VERSION%
@@ -889,7 +889,7 @@ iana-etc
 
 %XDATA%
 pkgtype=pkg
-"#;
+";
         let parsed_desc = DESC_CONTENTS.parse::<LocalAlpmDbFile>().unwrap();
         assert_eq!(
             parsed_desc.get_single_line_value("NAME").unwrap(),
@@ -900,12 +900,12 @@ pkgtype=pkg
         assert_eq!(parsed_desc.base().unwrap(), "filesystem");
         // This is the builddate at the time of writing the test.
         // Package will probably be newer if the fixture contents are regenerated at a later point in time
-        assert!(parsed_desc.builddate().unwrap() >= 1760286101);
+        assert!(parsed_desc.builddate().unwrap() >= 1_760_286_101);
     }
 
     #[test]
     fn test_parse_files() {
-        const FILES_CONTENT: &str = r#"%FILES%
+        const FILES_CONTENT: &str = r"%FILES%
 etc/
 etc/protocols
 etc/services
@@ -921,7 +921,7 @@ usr/share/licenses/iana-etc/LICENSE
 %BACKUP%
 etc/protocols	b9833a5373ef2f5df416f4f71ccb42eb
 etc/services	b80b33810d79289b09bac307a99b4b54
-"#;
+";
         const EXPECTED_PATHS: &[&str] = &[
             "etc/",
             "etc/protocols",
@@ -937,16 +937,13 @@ etc/services	b80b33810d79289b09bac307a99b4b54
         ];
         let mut expected_paths_set = EXPECTED_PATHS
             .iter()
-            .map(|path| Utf8Path::new(path))
+            .map(Utf8Path::new)
             .collect::<BTreeSet<_>>();
 
         let parsed_files = FILES_CONTENT.parse::<LocalAlpmDbFile>().unwrap();
 
         // Test that the generic parser can parse other sections, such as BACKUP
-        let mut other_section = parsed_files
-            .get_multi_line_value("BACKUP")
-            .unwrap()
-            .into_iter();
+        let mut other_section = parsed_files.get_multi_line_value("BACKUP").unwrap().iter();
         assert_eq!(
             other_section.next().unwrap(),
             "etc/protocols\tb9833a5373ef2f5df416f4f71ccb42eb"
@@ -958,7 +955,7 @@ etc/services	b80b33810d79289b09bac307a99b4b54
         assert_eq!(other_section.next(), None);
 
         let parsed_files = LocalAlpmDbFilesFile(parsed_files);
-        for path_from_files in parsed_files.files().into_iter() {
+        for path_from_files in parsed_files.files() {
             assert!(
                 expected_paths_set.remove(path_from_files),
                 "path from files must be expected"
@@ -1026,14 +1023,14 @@ DBPathInvalid = /invalid
     #[test]
     fn pacman_conf_last_with_inline_comment() {
         /// A pacman.conf file that is valid, but contains comments in the same line
-        pub const PACMAN_CONF_MULTIPLE_WITH_INLINE_COMMENT_AND_RELATIVE: &str = r#"
+        pub const PACMAN_CONF_MULTIPLE_WITH_INLINE_COMMENT_AND_RELATIVE: &str = r"
         [options]
         DBPath = /invalid # This is an inline comment
         [invalid]
         invalid_option = false
         [options]
         DBPath = var/lib/pacman # Last path should win. Test relative paths are working as well.
-        "#;
+        ";
         let dbpath = AlpmComponentsRepo::parse_pacman_conf_dbpath(
             PACMAN_CONF_MULTIPLE_WITH_INLINE_COMMENT_AND_RELATIVE,
         );

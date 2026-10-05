@@ -70,7 +70,7 @@ impl BigfilesRepo {
 
             let filename = path
                 .file_name()
-                .map(|s| s.to_string())
+                .map(str::to_string)
                 .expect("filename has no basename");
 
             // derive component name from filename

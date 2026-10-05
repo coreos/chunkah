@@ -143,7 +143,7 @@ pub struct BuildArgs {
 
 impl BuildArgs {
     /// Apply CLI overrides to an OCI config, returning a new config.
-    fn apply_to_config(&self, config: oci_image::Config) -> Result<oci_image::Config> {
+    fn apply_to_config(&self, config: &oci_image::Config) -> Result<oci_image::Config> {
         let mut builder = oci_image::ConfigBuilder::default();
 
         // Copy over all fields from base config. Would be nice if we could
@@ -225,7 +225,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     let annotations = parse_key_value_pairs(&args.annotations, parsed.annotations)
         .context("parsing annotations")?;
 
-    let image_config = build_image_config(args, parsed.config, created_epoch, architecture)
+    let image_config = build_image_config(args, &parsed.config, created_epoch, architecture)
         .context("building image config")?;
 
     let rootfs = Dir::open_ambient_dir(args.rootfs.as_std_path(), ambient_authority())
@@ -260,7 +260,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
     }
 
     // pack components down to max layers
-    let components = pack_components(args.max_layers, components).context("packing components")?;
+    let components = pack_components(args.max_layers, components);
     tracing::info!(layers = components.len(), "packing complete");
 
     // build the OCI image
@@ -319,7 +319,7 @@ pub fn run(args: &BuildArgs) -> Result<()> {
 
 /// Parse the `--output` value into an [`OutputTarget`].
 fn parse_output_target(output: Option<&Utf8Path>) -> Result<OutputTarget> {
-    match output.map(|o| o.as_str()) {
+    match output.map(Utf8Path::as_str) {
         None => Ok(OutputTarget::Stdout),
         Some(s) => match s.split_once(':') {
             Some(("oci-archive", path)) => {
@@ -380,7 +380,7 @@ fn write_manifest(
                     file_count: component.files.len(),
                     size: component.files.values().map(|f| f.size).sum(),
                     stability: component.stability,
-                    files: component.files.keys().map(|p| p.to_string()).collect(),
+                    files: component.files.keys().map(Utf8PathBuf::to_string).collect(),
                 };
                 (name.clone(), entry)
             })
@@ -475,7 +475,7 @@ fn resolve_created_epoch(source_date_epoch: Option<u64>, parsed: &ParsedConfig) 
 /// Build the OCI image configuration from CLI args and a parsed config.
 fn build_image_config(
     args: &BuildArgs,
-    config: oci_image::Config,
+    config: &oci_image::Config,
     created: u64,
     architecture: &str,
 ) -> Result<oci_image::ImageConfiguration> {
@@ -539,7 +539,7 @@ fn parse_key_value_pairs(
 fn pack_components(
     max_layers: usize,
     components: HashMap<String, Component>,
-) -> Result<Vec<(String, Component)>> {
+) -> Vec<(String, Component)> {
     let mut entries: Vec<Option<(String, Component)>> = components.into_iter().map(Some).collect();
     // sort by component name for deterministic inputs to the packing algorithm
     entries.sort_by(|a, b| a.as_ref().unwrap().0.cmp(&b.as_ref().unwrap().0));
@@ -600,7 +600,7 @@ fn pack_components(
         }
     }
 
-    Ok(result)
+    result
 }
 
 #[cfg(test)]
@@ -651,7 +651,7 @@ mod tests {
 
         // parse config from fixture file
         let parsed = parse_config(CONFIG_FIXTURE).unwrap();
-        let image_config = build_image_config(&args, parsed.config, 1, "amd64").unwrap();
+        let image_config = build_image_config(&args, &parsed.config, 1, "amd64").unwrap();
 
         let rootfs = Dir::open_ambient_dir(rootfs_dir.path(), ambient_authority()).unwrap();
 
@@ -702,7 +702,7 @@ mod tests {
 
         // verify there's no history
         assert!(
-            image_config.history().as_ref().is_none_or(|h| h.is_empty()),
+            image_config.history().as_ref().is_none_or(Vec::is_empty),
             "image should have no history entries"
         );
 
@@ -861,7 +861,7 @@ mod tests {
             ..Default::default()
         };
 
-        let image_config = build_image_config(&args, parsed.config, 1, "amd64").unwrap();
+        let image_config = build_image_config(&args, &parsed.config, 1, "amd64").unwrap();
         let labels = image_config
             .config()
             .as_ref()
@@ -891,7 +891,7 @@ mod tests {
             let rootfs = Dir::open_ambient_dir(tmp.path(), ambient_authority()).unwrap();
 
             let add_component = |name: &str, size_mb: usize, interval: &str| {
-                rootfs.write(name, &vec![0u8; size_mb * MB]).unwrap();
+                rootfs.write(name, vec![0u8; size_mb * MB]).unwrap();
                 rootfs
                     .setxattr(name, XATTR_COMPONENT, name.as_bytes())
                     .unwrap();
@@ -907,7 +907,7 @@ mod tests {
             let files = crate::scan::Scanner::new(&rootfs).scan().unwrap();
             let repos = ComponentsRepos::load(&rootfs, &files, 0).unwrap();
             let components = repos.into_components(&rootfs, files).unwrap();
-            pack_components(2, components).unwrap()
+            pack_components(2, components)
         };
 
         // Helper to find which packed layer contains a given file.

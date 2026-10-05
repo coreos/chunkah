@@ -78,15 +78,15 @@ impl<'a> Scanner<'a> {
                     .with_context(|| format!("getting metadata for {}", path))?;
 
                 // Check file type early, before reading xattrs
-                let file_type = match FileType::from_cap_std(&metadata.file_type()) {
+                let file_type = match FileType::from_cap_std(metadata.file_type()) {
                     Some(ft) => ft,
                     None => {
                         if self.skip_special_files {
                             tracing::debug!(path = %path, "skipping special file");
                             return Ok(ControlFlow::Continue(()));
-                        } else {
-                            anyhow::bail!("special file type not supported: {}", path);
                         }
+
+                        anyhow::bail!("special file type not supported: {}", path);
                     }
                 };
 
@@ -333,7 +333,7 @@ mod tests {
         assert_eq!(get_file_type(&files, "/regular.txt"), Some(FileType::File));
 
         // Socket should be skipped (not in the map)
-        assert!(files.get(Utf8Path::new("/test.sock")).is_none());
+        assert!(!files.contains_key(Utf8Path::new("/test.sock")));
     }
 
     #[test]
