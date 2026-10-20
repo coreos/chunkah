@@ -250,7 +250,7 @@ fn canonicalize_dir_path(
 }
 
 /// Normalize a path by resolving `.` and `..` components.
-fn normalize_path(path: &Utf8Path) -> Result<Utf8PathBuf> {
+pub fn normalize_path(path: &Utf8Path) -> Result<Utf8PathBuf> {
     let mut result = Utf8PathBuf::new();
     for component in path.components() {
         use camino::Utf8Component;
