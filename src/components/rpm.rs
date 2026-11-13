@@ -20,7 +20,7 @@ const RPMDB_PATHS: &[&str] = &["usr/lib/sysimage/rpm", "usr/share/rpm", "var/lib
 /// Uses the RPM database to determine file ownership and groups files
 /// by their SRPM.
 pub struct RpmRepo {
-    /// Unique component (SRPM) names mapped to (buildtime, stability), indexed by ComponentId.
+    /// Unique component (SRPM) names mapped to (mtime clamp, stability), indexed by ComponentId.
     components: IndexMap<String, (u64, f64)>,
 
     /// Mapping from path to list of (ComponentId, FileInfo).
@@ -80,13 +80,21 @@ impl RpmRepo {
 
             let entry = components.entry(component_name.to_string());
             let stability = calculate_stability(&pkg.changelog_times, pkg.buildtime, now);
+            // Packaged files can be newer than the build time.
+            // Clamping them below their packaged mtime would make
+            // e.g. byte-compiled Python stale, since .pyc records the source's mtime.
+            let mtime_clamp = pkg
+                .files
+                .values()
+                .map(|fi| fi.mtime)
+                .fold(pkg.buildtime, u64::max);
             let component_id = ComponentId(entry.index());
             match entry {
                 indexmap::map::Entry::Occupied(mut e) => {
-                    // Build time across subpackages for a given SRPM can vary.
+                    // Clamps across subpackages for a given SRPM can vary.
                     // We want the max() of all of them as the clamp.
                     let (existing_bt, existing_stability) = e.get_mut();
-                    *existing_bt = (*existing_bt).max(pkg.buildtime);
+                    *existing_bt = (*existing_bt).max(mtime_clamp);
                     if stability != *existing_stability && !pkg.changelog_times.is_empty() {
                         // Stability was derived from changelogs only and yet
                         // they're different? This likely means that the RPMs
@@ -101,7 +109,7 @@ impl RpmRepo {
                 }
                 indexmap::map::Entry::Vacant(e) => {
                     tracing::trace!(component = %component_name, id = component_id.0, "rpm component created");
-                    e.insert((pkg.buildtime, stability));
+                    e.insert((mtime_clamp, stability));
                 }
             }
 
@@ -478,6 +486,22 @@ mod tests {
                 rpmdb_path
             );
         }
+    }
+
+    #[test]
+    fn test_mtime_clamp_covers_packaged_mtimes() {
+        let mut packages = rpm_qa::load_from_str(FIXTURE).unwrap();
+        let bash = packages.get_mut("bash").unwrap();
+        let newer = bash.buildtime + 8;
+        bash.files
+            .get_mut(Utf8Path::new("/usr/bin/bash"))
+            .unwrap()
+            .mtime = newer;
+        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+
+        let claims =
+            repo.strong_claims_for_path(Utf8Path::new("/usr/bin/bash"), &fi(FileType::File));
+        assert_eq!(repo.component_info(claims[0]).mtime_clamp, newer);
     }
 
     #[test]
