@@ -78,7 +78,7 @@ impl FileType {
     /// Try to convert from cap_std file type.
     ///
     /// Returns `None` for unsupported types (sockets, FIFOs, block/char devices).
-    pub fn from_cap_std(file_type: &CapFileType) -> Option<Self> {
+    pub fn from_cap_std(file_type: CapFileType) -> Option<Self> {
         if file_type.is_dir() {
             Some(FileType::Directory)
         } else if file_type.is_file() {
@@ -253,7 +253,7 @@ impl ComponentsRepos {
 }
 
 /// Whether to use strong or weak claims in a claiming pass.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum ClaimStrength {
     Strong,
     Weak,
@@ -426,7 +426,7 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        let rpm_repo = rpm::RpmRepo::load_from_packages(packages, now).unwrap();
+        let rpm_repo = rpm::RpmRepo::load_from_packages(packages, now);
 
         let repos: Vec<Box<dyn ComponentsRepo>> = vec![Box::new(rpm_repo), Box::new(xattr_repo)];
         let loaded = ComponentsRepos {

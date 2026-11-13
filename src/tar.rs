@@ -10,6 +10,7 @@ use ocidir::oci_spec::image as oci_image;
 use crate::components::{FileInfo, FileMap, FileType};
 
 /// Compression options for OCI archives.
+#[derive(Debug, Clone, Copy)]
 pub enum ArchiveCompression {
     /// No compression.
     None,
@@ -23,7 +24,7 @@ pub enum LayerWriter<'a> {
     Gzip(ocidir::LayerWriter<'a, flate2::write::GzEncoder<BlobWriter<'a>>>),
 }
 
-impl<'a> Write for LayerWriter<'a> {
+impl Write for LayerWriter<'_> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         match self {
             LayerWriter::Uncompressed(w) => w.write(buf),
@@ -39,7 +40,7 @@ impl<'a> Write for LayerWriter<'a> {
     }
 }
 
-impl<'a> LayerWriter<'a> {
+impl LayerWriter<'_> {
     /// Complete the layer and return the layer.
     pub fn complete(self) -> Result<ocidir::Layer> {
         match self {
@@ -187,8 +188,8 @@ fn strip_root_prefix(path: &Utf8Path) -> &Utf8Path {
 fn write_header_from_file_info(header: &mut tar::Header, file_info: &FileInfo, mtime_clamp: u64) {
     let mtime = std::cmp::min(file_info.mtime, mtime_clamp);
     header.set_mtime(mtime);
-    header.set_uid(file_info.uid as u64);
-    header.set_gid(file_info.gid as u64);
+    header.set_uid(u64::from(file_info.uid));
+    header.set_gid(u64::from(file_info.gid));
     header.set_mode(file_info.mode);
 }
 

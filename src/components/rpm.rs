@@ -56,12 +56,12 @@ impl RpmRepo {
         canonicalize_package_paths(rootfs, files, &mut packages)
             .context("canonicalizing package paths")?;
 
-        let mut repo = Self::load_from_packages(packages, now)?;
+        let mut repo = Self::load_from_packages(packages, now);
         build_orphan_digest_index(&mut repo, files);
         Ok(Some(repo))
     }
 
-    pub fn load_from_packages(packages: rpm_qa::Packages, now: u64) -> Result<Self> {
+    pub fn load_from_packages(packages: rpm_qa::Packages, now: u64) -> Self {
         let mut components: IndexMap<String, (u64, f64)> = IndexMap::new();
         let mut path_to_components: HashMap<Utf8PathBuf, Vec<(ComponentId, FileInfo)>> =
             HashMap::new();
@@ -118,7 +118,7 @@ impl RpmRepo {
                 None => false,
             };
 
-            for (path, mut file_info) in pkg.files.into_iter() {
+            for (path, mut file_info) in pkg.files {
                 if !is_sha256 {
                     file_info.digest = None;
                 }
@@ -146,12 +146,12 @@ impl RpmRepo {
             "loaded rpm database"
         );
 
-        Ok(Self {
+        Self {
             components,
             path_to_components,
             orphan_digest_index: HashMap::new(),
             orphan_sizes: HashSet::new(),
-        })
+        }
     }
 }
 
@@ -375,7 +375,7 @@ fn parse_srpm_name(srpm: &str) -> &str {
 }
 
 fn file_info_to_file_type(fi: &FileInfo) -> Option<FileType> {
-    let file_type = (fi.mode as libc::mode_t) & libc::S_IFMT;
+    let file_type = libc::mode_t::from(fi.mode) & libc::S_IFMT;
     match file_type {
         libc::S_IFDIR => Some(FileType::Directory),
         libc::S_IFREG => Some(FileType::File),
@@ -434,7 +434,7 @@ mod tests {
     #[test]
     fn test_claims_for_path() {
         let packages = rpm_qa::load_from_str(FIXTURE).unwrap();
-        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        let repo = RpmRepo::load_from_packages(packages, now_secs());
 
         // /usr/bin/bash is a file owned by bash
         let claims =
@@ -442,7 +442,7 @@ mod tests {
         assert_eq!(claims.len(), 1);
         let info = repo.component_info(claims[0]);
         assert_eq!(info.name, "bash");
-        assert_eq!(info.mtime_clamp, 1753299195);
+        assert_eq!(info.mtime_clamp, 1_753_299_195);
 
         // /usr/bin/sh is a symlink owned by bash
         let claims =
@@ -457,7 +457,7 @@ mod tests {
         assert_eq!(claims.len(), 1);
         let info = repo.component_info(claims[0]);
         assert_eq!(info.name, "glibc");
-        assert_eq!(info.mtime_clamp, 1771428496);
+        assert_eq!(info.mtime_clamp, 1_771_428_496);
 
         // Unowned file should not be claimed
         let claims =
@@ -483,7 +483,7 @@ mod tests {
     #[test]
     fn test_claims_for_path_wrong_type() {
         let packages = rpm_qa::load_from_str(FIXTURE).unwrap();
-        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        let repo = RpmRepo::load_from_packages(packages, now_secs());
 
         // /usr/bin/bash is a file in RPM, but we query as symlink
         let claims =
@@ -498,7 +498,7 @@ mod tests {
     #[test]
     fn test_shared_directories_claimed_by_multiple_components() {
         let packages = rpm_qa::load_from_str(FIXTURE).unwrap();
-        let repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        let repo = RpmRepo::load_from_packages(packages, now_secs());
 
         // /usr/lib/.build-id is a well-known directory shared by many packages
         let claims = repo.strong_claims_for_path(
@@ -669,18 +669,18 @@ mod tests {
             arch: "x86_64".into(),
             license: "MIT".into(),
             size: 1000,
-            buildtime: now - 200000,
+            buildtime: now - 200_000,
             installtime: now,
             sourcerpm: Some(srpm.into()),
             digest_algo: None,
-            changelog_times: vec![now - 200000, now - 300000],
+            changelog_times: vec![now - 200_000, now - 300_0000],
             files: BTreeMap::new(),
         };
 
         // "foo2" has fresher changelogs so should have lower stability
         let mut foo2 = foo.clone();
         foo2.name = "foo2".into();
-        foo2.changelog_times = vec![now, now - 100000];
+        foo2.changelog_times = vec![now, now - 100_000];
 
         let stab_foo = calculate_stability(&foo.changelog_times, foo.buildtime, now);
         let stab_foo2 = calculate_stability(&foo2.changelog_times, foo2.buildtime, now);
@@ -688,9 +688,9 @@ mod tests {
 
         let assert_stability = |first: &Package, second: &Package| {
             let mut packages: rpm_qa::Packages = HashMap::new();
-            packages.insert(first.name.to_string(), first.clone());
-            packages.insert(second.name.to_string(), second.clone());
-            let repo = RpmRepo::load_from_packages(packages, now).unwrap();
+            packages.insert(first.name.clone(), first.clone());
+            packages.insert(second.name.clone(), second.clone());
+            let repo = RpmRepo::load_from_packages(packages, now);
             let info = repo.component_info(ComponentId(0));
             assert_eq!(info.name, "foo");
             // the component should use the min (most pessimistic) stability
@@ -744,7 +744,7 @@ mod tests {
         bash_fi.digest = Some(digest);
         bash_fi.size = size;
 
-        let mut repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        let mut repo = RpmRepo::load_from_packages(packages, now_secs());
         build_orphan_digest_index(&mut repo, &files);
 
         // the moved file should be reclaimed by bash's SRPM
@@ -786,7 +786,7 @@ mod tests {
         glibc_fi.digest = Some(digest);
         glibc_fi.size = size;
 
-        let mut repo = RpmRepo::load_from_packages(packages, now_secs()).unwrap();
+        let mut repo = RpmRepo::load_from_packages(packages, now_secs());
         build_orphan_digest_index(&mut repo, &files);
 
         // ambiguous digest should not claim anything

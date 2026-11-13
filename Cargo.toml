@@ -13,9 +13,18 @@ publish = false
 [dependencies]
 anyhow = "1"
 camino = { version = "1", features = ["serde1"] }
-cap-std-ext = { version = "5", default-features = false, features = ["fs_utf8"] }
+cap-std-ext = { version = "5", default-features = false, features = [
+    "fs_utf8",
+] }
 chrono = "0.4"
-clap = { version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context", "env"] }
+clap = { version = "4", default-features = false, features = [
+    "derive",
+    "std",
+    "help",
+    "usage",
+    "error-context",
+    "env",
+] }
 ctrlc = "3.5.2"
 flate2 = "1"
 fnv = "1.0.7"
@@ -35,3 +44,17 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 [dev-dependencies]
 fs-set-times = "0.20.3"
 maplit = "1"
+
+[lints.clippy]
+cast_lossless = "deny"
+manual_midpoint = "deny"
+bool_to_int_with_if = "deny"
+trivially_copy_pass_by_ref = "deny"
+map_clone = "deny"
+redundant_closure = "deny"
+explicit_into_iter_loop = "deny"
+unreadable_literal = "deny"
+needless_raw_string_hashes = "deny"
+unnecessary_wraps = "deny"
+# This can have some false positives with things like `Arc` so only warning
+needless_pass_by_value = "warn"
